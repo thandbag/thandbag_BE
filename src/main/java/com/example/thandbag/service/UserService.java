@@ -24,7 +24,7 @@ public class UserService {
     public void userRegister(SignupRequestDto signupRequestDto) {
 
         Optional<User> foundUsername = userRepository.findByUsername(signupRequestDto.getUsername());
-        Optional<User> foundNickname = userRepository.findByNickname(signupRequestDto.getUsername());
+        Optional<User> foundNickname = userRepository.findByNickname(signupRequestDto.getNickname());
 
         //유저 아이디 중복 검사
         userValidator.checkUsername(foundUsername);

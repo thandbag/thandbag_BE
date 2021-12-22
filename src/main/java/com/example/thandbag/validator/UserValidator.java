@@ -41,7 +41,7 @@ public class UserValidator {
         }
 
         // 이메일 형식 검사
-        if (!signupRequestDto.getUsername().contains("@") && !signupRequestDto.getUsername().contains(".")) {
+        if (!signupRequestDto.getUsername().contains("@") || !signupRequestDto.getUsername().contains(".")) {
             throw new IllegalArgumentException("이메일 형식을 확인해주세요.");
         }
 
