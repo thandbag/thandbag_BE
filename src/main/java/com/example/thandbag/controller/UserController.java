@@ -3,7 +3,6 @@ package com.example.thandbag.controller;
 import com.example.thandbag.dto.LoginRequestDto;
 import com.example.thandbag.dto.LoginResultDto;
 import com.example.thandbag.dto.SignupRequestDto;
-import com.example.thandbag.repository.UserRepository;
 import com.example.thandbag.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,7 +15,6 @@ import javax.servlet.http.HttpServletResponse;
 @RestController
 public class UserController {
 
-    private final UserRepository userRepository;
     private final UserService userService;
 
     @PostMapping("/api/user/signup")
