@@ -31,7 +31,7 @@ public class User extends Timestamped {
     private String nickname;
 
     @Column
-    private Enum mbti;
+    private String mbti;
 
     @Column(nullable = false)
     private int totalCount;
@@ -50,5 +50,9 @@ public class User extends Timestamped {
     @OneToOne
     @JoinColumn(name = "profile_img_id")
     private ProfileImg profileImg;
+
+    public void updateTotalPostsAndComments() {
+        this.totalCount += 1;
+    }
 
 }

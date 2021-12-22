@@ -1,6 +1,7 @@
 package com.example.thandbag.controller;
 
-import com.example.thandbag.dto.ThangbagResponseDto;
+import com.example.thandbag.dto.ThandbagResponseDto;
+import com.example.thandbag.service.ThandbagDetailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -8,13 +9,15 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class ThandbagDetailController {
 
-    @GetMapping("/api/thandbag/{postId}")
-    public ThangbagResponseDto getThangbagDetail(@PathVariable int postId, @RequestParam boolean share) {
+    private final ThandbagDetailService thandbagDetailService;
 
+    @GetMapping("/api/thandbag/{postId}")
+    public ThandbagResponseDto getThandbagDetail(@PathVariable int postId, @RequestParam boolean share) {
+        return thandbagDetailService.getOneThandbag(postId, share);
     }
 
     @DeleteMapping("/api/thandbag/{postId}")
     public void removeThandbag (@PathVariable int postId) {
-
+        thandbagDetailService.removeThandbag(postId);
     }
 }
