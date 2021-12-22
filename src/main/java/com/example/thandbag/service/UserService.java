@@ -1,13 +1,18 @@
 package com.example.thandbag.service;
 
+import com.example.thandbag.dto.LoginRequestDto;
+import com.example.thandbag.dto.LoginResultDto;
 import com.example.thandbag.dto.SignupRequestDto;
 import com.example.thandbag.model.User;
 import com.example.thandbag.repository.UserRepository;
+import com.example.thandbag.security.UserDetailsImpl;
+import com.example.thandbag.security.jwt.JwtTokenUtils;
 import com.example.thandbag.validator.UserValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
 import java.util.Optional;
 
@@ -20,6 +25,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final UserValidator userValidator;
 
+    // 회원가입
     @Transactional
     public void userRegister(SignupRequestDto signupRequestDto) {
 
@@ -40,5 +46,20 @@ public class UserService {
         User user = new User(signupRequestDto);
         user.setPassword(password);
         userRepository.save(user);
+    }
+
+    // 로그인
+    public LoginResultDto userLogin(LoginRequestDto loginRequestDto, HttpServletResponse response) {
+        User user = userRepository.findByUsername(loginRequestDto.getUsername())
+                .orElseThrow(() -> new IllegalArgumentException("아이디가 존재하지 않습니다."));
+
+        if(!passwordEncoder.matches(loginRequestDto.getPassword(), user.getPassword())) {
+            throw new IllegalArgumentException("비밀번호를 확인해주세요.");
+        }
+
+        UserDetailsImpl userDetails = new UserDetailsImpl(user);
+        String token = JwtTokenUtils.generateJwtToken(userDetails);
+        response.addHeader("Authorization", "Bearer " + token);
+        return new LoginResultDto(user.getId(), user.getNickname());
     }
 }
