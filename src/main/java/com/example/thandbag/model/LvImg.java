@@ -9,7 +9,6 @@ import javax.persistence.*;
 
 @Getter
 @NoArgsConstructor
-@AllArgsConstructor
 @Entity
 public class LvImg {
 
@@ -20,4 +19,7 @@ public class LvImg {
     @Column
     private String lvImgUrl;
 
+    public LvImg(String lvImgUrl) {
+        this.lvImgUrl = lvImgUrl;
+    }
 }

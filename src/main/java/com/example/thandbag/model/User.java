@@ -35,8 +35,8 @@ public class User extends Timestamped {
     private String nickname;
 
     @Column
-    @Enumerated(value = EnumType.STRING)
-    private Mbti mbti;
+    private String mbti;
+
 
     @Column(nullable = false)
     private int totalCount;
@@ -57,17 +57,20 @@ public class User extends Timestamped {
     @JoinColumn(name = "profile_img_id")
     private ProfileImg profileImg;
 
-
     public User(SignupRequestDto requestDto){
 
         this.username = requestDto.getUsername();
         this.password = requestDto.getPassword();
         this.nickname = requestDto.getNickname();
-        this.mbti = Mbti.valueOf(requestDto.getMbti());
+        this.mbti = requestDto.getMbti();
         this.totalCount = 0;
         this.level = 1;
         this.lvImgId = 1L;
         this.auth = Auth.USER;
+    }
+  
+    public void updateTotalPostsAndComments() {
+        this.totalCount += 1;
     }
 
 }

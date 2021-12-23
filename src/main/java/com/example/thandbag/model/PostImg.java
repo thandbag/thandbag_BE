@@ -22,4 +22,8 @@ public class PostImg {
     @ManyToOne
     private Post post;
 
+    public PostImg(String postImgUrl) {
+        this.postImgUrl = postImgUrl;
+    }
+
 }
