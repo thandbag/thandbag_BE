@@ -10,8 +10,8 @@ public class ShowCommentDto {
 
     private String nickname;
     private String lvIcon;
-    private Mbti mbti;
+    private String mbti;
     private String comment;
     private String createdAt;
-    private int like;
+    private long like;
 }

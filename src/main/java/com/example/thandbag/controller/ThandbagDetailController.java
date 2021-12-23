@@ -12,8 +12,8 @@ public class ThandbagDetailController {
     private final ThandbagDetailService thandbagDetailService;
 
     @GetMapping("/api/thandbag/{postId}")
-    public ThandbagResponseDto getThandbagDetail(@PathVariable int postId, @RequestParam boolean share) {
-        return thandbagDetailService.getOneThandbag(postId, share);
+    public ThandbagResponseDto getThandbagDetail(@PathVariable int postId) {
+        return thandbagDetailService.getOneThandbag(postId);
     }
 
     @DeleteMapping("/api/thandbag/{postId}")

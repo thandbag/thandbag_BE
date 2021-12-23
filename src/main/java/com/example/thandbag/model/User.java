@@ -62,7 +62,7 @@ public class User extends Timestamped {
         this.username = requestDto.getUsername();
         this.password = requestDto.getPassword();
         this.nickname = requestDto.getNickname();
-        this.mbti = Mbti.valueOf(requestDto.getMbti());
+        this.mbti = requestDto.getMbti();
         this.totalCount = 0;
         this.level = 1;
         this.lvImgId = 1L;
