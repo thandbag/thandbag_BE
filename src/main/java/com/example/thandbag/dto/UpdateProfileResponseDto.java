@@ -1,22 +1,19 @@
 package com.example.thandbag.dto;
 
-
-import com.example.thandbag.model.Post;
+import com.example.thandbag.Enum.Mbti;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class MyPageResponseDto {
+public class UpdateProfileResponseDto {
 
     private Long userId;
+    private String profileImgUrl;
     private String nickname;
-    private List<String> profileImgUrl;
-    private int level;
-    private List<Post> myPostList;
+    private Mbti mbti;
+    private String newPassword;
 
 }
