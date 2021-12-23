@@ -19,6 +19,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,16 +32,27 @@ public class MainService {
     private final PostImgRepository postImgRepository;
     private final UserRepository userRepository;
     private final LvImgRepository lvImgRepository;
+    private final PostService postService;
 
     @Transactional
     public ThandbagResponseDto createThandbag(ThandbagRequestDto thandbagRequestDto, UserDetailsImpl userDetails) {
 
         User user = userDetails.getUser();
+        List<PostImg> postImgList = new ArrayList<>();
+        List<String> fileUrlList = new ArrayList<>();
+        for(MultipartFile multipartFile : thandbagRequestDto.getImgUrl()) {
+            String imgUrl = postService.uploadFile(multipartFile);
+            PostImg img = new PostImg(imgUrl);
+            fileUrlList.add(imgUrl);
+            postImgList.add(img);
+        }
+
         Post post = Post.builder()
                 .title(thandbagRequestDto.getTitle())
                 .category(Category.valueOf(thandbagRequestDto.getCategory()))
                 .closed(thandbagRequestDto.isShare())
                 .content(thandbagRequestDto.getContent())
+                .imgList(postImgList)
                 .share(thandbagRequestDto.isShare())
                 .user(user)
                 .build();
@@ -54,7 +67,7 @@ public class MainService {
                 .category(thandbagRequestDto.getCategory())
                 .createdAt(TimeConversion.timeConversion(posted.getCreatedAt()))
                 .share(thandbagRequestDto.isShare())
-                .imgUrl(thandbagRequestDto.getImgUrl())
+                .imgUrl(fileUrlList)
                 .totalCount(user.getTotalCount())
                 .content(thandbagRequestDto.getContent())
                 .nickname(user.getNickname())

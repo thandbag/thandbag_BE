@@ -1,6 +1,5 @@
 package com.example.thandbag.service;
 
-import com.example.thandbag.Enum.Mbti;
 import com.example.thandbag.dto.MyPageResponseDto;
 import com.example.thandbag.dto.MyPostListDto;
 import com.example.thandbag.dto.ProfileUpdateRequestDto;
@@ -8,7 +7,10 @@ import com.example.thandbag.dto.UpdateProfileResponseDto;
 import com.example.thandbag.model.Post;
 import com.example.thandbag.model.ProfileImg;
 import com.example.thandbag.model.User;
-import com.example.thandbag.repository.*;
+import com.example.thandbag.repository.PostImgRepository;
+import com.example.thandbag.repository.PostRepository;
+import com.example.thandbag.repository.ProfileImgRepository;
+import com.example.thandbag.repository.UserRepository;
 import com.example.thandbag.security.UserDetailsImpl;
 import com.example.thandbag.validator.UserValidator;
 import lombok.RequiredArgsConstructor;
@@ -53,7 +55,6 @@ public class MyPageService {
     }
 
     // 마이페이지에서 회원정보 변경 시, 비밀번호 확인
-    // 왜 안됨?
     public String accessToInfoPage(String newPassword, UserDetailsImpl userDetails) {
         User user = userRepository.findByUsername(userDetails.getUsername())
                 .orElseThrow(() -> new IllegalArgumentException("유저 정보가 없습니다."));
@@ -75,7 +76,7 @@ public class MyPageService {
         Long userId = user.get().getId();
         String profileImgUrl = updateDto.getProfileImgUrl();
         String nickname = updateDto.getNickname();
-        Mbti mbti = Mbti.valueOf(updateDto.getMbti());
+        String mbti = updateDto.getMbti();
         String newPassword = updateDto.getNewPassword();
 
         // 프로필 이미지가 빈 값이 아니면 수정하기
