@@ -1,7 +1,6 @@
 package com.example.thandbag.model;
 
 import com.example.thandbag.Enum.Auth;
-import com.example.thandbag.Enum.Mbti;
 import com.example.thandbag.dto.SignupRequestDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
