@@ -55,4 +55,25 @@ public class UserValidator {
             throw new IllegalArgumentException("닉네임은 영문, 한글, 숫자로 이루어진 2~6자로 작성해주세요.");
         }
     }
+
+    public void checkPassword(String password) {
+        if (password.contains(" ")) {
+            throw new IllegalArgumentException("비밀번호는 공백을 포함할 수 없습니다.");
+        }
+
+        if (!Pattern.matches("^(?=.*[A-Za-z])(?=.*\\d)(?=.*[$@$!%*#?&])[A-Za-z\\d$@$!%*#?&]{8,}$", password)) {
+            throw new IllegalArgumentException("비밀번호는 영문, 숫자, 특수문자를 모두 포함한 8자 이상으로 입력해야 합니다.");
+        }
+    }
+
+    public void checkNicknameIsValid(String nickname) {
+        if (nickname.contains(" ")) {
+            throw new IllegalArgumentException("닉네임은 공백을 포함할 수 없습니다.");
+        }
+
+        if (!Pattern.matches("^[a-zA-Z0-9가-힣]{2,6}$", nickname)) {
+            throw new IllegalArgumentException("닉네임은 영문, 한글, 숫자로 이루어진 2~6자로 작성해주세요.");
+        }
+    }
+
 }
