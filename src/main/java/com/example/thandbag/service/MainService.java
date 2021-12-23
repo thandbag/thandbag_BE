@@ -4,11 +4,13 @@ import com.example.thandbag.Enum.Category;
 import com.example.thandbag.dto.ThandbagRequestDto;
 import com.example.thandbag.dto.ThandbagResponseDto;
 import com.example.thandbag.model.Post;
+import com.example.thandbag.model.PostImg;
 import com.example.thandbag.model.User;
 import com.example.thandbag.repository.LvImgRepository;
 import com.example.thandbag.repository.PostImgRepository;
 import com.example.thandbag.repository.PostRepository;
 import com.example.thandbag.repository.UserRepository;
+import com.example.thandbag.security.UserDetailsImpl;
 import com.example.thandbag.timeconversion.TimeConversion;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.support.PagedListHolder;
@@ -30,9 +32,9 @@ public class MainService {
     private final LvImgRepository lvImgRepository;
 
     @Transactional
-    public ThandbagResponseDto createThandbag(ThandbagRequestDto thandbagRequestDto) {
+    public ThandbagResponseDto createThandbag(ThandbagRequestDto thandbagRequestDto, UserDetailsImpl userDetails) {
 
-        User user = new User();
+        User user = userDetails.getUser();
         Post post = Post.builder()
                 .title(thandbagRequestDto.getTitle())
                 .category(Category.valueOf(thandbagRequestDto.getCategory()))
@@ -63,29 +65,16 @@ public class MainService {
     public List<ThandbagResponseDto> showAllThandbag(int page, int size) {
         Pageable sortedByModifiedAtDesc = PageRequest.of(page, size, Sort.by("modifiedAt").descending());
         List<ThandbagResponseDto> allThandbags = new ArrayList<>();
-        List<Post> allPosts = postRepository.findAllByOrderByCreatedAtDesc(sortedByModifiedAtDesc).getContent();
+        List<Post> allPosts = postRepository.findAllByShareTrueOrderByCreatedAtDesc(sortedByModifiedAtDesc).getContent();
         for(Post post : allPosts) {
-            ThandbagResponseDto thandbagResponseDto = ThandbagResponseDto.builder()
-                    .userId(post.getUser().getId())
-                    .nickname(post.getUser().getNickname())
-                    //ispresent check 안했음
-                    .lvIcon(lvImgRepository.findById(post.getUser().getLvImgId()).get().getLvImgUrl())
-                    .title(post.getTitle())
-                    .category(post.getCategory().getCategory())
-                    .createdAt(TimeConversion.timeConversion(post.getCreatedAt()))
-                    .closed(post.getClosed())
-                    .mbti(post.getUser().getMbti())
-                    .commentCount(post.getCommentList().size())
-                    .content(post.getContent())
-                    .imgUrl(postImgRepository.findByPostId(post.getId()).getPostImgUrl())
-                    .build();
+            ThandbagResponseDto thandbagResponseDto = createThandbagResponseDto(post);
             allThandbags.add(thandbagResponseDto);
         }
         return allThandbags;
     }
 
     public List<ThandbagResponseDto> searchThandbags(String keyword, int pageNumber, int size) {
-        List<Post> posts = postRepository.findAllByOrderByCreatedAtDesc();
+        List<Post> posts = postRepository.findAllByShareTrueOrderByCreatedAtDesc();
         posts.removeIf(post -> !(userRepository.getById(post.getUser().getId()).getNickname().contains(keyword)
                 || post.getContent().contains(keyword) || post.getTitle().contains(keyword)));
         PagedListHolder<Post> page = new PagedListHolder<>(posts);
@@ -94,22 +83,31 @@ public class MainService {
         posts = page.getPageList();
         List<ThandbagResponseDto> searchedPosts = new ArrayList<>();
         for (Post post : posts) {
-            ThandbagResponseDto thandbagResponseDto = ThandbagResponseDto.builder()
-                    .userId(post.getUser().getId())
-                    .nickname(post.getUser().getNickname())
-                    //ispresent check 안했음
-                    .lvIcon(lvImgRepository.findById(post.getUser().getLvImgId()).get().getLvImgUrl())
-                    .title(post.getTitle())
-                    .category(post.getCategory().getCategory())
-                    .createdAt(TimeConversion.timeConversion(post.getCreatedAt()))
-                    .closed(post.getClosed())
-                    .mbti(post.getUser().getMbti())
-                    .commentCount(post.getCommentList().size())
-                    .content(post.getContent())
-                    .imgUrl(postImgRepository.findByPostId(post.getId()).getPostImgUrl())
-                    .build();
+            ThandbagResponseDto thandbagResponseDto = createThandbagResponseDto(post);
             searchedPosts.add(thandbagResponseDto);
         }
         return searchedPosts;
+    }
+
+    public ThandbagResponseDto createThandbagResponseDto (Post post) {
+        List<PostImg> postImgList = postImgRepository.findAllByPostId(post.getId());
+        List<String> imgList = new ArrayList<>();
+        for(PostImg postImg : postImgList)
+            imgList.add(postImg.getPostImgUrl());
+
+        return ThandbagResponseDto.builder()
+                .userId(post.getUser().getId())
+                .nickname(post.getUser().getNickname())
+                //ispresent check 안했음
+                .lvIcon(lvImgRepository.findById(post.getUser().getLvImgId()).get().getLvImgUrl())
+                .title(post.getTitle())
+                .category(post.getCategory().getCategory())
+                .createdAt(TimeConversion.timeConversion(post.getCreatedAt()))
+                .closed(post.getClosed())
+                .mbti(post.getUser().getMbti())
+                .commentCount(post.getCommentList().size())
+                .content(post.getContent())
+                .imgUrl(imgList)
+                .build();
     }
 }

@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 
 @Getter
-@NoArgsConstructor
 @AllArgsConstructor
 @Entity
 public class CommentLike extends Timestamped {
@@ -18,7 +17,12 @@ public class CommentLike extends Timestamped {
 
     private Long user_id;
 
+    private int totalLike;
+
     @ManyToOne
     private Comment comment;
 
+    public CommentLike() {
+        this.totalLike = 0;
+    }
 }
