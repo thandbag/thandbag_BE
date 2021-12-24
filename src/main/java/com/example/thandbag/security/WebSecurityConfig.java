@@ -85,6 +85,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests()
                 .antMatchers("/api/user/signup").permitAll()
                 .antMatchers("/api/user/login").permitAll()
+                .antMatchers("/h2-console/**").permitAll()
                 .antMatchers(
                         "/v2/api-docs",
                         "/swagger-resources/**",
