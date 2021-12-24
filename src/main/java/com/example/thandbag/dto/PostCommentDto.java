@@ -1,16 +1,19 @@
 package com.example.thandbag.dto;
 
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-@Getter
 @AllArgsConstructor
-public class ShowCommentDto {
+@NoArgsConstructor
+@Getter
+public class PostCommentDto {
 
+    private long userId;
     private String nickname;
-    private String lvIcon;
-    private String mbti;
     private String comment;
     private String createdAt;
-    private long like;
+    private long totalCount;
+
 }

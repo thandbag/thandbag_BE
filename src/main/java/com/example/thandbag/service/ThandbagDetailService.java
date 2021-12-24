@@ -1,17 +1,15 @@
 package com.example.thandbag.service;
 
+import com.example.thandbag.dto.BestUserDto;
 import com.example.thandbag.dto.ShowCommentDto;
 import com.example.thandbag.dto.ThandbagResponseDto;
-import com.example.thandbag.model.Comment;
-import com.example.thandbag.model.CommentLike;
-import com.example.thandbag.model.Post;
-import com.example.thandbag.model.PostImg;
-import com.example.thandbag.repository.CommentLikeRepository;
-import com.example.thandbag.repository.LvImgRepository;
-import com.example.thandbag.repository.PostRepository;
+import com.example.thandbag.model.*;
+import com.example.thandbag.repository.*;
+import com.example.thandbag.security.UserDetailsImpl;
 import com.example.thandbag.timeconversion.TimeConversion;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +21,8 @@ public class ThandbagDetailService {
     private final PostRepository postRepository;
     private final LvImgRepository lvImgRepository;
     private final CommentLikeRepository commentLikeRepository;
+    private final CommentRepository commentRepository;
+    private final UserRepository userRepository;
 
     public ThandbagResponseDto getOneThandbag(long postId) {
         Post post = postRepository.findById(postId).orElseThrow(
@@ -33,14 +33,14 @@ public class ThandbagDetailService {
 
         List<ShowCommentDto> showCommentDtoList = new ArrayList<>();
         for (Comment comment : post.getCommentList()) {
-            CommentLike commentLike = commentLikeRepository.findByComment(comment).orElse(new CommentLike());
+            List<CommentLike> allLikes = commentLikeRepository.findAllByUserId(comment.getUser().getId());
             ShowCommentDto showCommentDto = new ShowCommentDto(
                     comment.getUser().getNickname(),
                     lvImgRepository.getById(comment.getUser().getLvImgId()).getLvImgUrl(),
                     comment.getUser().getMbti(),
                     comment.getComment(),
                     TimeConversion.timeConversion(comment.getCreatedAt()),
-                    commentLike.getTotalLike()
+                    allLikes.size()
             );
             showCommentDtoList.add(showCommentDto);
         }
@@ -59,7 +59,31 @@ public class ThandbagDetailService {
                 .build();
     }
 
-    public void removeThandbag(long postId) {
+    @Transactional
+    public void removeThandbag(long postId, UserDetailsImpl userDetails) {
         postRepository.deleteById(postId);
+        User user = userRepository.getById(userDetails.getUser().getId());
+        user.minusTotalPostsAndComments();
+
+        //leveldown 재조정 여부 아직 안함
+
+        // leveldown 으로인한 알림 안함
+    }
+
+    @Transactional
+    public List<BestUserDto> completeThandbag(long postId, List<Long> commentIdList) {
+        Post post = postRepository.findById(postId).orElseThrow(
+                () -> new NullPointerException("게시글이 없습니다"));
+        post.closePost();
+        List<BestUserDto> bestUserDtoList = new ArrayList<>();
+        for(long commentId : commentIdList) {
+            Comment comment = commentRepository.getById(commentId);
+            BestUserDto bestUserDto = new BestUserDto(
+                    comment.getUser().getId(),
+                    comment.getUser().getMbti(),
+                    comment.getUser().getNickname());
+            bestUserDtoList.add(bestUserDto);
+        }
+        return bestUserDtoList;
     }
 }

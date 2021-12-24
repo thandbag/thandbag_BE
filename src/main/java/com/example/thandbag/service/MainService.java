@@ -40,11 +40,13 @@ public class MainService {
         User user = userDetails.getUser();
         List<PostImg> postImgList = new ArrayList<>();
         List<String> fileUrlList = new ArrayList<>();
-        for(MultipartFile multipartFile : thandbagRequestDto.getImgUrl()) {
-            String imgUrl = postService.uploadFile(multipartFile);
-            PostImg img = new PostImg(imgUrl);
-            fileUrlList.add(imgUrl);
-            postImgList.add(img);
+        if (thandbagRequestDto.getImgUrl() != null) {
+            for (MultipartFile multipartFile : thandbagRequestDto.getImgUrl()) {
+                String imgUrl = postService.uploadFile(multipartFile);
+                PostImg img = new PostImg(imgUrl);
+                fileUrlList.add(imgUrl);
+                postImgList.add(img);
+            }
         }
 
         Post post = Post.builder()
@@ -57,10 +59,17 @@ public class MainService {
                 .user(user)
                 .build();
         postRepository.save(post);
-        user.updateTotalPostsAndComments();
+
+        //전체 게시글 수 count
+        user.plusTotalPostsAndComments();
         userRepository.save(user);
         Post posted = postRepository.findById(post.getId()).orElseThrow(
                 () -> new NullPointerException("post가 없습니다"));
+
+
+        //levelup 여부 아직 구현 안됨
+
+        //levelup 했으면 알림
 
         return ThandbagResponseDto.builder()
                 .userId(user.getId())

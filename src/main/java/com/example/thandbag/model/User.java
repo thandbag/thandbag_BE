@@ -68,8 +68,11 @@ public class User extends Timestamped {
         this.auth = Auth.USER;
     }
   
-    public void updateTotalPostsAndComments() {
+    public void plusTotalPostsAndComments() {
         this.totalCount += 1;
+    }
+    public void minusTotalPostsAndComments()   {
+        this.totalCount -= 1;
     }
 
 }

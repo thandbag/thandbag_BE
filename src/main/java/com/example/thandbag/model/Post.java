@@ -46,4 +46,8 @@ public class Post extends Timestamped {
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Comment> commentList;
 
+    public void closePost() {
+        this.closed = true;
+    }
+
 }
