@@ -75,9 +75,12 @@ public class ThandbagDetailService {
         Post post = postRepository.findById(postId).orElseThrow(
                 () -> new NullPointerException("게시글이 없습니다"));
         post.closePost();
+
         List<BestUserDto> bestUserDtoList = new ArrayList<>();
         for(long commentId : commentIdList) {
             Comment comment = commentRepository.getById(commentId);
+            comment.selectedByPostOwner();
+            commentRepository.save(comment);
             BestUserDto bestUserDto = new BestUserDto(
                     comment.getUser().getId(),
                     comment.getUser().getMbti(),

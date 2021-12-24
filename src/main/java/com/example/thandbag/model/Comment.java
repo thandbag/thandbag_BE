@@ -30,4 +30,8 @@ public class Comment extends Timestamped {
     @ManyToOne
     private Post post;
 
+    public void selectedByPostOwner() {
+        this.likedByWriter = true;
+    }
+
 }
