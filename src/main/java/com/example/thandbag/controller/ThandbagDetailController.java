@@ -15,16 +15,19 @@ public class ThandbagDetailController {
 
     private final ThandbagDetailService thandbagDetailService;
 
+    @CrossOrigin("*")
     @GetMapping("/api/thandbag/{postId}")
     public ThandbagResponseDto getThandbagDetail(@PathVariable int postId) {
         return thandbagDetailService.getOneThandbag(postId);
     }
 
+    @CrossOrigin("*")
     @DeleteMapping("/api/thandbag/{postId}")
     public void removeThandbag (@PathVariable int postId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         thandbagDetailService.removeThandbag(postId, userDetails);
     }
 
+    @CrossOrigin("*")
     @PostMapping("/api/thandbag")
     public List<BestUserDto> completeThandbag(@RequestParam long postId, @RequestBody List<Long> commentIdList) {
         return thandbagDetailService.completeThandbag(postId, commentIdList);
