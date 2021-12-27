@@ -5,12 +5,14 @@ import com.example.thandbag.dto.LoginResultDto;
 import com.example.thandbag.dto.SignupRequestDto;
 import com.example.thandbag.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletResponse;
 
+@CrossOrigin(exposedHeaders = "Authorization", originPatterns = "*")
 @RequiredArgsConstructor
 @RestController
 public class UserController {

@@ -1,25 +1,24 @@
 package com.example.thandbag.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-import javax.persistence.*;
+import java.io.Serializable;
+import java.util.UUID;
 
 @Getter
-@NoArgsConstructor
+@Setter
 @AllArgsConstructor
-@Entity
-public class ChatRoom extends Timestamped {
+@NoArgsConstructor
+public class ChatRoom implements Serializable {
 
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Id
-    private Long id;
+    private String roomId;
+    private String name;
 
-    @Column
-    private String title;
-
-    @Column
-    private int userCount;
+    public static ChatRoom create(String name) {
+        ChatRoom chatRoom = new ChatRoom();
+        chatRoom.roomId = UUID.randomUUID().toString();
+        chatRoom.name = name;
+        return chatRoom;
+    }
 
 }

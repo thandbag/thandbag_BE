@@ -10,15 +10,16 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class ChatUser {
+public class ChattingRoom extends Timestamped {
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     private Long id;
 
-    @ManyToOne
-    private User user;
+    @Column
+    private String title;
 
-    @ManyToOne
-    private ChatRoom chatRoom;
+    @Column
+    private int userCount;
+
 }
