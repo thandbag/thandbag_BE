@@ -1,0 +1,16 @@
+hooks:
+  # Nginx 와 연동된 Spring Boot 프로젝트 종료
+  AfterInstall:
+    - location: stop.sh
+      timeout: 60
+      runas: ec2-user
+  # Nginx 와 연동안된 profile 버전으로 Spring Boot 실행
+  ApplicationStart:
+    - location: start.sh
+      timeout: 60
+      runas: ec2-user
+  # 새로 실행된 Spring Boot 정상 동작 확인
+  ValidateService:
+    - location: health.sh
+      timeout: 60
+      runas: ec2-user
