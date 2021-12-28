@@ -10,7 +10,6 @@ import com.example.thandbag.repository.LvImgRepository;
 import com.example.thandbag.repository.PostImgRepository;
 import com.example.thandbag.repository.PostRepository;
 import com.example.thandbag.repository.UserRepository;
-import com.example.thandbag.security.UserDetailsImpl;
 import com.example.thandbag.timeconversion.TimeConversion;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.support.PagedListHolder;
@@ -35,9 +34,8 @@ public class MainService {
     private final PostService postService;
 
     @Transactional
-    public ThandbagResponseDto createThandbag(ThandbagRequestDto thandbagRequestDto, UserDetailsImpl userDetails) {
+    public ThandbagResponseDto createThandbag(ThandbagRequestDto thandbagRequestDto, User user) {
 
-        User user = userDetails.getUser();
         List<PostImg> postImgList = new ArrayList<>();
         List<String> fileUrlList = new ArrayList<>();
         if (thandbagRequestDto.getImgUrl() != null) {
@@ -58,13 +56,12 @@ public class MainService {
                 .share(thandbagRequestDto.isShare())
                 .user(user)
                 .build();
-        postRepository.save(post);
 
+        post = postRepository.save(post);
         //전체 게시글 수 count
         user.plusTotalPostsAndComments();
         userRepository.save(user);
-        Post posted = postRepository.findById(post.getId()).orElseThrow(
-                () -> new NullPointerException("post가 없습니다"));
+        Post posted = postRepository.getById(post.getId());
 
 
         //levelup 여부 아직 구현 안됨

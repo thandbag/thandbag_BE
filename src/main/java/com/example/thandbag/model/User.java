@@ -2,10 +2,7 @@ package com.example.thandbag.model;
 
 import com.example.thandbag.Enum.Auth;
 import com.example.thandbag.dto.SignupRequestDto;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
@@ -14,6 +11,7 @@ import javax.persistence.*;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Entity
 public class User extends Timestamped {
 
@@ -46,7 +44,7 @@ public class User extends Timestamped {
 
     @Column(nullable = false)
     @ColumnDefault("1")
-    private Long lvImgId;
+    private long lvImgId;
 
     @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)

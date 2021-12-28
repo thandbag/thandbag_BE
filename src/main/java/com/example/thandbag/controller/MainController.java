@@ -19,8 +19,7 @@ public class MainController {
     @CrossOrigin("*")
     @PostMapping("/api/newThandbag")
     public ThandbagResponseDto createThandbag(@RequestBody ThandbagRequestDto thandbagRequestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        // @AuthenticationPrincipal UserDetailsImpl userDetails
-        return mainService.createThandbag(thandbagRequestDto, userDetails);
+        return mainService.createThandbag(thandbagRequestDto, userDetails.getUser());
     }
 
     @CrossOrigin("*")

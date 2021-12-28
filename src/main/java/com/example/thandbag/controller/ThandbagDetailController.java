@@ -24,7 +24,7 @@ public class ThandbagDetailController {
     @CrossOrigin("*")
     @DeleteMapping("/api/thandbag/{postId}")
     public void removeThandbag (@PathVariable int postId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        thandbagDetailService.removeThandbag(postId, userDetails);
+        thandbagDetailService.removeThandbag(postId, userDetails.getUser());
     }
 
     @CrossOrigin("*")

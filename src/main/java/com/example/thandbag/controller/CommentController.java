@@ -22,7 +22,7 @@ public class CommentController {
     @CrossOrigin("*")
     @DeleteMapping("/api/uncomment/{commentId}")
     public void deleteComment(@PathVariable long commentId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        commentService.deleteComment(commentId, userDetails);
+        commentService.deleteComment(commentId, userDetails.getUser());
     }
 
     @CrossOrigin("*")

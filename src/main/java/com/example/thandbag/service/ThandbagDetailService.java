@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
+
 @Service
 @RequiredArgsConstructor
 public class ThandbagDetailService {
@@ -60,9 +61,8 @@ public class ThandbagDetailService {
     }
 
     @Transactional
-    public void removeThandbag(long postId, UserDetailsImpl userDetails) {
+    public void removeThandbag(long postId, User user) {
         postRepository.deleteById(postId);
-        User user = userRepository.getById(userDetails.getUser().getId());
         user.minusTotalPostsAndComments();
 
         //leveldown 재조정 여부 아직 안함
