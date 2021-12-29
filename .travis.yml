@@ -1,21 +1,19 @@
 language: java
 jdk:
-  - openjdk8
-
+- openjdk8
 branches:
   only:
-    - master
-
-# 트래비스 CI 서버의 Home
+  - master
 cache:
   directories:
-    - '$HOME/.m2/repository'
-    - '$HOME/.gradle'
-
+  - "$HOME/.m2/repository"
+  - "$HOME/.gradle"
 script: "./gradlew clean build"
-
-# CI 실행 완료시 메일로 알림
 notifications:
   email:
     recipients:
-      - 5.9.devv@gmail.com
+    - 5.9.devv@gmail.com
+before_install:
+- openssl aes-256-cbc -K $encrypted_2d4f739abdf9_key -iv $encrypted_2d4f739abdf9_iv
+  -in thandbag.tar.enc -out thandbag.tar -d
+- tar xvf thandbag.tar
