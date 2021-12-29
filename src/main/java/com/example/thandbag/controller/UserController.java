@@ -12,19 +12,21 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletResponse;
 
-@CrossOrigin(exposedHeaders = "Authorization", originPatterns = "*")
+
 @RequiredArgsConstructor
 @RestController
 public class UserController {
 
     private final UserService userService;
 
+    @CrossOrigin(exposedHeaders = "Authorization", originPatterns = "*")
     @PostMapping("/api/user/signup")
     public String userRegister(@RequestBody SignupRequestDto signupRequestDto){
         userService.userRegister(signupRequestDto);
         return "회원가입 성공";
     }
 
+    @CrossOrigin(exposedHeaders = "Authorization", originPatterns = "*")
     @PostMapping("/api/user/login")
     public LoginResultDto userLogin(@RequestBody LoginRequestDto loginRequestDto, HttpServletResponse response){
         return userService.userLogin(loginRequestDto, response);

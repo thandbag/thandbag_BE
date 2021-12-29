@@ -2,6 +2,7 @@ package com.example.thandbag.service;
 
 
 import com.example.thandbag.model.ChatRoom;
+import com.example.thandbag.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +19,7 @@ import java.util.*;
 @Service
 public class ChatService {
 
+    private final UserRepository userRepository;
     private final ObjectMapper objectMapper;
     private Map<String, ChatRoom> chatRooms;
 
@@ -48,5 +50,10 @@ public class ChatService {
         } catch (IOException e) {
             log.error(e.getMessage(), e);
         }
+    }
+
+    public String getNickname(String username) {
+        String nickname = userRepository.findByUsername(username).get().getNickname();
+        return nickname;
     }
 }

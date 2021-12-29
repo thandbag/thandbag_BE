@@ -3,7 +3,8 @@ package com.example.thandbag.controller;
 import com.example.thandbag.model.ChatRoom;
 import com.example.thandbag.model.LoginInfo;
 import com.example.thandbag.repository.ChatRoomRepository;
-import com.example.thandbag.security.provider.JwtTokenProvider;
+import com.example.thandbag.security.UserDetailsImpl;
+import com.example.thandbag.security.jwt.JwtTokenUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -18,24 +19,26 @@ import java.util.List;
 @RequestMapping("/chat")
 public class ChatRoomController {
     private final ChatRoomRepository chatRoomRepository;
-    private final JwtTokenProvider jwtTokenProvider;
 
-
+    @CrossOrigin(exposedHeaders = "Authorization", originPatterns = "*")
     @GetMapping("/user")
     @ResponseBody
     public LoginInfo getUserInfo() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        UserDetailsImpl user = (UserDetailsImpl) auth.getPrincipal();
         String name = auth.getName();
-        return LoginInfo.builder().name(name).token(jwtTokenProvider.generateToken(name)).build();
+        return LoginInfo.builder().name(name).token(JwtTokenUtils.generateJwtToken(user)).build();
     }
 
     // 채팅 리스트 화면
+    @CrossOrigin(exposedHeaders = "Authorization", originPatterns = "*")
     @GetMapping("/room")
     public String rooms(Model model) {
         return "/chat/room";
     }
 
     // 모든 채팅방 목록 반환
+    @CrossOrigin(exposedHeaders = "Authorization", originPatterns = "*")
     @GetMapping("/rooms")
     @ResponseBody
     public List<ChatRoom> room() {
@@ -43,6 +46,7 @@ public class ChatRoomController {
     }
 
     // 채팅방 생성
+    @CrossOrigin(exposedHeaders = "Authorization", originPatterns = "*")
     @PostMapping("/room")
     @ResponseBody
     public ChatRoom createRoom(@RequestParam String name) {
@@ -50,6 +54,7 @@ public class ChatRoomController {
     }
 
     // 채팅방 입장 화면
+    @CrossOrigin(exposedHeaders = "Authorization", originPatterns = "*")
     @GetMapping("/room/enter/{roomId}")
     public String roomDetail(Model model, @PathVariable String roomId) {
         model.addAttribute("roomId", roomId);
@@ -57,6 +62,7 @@ public class ChatRoomController {
     }
 
     // 특정 채팅방 조회
+    @CrossOrigin(exposedHeaders = "Authorization", originPatterns = "*")
     @GetMapping("/room/{roomId}")
     @ResponseBody
     public ChatRoom roomInfo(@PathVariable String roomId) {

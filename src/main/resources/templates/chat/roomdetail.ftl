@@ -64,7 +64,7 @@
             var _this = this;
             axios.get('/chat/user').then(response => {
                 _this.token = response.data.token;
-                ws.connect({"token":_this.token}, function(frame) {
+                ws.connect({"Authorization":_this.token}, function(frame) {
                     ws.subscribe("/sub/chat/room/"+_this.roomId, function(message) {
                         var recv = JSON.parse(message.body);
                         _this.recvMessage(recv);
@@ -78,7 +78,7 @@
         },
         methods: {
             sendMessage: function(type) {
-                ws.send("/pub/chat/message", {"token":this.token}, JSON.stringify({type:type, roomId:this.roomId, message:this.message}));
+                ws.send("/pub/chat/message", {"Authorization":this.token}, JSON.stringify({type:type, roomId:this.roomId, message:this.message}));
                 this.message = '';
             },
             recvMessage: function(recv) {
