@@ -37,5 +37,5 @@ deploy:
     region: ap-northeast-2
     skip_cleanup: true
     acl: private
-    local_dir: deploy
+    local_dir: build_files
     wait-until-deployed: true
