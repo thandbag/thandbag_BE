@@ -2,8 +2,8 @@ package com.example.thandbag.controller;
 
 import com.example.thandbag.model.ChatMessage;
 import com.example.thandbag.model.ChatRoom;
+import com.example.thandbag.redis.RedisPublisher;
 import com.example.thandbag.security.jwt.JwtDecoder;
-import com.example.thandbag.security.provider.JWTAuthProvider;
 import com.example.thandbag.service.ChatService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -24,13 +24,13 @@ import java.util.List;
 public class ChatController {
     private final ChatService chatService;
     private final RedisTemplate redisTemplate;
-    private final JWTAuthProvider jwtTokenProvider;
     private final ChannelTopic channelTopic;
     private final JwtDecoder jwtDecoder;
+    private final RedisPublisher redisPublisher;
 
     @CrossOrigin(exposedHeaders = "Authorization", originPatterns = "*")
     @MessageMapping("/chat/message")
-    public void message(ChatMessage message, @Header("Authorization") String token) {
+    public void message(ChatMessage message, @Header("token") String token) {
         String username = jwtDecoder.decodeUsername(token);
         String nickname = chatService.getNickname(username);
         // 로그인 회원 정보로 대화명 설정
@@ -41,7 +41,8 @@ public class ChatController {
             message.setMessage(nickname + "님이 입장하셨습니다.");
         }
         // Websocket에 발행된 메시지를 redis로 발행(publish)
-        redisTemplate.convertAndSend(channelTopic.getTopic(), message);
+//        redisTemplate.convertAndSend(channelTopic.getTopic(), message);
+        redisPublisher.publish(channelTopic, message);
     }
 
     @CrossOrigin(exposedHeaders = "Authorization", originPatterns = "*")
