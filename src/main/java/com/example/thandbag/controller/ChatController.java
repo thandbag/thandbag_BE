@@ -23,26 +23,29 @@ import java.util.List;
 @Controller
 public class ChatController {
     private final ChatService chatService;
-    private final RedisTemplate redisTemplate;
     private final ChannelTopic channelTopic;
     private final JwtDecoder jwtDecoder;
     private final RedisPublisher redisPublisher;
+    private final RedisTemplate redisTemplate;
 
     @CrossOrigin(exposedHeaders = "Authorization", originPatterns = "*")
     @MessageMapping("/chat/message")
-    public void message(ChatMessage message, @Header("token") String token) {
-        String username = jwtDecoder.decodeUsername(token);
+    public void message(ChatMessage message, @Header("Authorization") String token) {
+        String tokenInfo = token.substring(7);
+        System.out.println("Bearer제외한 토큰 : " + tokenInfo);
+        System.out.println(message);
+        String username = jwtDecoder.decodeUsername(tokenInfo);
         String nickname = chatService.getNickname(username);
         // 로그인 회원 정보로 대화명 설정
         message.setSender(nickname);
+
         // 채팅방 입장시에는 대화명과 메시지를 자동으로 세팅한다.
         if (ChatMessage.MessageType.ENTER.equals(message.getType())) {
             message.setSender("[알림]");
             message.setMessage(nickname + "님이 입장하셨습니다.");
         }
         // Websocket에 발행된 메시지를 redis로 발행(publish)
-//        redisTemplate.convertAndSend(channelTopic.getTopic(), message);
-        redisPublisher.publish(channelTopic, message);
+        redisTemplate.convertAndSend(channelTopic.getTopic(), message);
     }
 
     @CrossOrigin(exposedHeaders = "Authorization", originPatterns = "*")

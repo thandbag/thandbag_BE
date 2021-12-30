@@ -141,7 +141,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         skipPathList.add("GET,/ws-stomp/pub/chat/room/**");
         skipPathList.add("GET,**/pub/chat/room/**");
         skipPathList.add("GET,**/sub/chat/room/**");
-        skipPathList.add("GET,/webjars/**");
         skipPathList.add("GET,/ws-stomp/**");
 
 
