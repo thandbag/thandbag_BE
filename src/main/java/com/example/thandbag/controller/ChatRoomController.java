@@ -1,5 +1,6 @@
 package com.example.thandbag.controller;
 
+import com.example.thandbag.dto.ChatMyRoomListResponseDto;
 import com.example.thandbag.dto.ChatRoomDto;
 import com.example.thandbag.dto.CreateRoomRequestDto;
 import com.example.thandbag.model.LoginInfo;
@@ -9,10 +10,13 @@ import com.example.thandbag.security.jwt.JwtTokenUtils;
 import com.example.thandbag.service.ChatService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @Controller
@@ -38,15 +42,13 @@ public class ChatRoomController {
         return "/chat/room";
     }
 
-    //
     // 내가 참가한 모든 채팅방 목록
-//    @CrossOrigin(exposedHeaders = "Authorization", originPatterns = "*")
-//    @GetMapping("/myRoomList")
-//    @ResponseBody
-//    public List<ChatMyRoomListResponseDto> room(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-//        return null;
-//        return chatService.findMyChatList(userDetails.getUser());
-//    }
+    @CrossOrigin(exposedHeaders = "Authorization", originPatterns = "*")
+    @GetMapping("/myRoomList")
+    @ResponseBody
+    public List<ChatMyRoomListResponseDto> room(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return chatService.findMyChatList(userDetails.getUser());
+    }
 
     // 채팅방 생성
     @CrossOrigin(exposedHeaders = "Authorization", originPatterns = "*")

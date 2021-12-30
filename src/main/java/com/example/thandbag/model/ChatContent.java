@@ -1,6 +1,5 @@
 package com.example.thandbag.model;
 
-import com.example.thandbag.dto.ChatMessageDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,11 +18,8 @@ public class ChatContent extends Timestamped{
     @Id
     private Long id;
 
-    @Column(nullable = false)
+    @Column
     private String content;
-
-    @Column(nullable = false)
-    private ChatMessageDto.MessageType chatType;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -32,6 +28,7 @@ public class ChatContent extends Timestamped{
     @ManyToOne
     @JoinColumn(name = "chat_room_id")
     private ChatRoom chatRoom;
-
-
+//
+//    @Column
+//    private ChatMessageDto.MessageType chatType;
 }

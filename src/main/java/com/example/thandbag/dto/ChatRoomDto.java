@@ -19,7 +19,7 @@ public class ChatRoomDto implements Serializable {
 
     public ChatRoomDto (CreateRoomRequestDto createRoomRequestDto) {
         this.roomId = UUID.randomUUID().toString();
-        this.pub_id = createRoomRequestDto.getPub_id();
-        this.sub_id = createRoomRequestDto.getSub_id();
+        this.pub_id = createRoomRequestDto.getPubId();
+        this.sub_id = createRoomRequestDto.getSubId();
     }
 }

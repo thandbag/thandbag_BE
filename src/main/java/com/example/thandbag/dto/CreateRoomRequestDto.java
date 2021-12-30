@@ -10,6 +10,6 @@ import lombok.Setter;
 @Setter
 @Getter
 public class CreateRoomRequestDto {
-    private Long pub_id;
-    private Long sub_id;
+    private Long pubId;
+    private Long subId;
 }

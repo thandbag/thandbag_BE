@@ -2,6 +2,7 @@ package com.example.thandbag.service;
 
 
 import com.example.thandbag.dto.ChatMessageDto;
+import com.example.thandbag.dto.ChatMyRoomListResponseDto;
 import com.example.thandbag.dto.ChatRoomDto;
 import com.example.thandbag.dto.CreateRoomRequestDto;
 import com.example.thandbag.model.ChatContent;
@@ -18,6 +19,9 @@ import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -68,7 +72,6 @@ public class ChatService {
             // 입장, 퇴장 알림을 제외한 메시지를 MYSQL에 저장
             ChatContent chatContent = ChatContent.builder()
                     .content(chatMessageDto.getMessage())
-                    .chatType(chatMessageDto.getType())
                     .user(user.get())
                     .chatRoom(chatRoom.get())
                     .build();
@@ -87,49 +90,52 @@ public class ChatService {
 
         ChatRoom chatRoom = new ChatRoom(
                 chatRoomDto.getRoomId(),
-                roomRequestDto.getPub_id(),
-                roomRequestDto.getSub_id()
+                roomRequestDto.getPubId(),
+                roomRequestDto.getSubId()
         );
         // RDB에 저장
         chatRoomRepository.save(chatRoom);
         return chatRoomDto;
     }
 
-
     // 내가 참가한 채팅방 목록
-//    public List<ChatMyRoomListResponseDto> findMyChatList(User user) {
-//        List<ChatRoom> chatRoomList = chatRoomRepository.findAllByPubUserIdOrBySubUserId(user.getId());
-//        List<ChatMyRoomListResponseDto> responseDtoList = new ArrayList<>();
-//        String subNickname;
-//        String subProfileImgUrl;
-//        String lastContent;
-//        String lastContentCreatedTime;
-//
-//        for (ChatRoom room: chatRoomList) {
-//
-//            // 내가 pub 이면 sub아이디 찾아야함
-//            User subUser = user.getId().equals(room.getSubUserId()) ? userRepository.getById(room.getPubUserId()) : userRepository.getById(room.getSubUserId());
-//            ChatContent content = chatContentRepository.findAllByChatRoomIdOrderByCreatedAtDesc(room.getId());
-//            subNickname = subUser.getNickname();
+    public List<ChatMyRoomListResponseDto> findMyChatList(User user) {
+        List<ChatRoom> chatRoomList = chatRoomRepository.findAllByPubUserIdOrSubUserId(user.getId(), user.getId());
+        List<ChatMyRoomListResponseDto> responseDtoList = new ArrayList<>();
+        String roomId;
+        String subNickname;
+        String subProfileImgUrl;
+        String lastContent;
+        LocalDateTime lastContentCreatedTime;
+
+        for (ChatRoom room : chatRoomList) {
+            // 내가 pub 이면 sub아이디 찾아야 하고, sub이면 pub아이디 찾아야 함
+            roomId = room.getId();
+            User subUser = user.getId().equals(room.getSubUserId()) ? userRepository.getById(room.getPubUserId()) : userRepository.getById(room.getSubUserId());
+            subNickname = subUser.getNickname();
 //            subProfileImgUrl = subUser.getProfileImg().getProfileImgUrl();
-//
-//
-//
-//
-//
-//            ChatMyRoomListResponseDto dto = new ChatMyRoomListResponseDto(
-//                    subNickname,
-//                    subProfileImgUrl,
-//                    lastContent,
-//                    lastContentCreatedTime
-//            );
+            subProfileImgUrl = "naver.com/asdfasdf.jpg";
 
+            Optional<ChatContent> lastCont = chatContentRepository.findFirstByChatRoomOrderByCreatedAtDesc(room);
+            if (lastCont.isPresent()) {
+                lastContent = lastCont.get().getContent();
+                lastContentCreatedTime = lastCont.get().getCreatedAt();
+            } else {
+                lastContent = "";
+                lastContentCreatedTime = LocalDateTime.now();
+            }
 
-//            subNickname;
-//            subProfileImgUrl;
-//            lastContent;
-//            lastContentCreatedTime;
-
+            ChatMyRoomListResponseDto dto = new ChatMyRoomListResponseDto(
+                    roomId,
+                    subNickname,
+                    subProfileImgUrl,
+                    lastContent,
+                    lastContentCreatedTime
+            );
+            responseDtoList.add(dto);
+        }
+        return responseDtoList;
+    }
 }
 
 //    }
