@@ -1,63 +1,41 @@
 package com.example.thandbag.controller;
 
-import com.example.thandbag.model.ChatMessage;
-import com.example.thandbag.model.ChatRoom;
-import com.example.thandbag.redis.RedisPublisher;
+import com.example.thandbag.dto.ChatMessageDto;
+import com.example.thandbag.repository.ChatRedisRepository;
 import com.example.thandbag.security.jwt.JwtDecoder;
 import com.example.thandbag.service.ChatService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-
-import java.util.List;
 
 
 @RequiredArgsConstructor
 @Controller
 public class ChatController {
-    private final ChatService chatService;
-    private final ChannelTopic channelTopic;
-    private final JwtDecoder jwtDecoder;
-    private final RedisPublisher redisPublisher;
-    private final RedisTemplate redisTemplate;
 
+    private final JwtDecoder jwtDecoder;
+    private final ChatRedisRepository chatRedisRepository;
+    private final ChatService chatService;
+
+    /**
+     * websocket "/pub/chat/message"로 들어오는 메시징을 처리한다.
+     */
     @CrossOrigin(exposedHeaders = "Authorization", originPatterns = "*")
     @MessageMapping("/chat/message")
-    public void message(ChatMessage message, @Header("Authorization") String token) {
+    public void message(ChatMessageDto message, @Header("Authorization") String token) {
+        // 토큰 정보 추출
         String tokenInfo = token.substring(7);
-        System.out.println("Bearer제외한 토큰 : " + tokenInfo);
-        System.out.println(message);
         String username = jwtDecoder.decodeUsername(tokenInfo);
         String nickname = chatService.getNickname(username);
         // 로그인 회원 정보로 대화명 설정
         message.setSender(nickname);
+        System.out.println("ChatController Sender정보 : " + message.getSender());
+        message.setUserCount(chatRedisRepository.getUserCount(message.getRoomId()));
 
-        // 채팅방 입장시에는 대화명과 메시지를 자동으로 세팅한다.
-        if (ChatMessage.MessageType.ENTER.equals(message.getType())) {
-            message.setSender("[알림]");
-            message.setMessage(nickname + "님이 입장하셨습니다.");
-        }
         // Websocket에 발행된 메시지를 redis로 발행(publish)
-        redisTemplate.convertAndSend(channelTopic.getTopic(), message);
-    }
-
-    @CrossOrigin(exposedHeaders = "Authorization", originPatterns = "*")
-    @PostMapping
-    public ChatRoom createRoom(@RequestParam String name) {
-        return chatService.createRoom(name);
-    }
-
-    @CrossOrigin(exposedHeaders = "Authorization", originPatterns = "*")
-    @GetMapping
-    public List<ChatRoom> findAllRoom() {
-        return chatService.findAllRoom();
+        chatService.sendChatMessage(message);
     }
 
 }

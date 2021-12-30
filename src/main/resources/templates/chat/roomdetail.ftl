@@ -5,6 +5,7 @@
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="/webjars/bootstrap/4.3.1/dist/css/bootstrap.min.css">
     <style>
@@ -17,10 +18,11 @@
 <div class="container" id="app" v-cloak>
     <div class="row">
         <div class="col-md-6">
-            <h3>{{roomName}}</h3>
+            <h4>{{roomName}} <span class="badge badge-info badge-pill">{{userCount}}</span></h4>
         </div>
         <div class="col-md-6 text-right">
             <a class="btn btn-primary btn-sm" href="/logout">로그아웃</a>
+            <a class="btn btn-info btn-sm" href="/chat/room">채팅방 나가기</a>
         </div>
     </div>
     <div class="input-group">
@@ -47,7 +49,6 @@
     // websocket & stomp initialize
     var sock = new SockJS("/ws-stomp");
     var ws = Stomp.over(sock);
-    var reconnect = 0;
     // vue.js
     var vm = new Vue({
         el: '#app',
@@ -56,7 +57,8 @@
             roomName: '',
             message: '',
             messages: [],
-            token: ''
+            token: '',
+            userCount: 0
         },
         created() {
             this.roomId = localStorage.getItem('wschat.roomId');
@@ -64,12 +66,11 @@
             var _this = this;
             axios.get('/chat/user').then(response => {
                 _this.token = response.data.token;
-                ws.connect({"Authorization":_this.token}, function(frame) {
+                ws.connect({"token":_this.token}, function(frame) {
                     ws.subscribe("/sub/chat/room/"+_this.roomId, function(message) {
                         var recv = JSON.parse(message.body);
                         _this.recvMessage(recv);
                     });
-                    _this.sendMessage('ENTER');
                 }, function(error) {
                     alert("서버 연결에 실패 하였습니다. 다시 접속해 주십시요.");
                     location.href="/chat/room";
@@ -78,10 +79,11 @@
         },
         methods: {
             sendMessage: function(type) {
-                ws.send("/pub/chat/message", {"Authorization":this.token}, JSON.stringify({type:type, roomId:this.roomId, message:this.message}));
+                ws.send("/pub/chat/message", {"token":this.token}, JSON.stringify({type:type, roomId:this.roomId, message:this.message}));
                 this.message = '';
             },
             recvMessage: function(recv) {
+                this.userCount = recv.userCount;
                 this.messages.unshift({"type":recv.type,"sender":recv.sender,"message":recv.message})
             }
         }
