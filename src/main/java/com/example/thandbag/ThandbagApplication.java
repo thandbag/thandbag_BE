@@ -12,19 +12,18 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 @SpringBootApplication
 public class ThandbagApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(ThandbagApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(ThandbagApplication.class, args);
+    }
 
-
-
-	@Bean
-	public CommandLineRunner demo(LvImgRepository lvImgRepository) {
-		return (args) -> {
-			System.out.println("test test");
-			lvImgRepository.save(new LvImg("image1.jpg"));
-			lvImgRepository.save(new LvImg("image2.jpg"));
-		};
-	}
+    @Bean
+    public CommandLineRunner demo(LvImgRepository lvImgRepository) {
+        return (args) -> {
+            System.out.println("test test");
+            lvImgRepository.save(new LvImg("image1.jpg"));
+            lvImgRepository.save(new LvImg("image2.jpg"));
+        };
+    }
 
 }
+

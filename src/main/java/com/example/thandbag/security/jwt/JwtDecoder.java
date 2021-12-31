@@ -37,7 +37,7 @@ public class JwtDecoder {
         return username;
     }
 
-    private Optional<DecodedJWT> isValidToken(String token) {
+    public Optional<DecodedJWT> isValidToken(String token) {
         DecodedJWT jwt = null;
 
         try {

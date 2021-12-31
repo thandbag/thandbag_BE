@@ -3,23 +3,23 @@ package com.example.thandbag.model;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class ChatRoom extends Timestamped {
+public class ChatRoom {
 
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
-    private Long id;
+    private String id;
 
-    @Column
-    private String title;
+    @Column (nullable = false)
+    private Long pubUserId;
 
-    @Column
-    private int userCount;
-
+    @Column (nullable = false)
+    private Long subUserId;
 }
