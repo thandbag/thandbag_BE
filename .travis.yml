@@ -1,0 +1,41 @@
+language: java
+
+jdk:
+- openjdk8
+
+branches:
+  only:
+  - master
+
+cache:
+  directories:
+  - "$HOME/.m2/repository"
+  - "$HOME/.gradle"
+
+script: "./gradlew clean build"
+
+notifications:
+  email:
+    recipients:
+    - 5.9.devv@gmail.com
+
+before_install:
+- openssl aes-256-cbc -K $encrypted_2d4f739abdf9_key -iv $encrypted_2d4f739abdf9_iv
+  -in thandbag.tar.enc -out thandbag.tar -d
+- tar xvf thandbag.tar
+
+before_deploy:
+  - zip -r thandbag-snapshot *
+  - mkdir -p build_files
+  - mv thandbag-snapshot.zip build_files/thandbag-snapshot.zip
+
+deploy:
+  - provider: s3
+    access_key_id: $AWS_ACCESS_KEY
+    secret_access_key: $AWS_SECRET_KEY
+    bucket: thandbag
+    region: ap-northeast-2
+    skip_cleanup: true
+    acl: private
+    local_dir: build_files
+    wait-until-deployed: true

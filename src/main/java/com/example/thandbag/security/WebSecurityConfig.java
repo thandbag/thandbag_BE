@@ -111,6 +111,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
         http
                 .addFilterBefore(jwtFilter(), UsernamePasswordAuthenticationFilter.class);
+
+        // NginX
+        http
+                .requiresChannel()
+                .antMatchers("/")
+                .requiresSecure();
     }
 
     // JwtFilter : 서버에 접근시 JWT 확인 후 인증을 실시합니다.
