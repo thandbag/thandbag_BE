@@ -1,5 +1,6 @@
 package com.example.thandbag.controller;
 
+import com.example.thandbag.dto.ChatHistoryResponseDto;
 import com.example.thandbag.dto.ChatMyRoomListResponseDto;
 import com.example.thandbag.dto.ChatRoomDto;
 import com.example.thandbag.dto.CreateRoomRequestDto;
@@ -12,22 +13,18 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RequiredArgsConstructor
-@Controller
-@RequestMapping("/chat")
+@RestController
 public class ChatRoomController {
     private final ChatRedisRepository chatRedisRepository;
     private final ChatService chatService;
 
     @CrossOrigin(exposedHeaders = "Authorization", originPatterns = "*")
-    @GetMapping("/user")
-    @ResponseBody
+    @GetMapping("/chat/user")
     public LoginInfo getUserInfo() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         UserDetailsImpl user = (UserDetailsImpl) auth.getPrincipal();
@@ -35,41 +32,30 @@ public class ChatRoomController {
         return LoginInfo.builder().name(name).token(JwtTokenUtils.generateJwtToken(user)).build();
     }
 
-    // 채팅 리스트 화면
-    @CrossOrigin(exposedHeaders = "Authorization", originPatterns = "*")
-    @GetMapping("/room")
-    public String rooms(Model model) {
-        return "/chat/room";
-    }
-
     // 내가 참가한 모든 채팅방 목록
     @CrossOrigin(exposedHeaders = "Authorization", originPatterns = "*")
-    @GetMapping("/myRoomList")
-    @ResponseBody
+    @GetMapping("/chat/myRoomList")
     public List<ChatMyRoomListResponseDto> room(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return chatService.findMyChatList(userDetails.getUser());
     }
 
     // 채팅방 생성
     @CrossOrigin(exposedHeaders = "Authorization", originPatterns = "*")
-    @PostMapping("/room")
-    @ResponseBody
+    @PostMapping("/chat/room")
     public ChatRoomDto createRoom(@RequestBody CreateRoomRequestDto roomRequestDto) {
         return chatService.createChatRoom(roomRequestDto);
     }
 
     // 채팅방 입장 화면
     @CrossOrigin(exposedHeaders = "Authorization", originPatterns = "*")
-    @GetMapping("/room/enter/{roomId}")
-    public String roomDetail(Model model, @PathVariable String roomId) {
-        model.addAttribute("roomId", roomId);
-        return "/chat/roomdetail";
+    @PostMapping("/chat/room/enter/{roomId}")
+    public List<ChatHistoryResponseDto> roomDetail(@PathVariable String roomId) {
+        return chatService.getTotalChatContents(roomId);
     }
 
     // 특정 채팅방 조회
     @CrossOrigin(exposedHeaders = "Authorization", originPatterns = "*")
-    @GetMapping("/room/{roomId}")
-    @ResponseBody
+    @PostMapping("/chat/room/{roomId}")
     public ChatRoomDto roomInfo(@PathVariable String roomId) {
         return chatRedisRepository.findRoomById(roomId);
     }

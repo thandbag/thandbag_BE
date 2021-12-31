@@ -1,10 +1,7 @@
 package com.example.thandbag.service;
 
 
-import com.example.thandbag.dto.ChatMessageDto;
-import com.example.thandbag.dto.ChatMyRoomListResponseDto;
-import com.example.thandbag.dto.ChatRoomDto;
-import com.example.thandbag.dto.CreateRoomRequestDto;
+import com.example.thandbag.dto.*;
 import com.example.thandbag.model.ChatContent;
 import com.example.thandbag.model.ChatRoom;
 import com.example.thandbag.model.User;
@@ -136,7 +133,24 @@ public class ChatService {
         }
         return responseDtoList;
     }
-}
 
-//    }
-//}
+    // 채팅방 입장 시 이전 대화 목록 불러오기
+    public List<ChatHistoryResponseDto> getTotalChatContents(String roomId) {
+        ChatRoom room = chatRoomRepository.getById(roomId);
+        System.out.println("roomId : " + roomId);
+        System.out.println(room.getId());
+        List<ChatContent> chatContentList = chatContentRepository.findAllByChatRoomOrderByCreatedAtDesc(room);
+        System.out.println(chatContentList);
+        List<ChatHistoryResponseDto> chatHistoryList = new ArrayList<>();
+
+        for (ChatContent chat : chatContentList) {
+            ChatHistoryResponseDto historyResponseDto = new ChatHistoryResponseDto(
+                    chat.getUser().getNickname(),
+                    chat.getContent(),
+                    chat.getCreatedAt().toString()
+            );
+            chatHistoryList.add(historyResponseDto);
+        }
+        return chatHistoryList;
+    }
+}
