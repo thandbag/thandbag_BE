@@ -6,8 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
-
 @Getter
 @Setter
 @NoArgsConstructor
@@ -18,7 +16,8 @@ public class ChatMyRoomListResponseDto {
     private String subNickname;
     private String subProfileImgUrl;
     private String lastContent;
-    private LocalDateTime lastContentCreatedTime;
+    private String lastContentCreatedTime;
+    private int unreadCount;
 
     // 새로운 메시지가 몇개인지는 나중에 추가하기로 함
 }

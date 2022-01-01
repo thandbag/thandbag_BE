@@ -38,19 +38,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         // CustomAuthenticationProvider()를 호출하기 위해서 Overriding
         auth
                 .authenticationProvider(jwtAuthProvider);
-
-        auth.inMemoryAuthentication()
-                .withUser("happydaddy")
-                .password("{noop}1234")
-                .roles("USER")
-                .and()
-                .withUser("angrydaddy")
-                .password("{noop}1234")
-                .roles("USER")
-                .and()
-                .withUser("guest")
-                .password("{noop}1234")
-                .roles("GUEST");
     }
 
     @Override
@@ -73,6 +60,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/pub/chat/room/**").permitAll()
                 .antMatchers("/ws-stomp/sub/chat/room/**").permitAll()
                 .antMatchers("/ws-stomp/pub/chat/room/**").permitAll()
+                .antMatchers("/ws-stompAlarm/**").permitAll()
+                .antMatchers("/ws-stompAlarm/sub/alarm/**").permitAll()
                 .antMatchers("**/pub/chat/room/**").permitAll()
                 .antMatchers("**/sub/chat/room/**").permitAll()
                 .antMatchers(
@@ -146,11 +135,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         skipPathList.add("GET,/sub/chat/room/**");
         skipPathList.add("GET,/pub/chat/room/**");
         skipPathList.add("GET,/ws-stomp/pub/chat/room/**");
+        skipPathList.add("GET,/ws-stompAlarm/pub/chat/room/**");
         skipPathList.add("GET,**/pub/chat/room/**");
         skipPathList.add("GET,**/sub/chat/room/**");
         skipPathList.add("GET,/ws-stomp/**");
-
-
+        skipPathList.add("GET,/ws-stompAlarm/**");
+        skipPathList.add("GET,/ws-stompAlarm/sub/alarm/**");
 
         FilterSkipMatcher matcher = new FilterSkipMatcher(
                 skipPathList,

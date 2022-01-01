@@ -12,7 +12,8 @@ import lombok.Setter;
 public class ChatHistoryResponseDto {
 
     private String sender;
-    private String content;
-    private String createdTime;
+    private String senderProfileImg;
+    private String message;
+    private String createdAt;
 
 }

@@ -8,6 +8,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
+import javax.annotation.PostConstruct;
+import java.util.TimeZone;
+
 @EnableJpaAuditing
 @SpringBootApplication
 public class ThandbagApplication {
@@ -23,6 +26,12 @@ public class ThandbagApplication {
             lvImgRepository.save(new LvImg("image1.jpg"));
             lvImgRepository.save(new LvImg("image2.jpg"));
         };
+    }
+
+    //배포시 시간을 맞추기 위함
+    @PostConstruct
+    public void started() {
+        TimeZone.setDefault(TimeZone.getTimeZone("Asia/Seoul"));
     }
 
 }
