@@ -12,6 +12,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
+import javax.annotation.PostConstruct;
+import java.util.TimeZone;
+
 @EnableJpaAuditing
 @SpringBootApplication
 public class ThandbagApplication {
@@ -38,6 +41,12 @@ public class ThandbagApplication {
             profileImgRepository.save(new ProfileImg( "https://thandbag.s3.ap-northeast-2.amazonaws.com/%ED%94%84%EB%A1%9C%ED%95%84%EC%9D%B4%EB%AF%B8%EC%A7%80_%EC%83%81%EC%84%B8_%EA%B8%80%EC%9E%91%EC%84%B1%EC%9E%90/option%3D2.jpg"));
             profileImgRepository.save(new ProfileImg( "https://thandbag.s3.ap-northeast-2.amazonaws.com/%ED%94%84%EB%A1%9C%ED%95%84%EC%9D%B4%EB%AF%B8%EC%A7%80_%EC%83%81%EC%84%B8_%EA%B8%80%EC%9E%91%EC%84%B1%EC%9E%90/option%3D3.jpg"));
         };
+    }
+
+    //배포시 시간을 맞추기 위함
+    @PostConstruct
+    public void started() {
+        TimeZone.setDefault(TimeZone.getTimeZone("Asia/Seoul"));
     }
 
 }

@@ -5,10 +5,7 @@ import com.example.thandbag.dto.*;
 import com.example.thandbag.model.ChatContent;
 import com.example.thandbag.model.ChatRoom;
 import com.example.thandbag.model.User;
-import com.example.thandbag.repository.ChatContentRepository;
-import com.example.thandbag.repository.ChatRedisRepository;
-import com.example.thandbag.repository.ChatRoomRepository;
-import com.example.thandbag.repository.UserRepository;
+import com.example.thandbag.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -17,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -25,7 +23,6 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Service
 public class ChatService {
-
     private final ChannelTopic channelTopic;
     private final RedisTemplate redisTemplate;
     private final ChatRedisRepository chatRedisRepository;
@@ -64,12 +61,14 @@ public class ChatService {
         } else {
             Optional<User> user = userRepository.findByNickname(nickname);
             Optional<ChatRoom> chatRoom = chatRoomRepository.findById(chatMessageDto.getRoomId());
+            Boolean readCheck = chatMessageDto.getUserCount()==1 ? false : true;
 
             // 입장, 퇴장 알림을 제외한 메시지를 MYSQL에 저장
             ChatContent chatContent = ChatContent.builder()
                     .content(chatMessageDto.getMessage())
                     .user(user.get())
                     .chatRoom(chatRoom.get())
+                    .isRead(readCheck)
                     .build();
 
             chatContentRepository.save(chatContent);
@@ -77,13 +76,11 @@ public class ChatService {
         redisTemplate.convertAndSend(channelTopic.getTopic(), chatMessageDto);
     }
 
-
     // 채팅방 생성
     @Transactional
     public ChatRoomDto createChatRoom(CreateRoomRequestDto roomRequestDto) {
         // Redis에 채팅방 저장
         ChatRoomDto chatRoomDto = chatRedisRepository.createChatRoom(roomRequestDto);
-
         ChatRoom chatRoom = new ChatRoom(
                 chatRoomDto.getRoomId(),
                 roomRequestDto.getPubId(),
@@ -91,6 +88,7 @@ public class ChatService {
         );
         // RDB에 저장
         chatRoomRepository.save(chatRoom);
+        redisTemplate.convertAndSend(channelTopic.getTopic(), "이거슨 알람에 대한 메시지다요.");
         return chatRoomDto;
     }
 
@@ -102,12 +100,14 @@ public class ChatService {
         String subNickname;
         String subProfileImgUrl;
         String lastContent;
-        LocalDateTime lastContentCreatedTime;
+        String lastContentCreatedTime;
+        int unreadCount;
 
         for (ChatRoom room : chatRoomList) {
             // 내가 pub 이면 sub아이디 찾아야 하고, sub이면 pub아이디 찾아야 함
             roomId = room.getId();
             User subUser = user.getId().equals(room.getSubUserId()) ? userRepository.getById(room.getPubUserId()) : userRepository.getById(room.getSubUserId());
+            DateTimeFormatter newFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");
             subNickname = subUser.getNickname();
 //            subProfileImgUrl = subUser.getProfileImg().getProfileImgUrl();
             subProfileImgUrl = "naver.com/asdfasdf.jpg";
@@ -115,18 +115,22 @@ public class ChatService {
             Optional<ChatContent> lastCont = chatContentRepository.findFirstByChatRoomOrderByCreatedAtDesc(room);
             if (lastCont.isPresent()) {
                 lastContent = lastCont.get().getContent();
-                lastContentCreatedTime = lastCont.get().getCreatedAt();
+                lastContentCreatedTime = newFormatter.format(lastCont.get().getCreatedAt());
             } else {
                 lastContent = "";
-                lastContentCreatedTime = LocalDateTime.now();
+                lastContentCreatedTime = newFormatter.format(LocalDateTime.now());
             }
+
+            // 읽지 않은 메시지 수
+            unreadCount = chatContentRepository.findAllByUserNotAndChatRoomAndIsRead(user, room, false).size();
 
             ChatMyRoomListResponseDto dto = new ChatMyRoomListResponseDto(
                     roomId,
                     subNickname,
                     subProfileImgUrl,
                     lastContent,
-                    lastContentCreatedTime
+                    lastContentCreatedTime,
+                    unreadCount
             );
             responseDtoList.add(dto);
         }
@@ -134,19 +138,25 @@ public class ChatService {
     }
 
     // 채팅방 입장 시 이전 대화 목록 불러오기
+    @Transactional
     public List<ChatHistoryResponseDto> getTotalChatContents(String roomId) {
         ChatRoom room = chatRoomRepository.getById(roomId);
         System.out.println("roomId : " + roomId);
         System.out.println(room.getId());
-        List<ChatContent> chatContentList = chatContentRepository.findAllByChatRoomOrderByCreatedAtDesc(room);
+        List<ChatContent> chatContentList = chatContentRepository.findAllByChatRoomOrderByCreatedAtAsc(room);
         System.out.println(chatContentList);
         List<ChatHistoryResponseDto> chatHistoryList = new ArrayList<>();
-
+        DateTimeFormatter newFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");
         for (ChatContent chat : chatContentList) {
+            String createdTime = newFormatter.format(chat.getCreatedAt());
+            if (!chat.getIsRead()) {
+                chat.setIsRead(true);
+            }
             ChatHistoryResponseDto historyResponseDto = new ChatHistoryResponseDto(
                     chat.getUser().getNickname(),
+                    "www.naver.com/dsjd.jpg",
                     chat.getContent(),
-                    chat.getCreatedAt().toString()
+                    createdTime
             );
             chatHistoryList.add(historyResponseDto);
         }
