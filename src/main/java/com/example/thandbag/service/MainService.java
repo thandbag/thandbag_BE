@@ -37,9 +37,12 @@ public class MainService {
     @Transactional
     public ThandbagResponseDto createThandbag(ThandbagRequestDto thandbagRequestDto, UserDetailsImpl userDetails) {
 
+        // 헌재 사용자 가져오기
         User user = userDetails.getUser();
         List<PostImg> postImgList = new ArrayList<>();
         List<String> fileUrlList = new ArrayList<>();
+
+        // 이미지 올렸으면 저장 처리하기
         if (thandbagRequestDto.getImgUrl() != null) {
             for (MultipartFile multipartFile : thandbagRequestDto.getImgUrl()) {
                 String imgUrl = postService.uploadFile(multipartFile);
@@ -49,10 +52,11 @@ public class MainService {
             }
         }
 
+        // 글 저장
         Post post = Post.builder()
                 .title(thandbagRequestDto.getTitle())
                 .category(Category.valueOf(thandbagRequestDto.getCategory()))
-                .closed(thandbagRequestDto.isShare())
+                .closed(false)
                 .content(thandbagRequestDto.getContent())
                 .imgList(postImgList)
                 .share(thandbagRequestDto.isShare())
@@ -62,14 +66,24 @@ public class MainService {
 
         //전체 게시글 수 count
         user.plusTotalPostsAndComments();
-        userRepository.save(user);
+
+
+
+        //levelup
+        int totalPosts = user.getTotalCount();
+        if(totalPosts < 5 && totalPosts > 2 && user.getLevel() == 1)
+            user.setLevel(2);
+        else if(totalPosts >= 5)
+            user.setLevel(3);
+
+        //levelup 했으면 알림 해주어야함
+
+        user = userRepository.save(user);
         Post posted = postRepository.findById(post.getId()).orElseThrow(
                 () -> new NullPointerException("post가 없습니다"));
 
-
-        //levelup 여부 아직 구현 안됨
-
-        //levelup 했으면 알림
+        //얼빡배너 lv
+        String bannerLv = lvImgRepository.findByTitleAndLevel("얼빡배너 기본", user.getLevel()).getLvImgUrl();
 
         return ThandbagResponseDto.builder()
                 .userId(user.getId())
@@ -80,6 +94,13 @@ public class MainService {
                 .totalCount(user.getTotalCount())
                 .content(thandbagRequestDto.getContent())
                 .nickname(user.getNickname())
+                .level(user.getLevel())
+                .mbti(user.getMbti())
+                .lvImg(bannerLv)
+                .closed(posted.getClosed())
+                .share(posted.getShare())
+                .hitCount(posted.getTotalHitCount())
+                .totalCount(user.getTotalCount())
                 .title(thandbagRequestDto.getTitle())
                 .build();
     }
@@ -116,20 +137,23 @@ public class MainService {
         List<String> imgList = new ArrayList<>();
         for(PostImg postImg : postImgList)
             imgList.add(postImg.getPostImgUrl());
-
         return ThandbagResponseDto.builder()
                 .userId(post.getUser().getId())
                 .nickname(post.getUser().getNickname())
                 //ispresent check 안했음
-                .lvIcon(lvImgRepository.findById(post.getUser().getLvImgId()).get().getLvImgUrl())
+                .level(post.getUser().getLevel())
                 .title(post.getTitle())
                 .category(post.getCategory().getCategory())
                 .createdAt(TimeConversion.timeConversion(post.getCreatedAt()))
                 .closed(post.getClosed())
                 .mbti(post.getUser().getMbti())
                 .commentCount(post.getCommentList().size())
+                .totalCount(post.getUser().getTotalCount())
+                .hitCount(post.getTotalHitCount())
                 .content(post.getContent())
                 .imgUrl(imgList)
+                .share(post.getShare())
+                .closed(post.getClosed())
                 .build();
     }
 }

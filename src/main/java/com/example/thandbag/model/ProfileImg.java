@@ -18,8 +18,13 @@ public class ProfileImg {
     private Long id;
 
     @Column
+    private String title;
+
+    @Column
     private String profileImgUrl;
 
-    @OneToOne
-    private User user;
+
+    public ProfileImg(String profileImgUrl) {
+        this.profileImgUrl = profileImgUrl;
+    }
 }

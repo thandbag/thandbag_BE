@@ -38,6 +38,9 @@ public class Post extends Timestamped {
     @Column
     private Category category;
 
+    @Column
+    private int totalHitCount;
+
 
     //api 작성시 추가된 부분
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
@@ -49,5 +52,6 @@ public class Post extends Timestamped {
     public void closePost() {
         this.closed = true;
     }
+    public void updateTotalHit(int totalHitCount) { this.totalHitCount = totalHitCount;}
 
 }

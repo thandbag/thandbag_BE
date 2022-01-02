@@ -35,8 +35,7 @@ public class ChatService {
 
 
     public String getNickname(String username) {
-        String nickname = userRepository.findByUsername(username).get().getNickname();
-        return nickname;
+        return userRepository.findByUsername(username).get().getNickname();
     }
 
     /**

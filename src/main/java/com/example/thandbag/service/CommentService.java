@@ -3,6 +3,7 @@ package com.example.thandbag.service;
 import com.example.thandbag.dto.PostCommentDto;
 import com.example.thandbag.model.Comment;
 import com.example.thandbag.model.CommentLike;
+import com.example.thandbag.model.Post;
 import com.example.thandbag.model.User;
 import com.example.thandbag.repository.CommentLikeRepository;
 import com.example.thandbag.repository.CommentRepository;
@@ -31,6 +32,7 @@ public class CommentService {
                 .user(userDetails.getUser())
                 .post(postRepository.getById(postId))
                 .build();
+        postRepository.getById(postId).getCommentList().add(comment);
         comment = commentRepository.save(comment);
 
         // 전체 게시글 수 count
@@ -38,7 +40,14 @@ public class CommentService {
         user.plusTotalPostsAndComments();
         userRepository.save(user);
 
-        //levelup여부 아직 구현 안됨
+        //levelup
+        int totalPosts = user.getTotalCount();
+        if(totalPosts < 5 && totalPosts > 2 && user.getLevel() == 1)
+            user.setLevel(2);
+        else if(totalPosts >= 5)
+            user.setLevel(3);
+
+        // levelup 으로인한 알림 안함
 
         return new PostCommentDto(
                 userDetails.getUser().getId(),
@@ -54,12 +63,23 @@ public class CommentService {
         User user = userRepository.getById(userDetails.getUser().getId());
         user.minusTotalPostsAndComments();
 
-        //leveldown 재조정 여부 아직 안함
+        //leveldown
+        int totalPosts = user.getTotalCount();
+        if(totalPosts <= 2 && user.getLevel() == 2)
+            user.setLevel(1);
+        else if(totalPosts < 5 && user.getLevel() == 3)
+            user.setLevel(2);
 
         // leveldown 으로인한 알림 안함
     }
 
+    @Transactional
     public void likeComment(long commentId, UserDetailsImpl userDetails) {
+        Comment comment = commentRepository.getById(commentId);
+        Post post = comment.getPost();
+        if(post.getUser().getId().equals(userDetails.getUser().getId()))
+            comment.selectedByPostOwner();
+        commentRepository.save(comment);
         if(commentLikeRepository.existsByUserId(userDetails.getUser().getId())) {
             commentLikeRepository.deleteById(commentId);
         } else {

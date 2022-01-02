@@ -8,7 +8,7 @@ import lombok.Getter;
 public class ShowCommentDto {
 
     private String nickname;
-    private String lvIcon;
+    private int level;
     private String mbti;
     private String comment;
     private String createdAt;
