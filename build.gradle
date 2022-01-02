@@ -56,6 +56,9 @@ dependencies {
 	// Json -> Java, Java -> Json
 	implementation 'com.google.code.gson:gson:2.8.0'
 
+	// jackson-core
+	implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.13.0'
+
 	// Redis
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 	implementation group: 'it.ozimov', name: 'embedded-redis', version: '0.7.2'

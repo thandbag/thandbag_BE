@@ -36,7 +36,6 @@ public class User extends Timestamped {
     @Column
     private String mbti;
 
-
     @Column(nullable = false)
     private int totalCount;
 
@@ -57,7 +56,6 @@ public class User extends Timestamped {
     private ProfileImg profileImg;
 
     public User(SignupRequestDto requestDto){
-
         this.username = requestDto.getUsername();
         this.password = requestDto.getPassword();
         this.nickname = requestDto.getNickname();
@@ -67,7 +65,19 @@ public class User extends Timestamped {
         this.lvImgId = 1L;
         this.auth = Auth.USER;
     }
-  
+
+    public User(String username, String nickname, String password, String mbti, Long kakaoId) {
+        this.username = username;
+        this.password = password;
+        this.nickname = nickname;
+        this.mbti = mbti;
+        this.totalCount = 0;
+        this.level = 1;
+        this.lvImgId = 1L;
+        this.auth = Auth.USER;
+        this.kakaoId = kakaoId;
+    }
+
     public void plusTotalPostsAndComments() {
         this.totalCount += 1;
     }
