@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.mapping.ToOne;
 
 import javax.persistence.*;
 
@@ -44,16 +45,15 @@ public class User extends Timestamped {
     @ColumnDefault("1")
     private int level;
 
-    @Column(nullable = false)
-    @ColumnDefault("1")
-    private Long lvImgId;
+//    @Column(nullable = false)
+//    @ColumnDefault("1")
+//    private Long lvImgId;
 
     @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)
     private Auth auth;
 
-    @OneToOne
-    @JoinColumn(name = "profile_img_id")
+    @ManyToOne
     private ProfileImg profileImg;
 
     public User(SignupRequestDto requestDto){
@@ -64,7 +64,6 @@ public class User extends Timestamped {
         this.mbti = requestDto.getMbti();
         this.totalCount = 0;
         this.level = 1;
-        this.lvImgId = 1L;
         this.auth = Auth.USER;
     }
   

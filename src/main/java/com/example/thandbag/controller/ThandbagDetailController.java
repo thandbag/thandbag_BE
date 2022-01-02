@@ -1,6 +1,7 @@
 package com.example.thandbag.controller;
 
 import com.example.thandbag.dto.BestUserDto;
+import com.example.thandbag.dto.PunchThangbagResponseDto;
 import com.example.thandbag.dto.ThandbagResponseDto;
 import com.example.thandbag.security.UserDetailsImpl;
 import com.example.thandbag.service.ThandbagDetailService;
@@ -29,7 +30,19 @@ public class ThandbagDetailController {
 
     @CrossOrigin("*")
     @PostMapping("/api/thandbag")
-    public List<BestUserDto> completeThandbag(@RequestParam long postId, @RequestBody List<Long> commentIdList) {
-        return thandbagDetailService.completeThandbag(postId, commentIdList);
+    public List<BestUserDto> completeThandbag(@RequestParam long postId) {
+        return thandbagDetailService.completeThandbag(postId);
+    }
+
+    @CrossOrigin("*")
+    @PostMapping("/api/thandbag/punch/{postId}")
+    public void punchThandBag(@PathVariable Long postId, @RequestBody int totalHitCount) {
+        thandbagDetailService.updateTotalPunch(postId, totalHitCount);
+    }
+
+    @CrossOrigin("*")
+    @GetMapping("/api/thandbag/punch/{postId}")
+    public PunchThangbagResponseDto getpunchedThandBag(@PathVariable Long postId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return thandbagDetailService.getpunchedThandBag(postId, userDetails.getUser());
     }
 }
