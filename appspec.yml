@@ -1,23 +1,26 @@
 version: 0.0
 os: linux
 files:
-  - source: /
-    destination: /home/ec2-user/app/step2/zip
+  - source:  /
+    destination: /home/ec2-user/app/step3/zip/
     overwrite: yes
 
+permissions:
+  - object: /
+    pattern: "**"
+    owner: ec2-user
+    group: ec2-user
+
 hooks:
-  # Nginx 와 연동된 Spring Boot 프로젝트 종료
   AfterInstall:
-    - location: stop.sh
+    - location: stop.sh # 엔진엑스와 연결되어 있지 않은 스프링 부트를 종료합니다.
       timeout: 60
       runas: ec2-user
-  # Nginx 와 연동안된 profile 버전으로 Spring Boot 실행
   ApplicationStart:
-    - location: start.sh
+    - location: start.sh # 엔진엑스와 연결되어 있지 않은 Port로 새 버전의 스프링 부트를 시작합니다.
       timeout: 60
       runas: ec2-user
-  # 새로 실행된 Spring Boot 정상 동작 확인
   ValidateService:
-    - location: health.sh
+    - location: health.sh # 새 스프링 부트가 정상적으로 실행됐는지 확인 합니다.
       timeout: 60
       runas: ec2-user

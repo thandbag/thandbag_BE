@@ -73,7 +73,6 @@ public class MainService {
         //전체 게시글 수 count
         user.plusTotalPostsAndComments();
 
-
         //levelup
         int totalPosts = user.getTotalCount();
         if (totalPosts < 5 && totalPosts > 2 && user.getLevel() == 1) {
