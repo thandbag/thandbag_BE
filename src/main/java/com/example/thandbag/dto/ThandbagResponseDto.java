@@ -11,6 +11,7 @@ import java.util.List;
 public class ThandbagResponseDto {
 
     private long userId;
+    private long postId;
     private String nickname;
     private int level;
     private String lvImg;

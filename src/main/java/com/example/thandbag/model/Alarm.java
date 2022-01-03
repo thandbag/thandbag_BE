@@ -35,6 +35,9 @@ public class Alarm extends Timestamped {
     @Column
     private String alarmMessage;
 
+    @Column
+    private Boolean isRead;
+
     public Alarm(Long userId, AlarmType type, String alarmMessage) {
         this.userId = userId;
         this.type = type;

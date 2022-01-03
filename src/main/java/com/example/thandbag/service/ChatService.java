@@ -105,6 +105,7 @@ public class ChatService {
                 .userId(roomRequestDto.getSubId())
                 .type(AlarmType.INVITEDCHAT)
                 .pubId(chatRoom.getPubUserId())
+                .isRead(false)
                 .alarmMessage(userRepository.getById(roomRequestDto.getPubId()).getNickname() + "님과의 새로운 채팅이 시작되었습니다.")
                 .build();
 
@@ -115,6 +116,7 @@ public class ChatService {
                         .alarmId(alarm.getId())
                         .type(AlarmType.INVITEDCHAT.toString())
                         .message("[알림] 새로운 채팅방 생성 알림")
+                        .isRead(alarm.getIsRead())
                         .chatRoomId(chatRoom.getId())
                         .alarmTargetId(chatRoom.getSubUserId())
                         .build();

@@ -138,6 +138,7 @@ public class MainService {
         for(PostImg postImg : postImgList)
             imgList.add(postImg.getPostImgUrl());
         return ThandbagResponseDto.builder()
+                .postId(post.getId())
                 .userId(post.getUser().getId())
                 .nickname(post.getUser().getNickname())
                 //ispresent check 안했음
