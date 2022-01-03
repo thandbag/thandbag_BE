@@ -1,15 +1,15 @@
 package com.example.thandbag.service;
 
+import com.example.thandbag.Enum.AlarmType;
 import com.example.thandbag.Enum.Category;
+import com.example.thandbag.dto.AlarmResponseDto;
 import com.example.thandbag.dto.ThandbagRequestDto;
 import com.example.thandbag.dto.ThandbagResponseDto;
+import com.example.thandbag.model.Alarm;
 import com.example.thandbag.model.Post;
 import com.example.thandbag.model.PostImg;
 import com.example.thandbag.model.User;
-import com.example.thandbag.repository.LvImgRepository;
-import com.example.thandbag.repository.PostImgRepository;
-import com.example.thandbag.repository.PostRepository;
-import com.example.thandbag.repository.UserRepository;
+import com.example.thandbag.repository.*;
 import com.example.thandbag.security.UserDetailsImpl;
 import com.example.thandbag.timeconversion.TimeConversion;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +17,8 @@ import org.springframework.beans.support.PagedListHolder;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -33,7 +35,11 @@ public class MainService {
     private final UserRepository userRepository;
     private final LvImgRepository lvImgRepository;
     private final PostService postService;
+    private final AlarmRepository alarmRepository;
+    private final RedisTemplate redisTemplate;
+    private final ChannelTopic channelTopic;
 
+    // 샌드백 생성
     @Transactional
     public ThandbagResponseDto createThandbag(ThandbagRequestDto thandbagRequestDto, UserDetailsImpl userDetails) {
 
@@ -69,12 +75,46 @@ public class MainService {
 
         //levelup
         int totalPosts = user.getTotalCount();
-        if(totalPosts < 5 && totalPosts > 2 && user.getLevel() == 1)
+        if (totalPosts < 5 && totalPosts > 2 && user.getLevel() == 1) {
             user.setLevel(2);
-        else if(totalPosts >= 5)
+            // 레벨업 알림 생성
+            Alarm levelAlarm2 = new Alarm(
+                    user.getId(),
+                    AlarmType.LEVELCHANGE,
+                    "레벨이 상승하였습니다."
+            );
+            alarmRepository.save(levelAlarm2);
+
+            // 알림 메시지를 보낼 DTO 생성
+            AlarmResponseDto alarmResponseDto = AlarmResponseDto.builder()
+                    .alarmId(levelAlarm2.getId())
+                    .type(levelAlarm2.getType().toString())
+                    .message("[알림] 레벨이 상승하였습니다.")
+                    .alarmTargetId(user.getId())
+                    .build();
+
+            redisTemplate.convertAndSend(channelTopic.getTopic(), alarmResponseDto);
+        } else if (totalPosts >= 5) {
             user.setLevel(3);
 
-        //levelup 했으면 알림 해주어야함
+            // 레벨업 알림 생성
+            Alarm levelAlarm3 = new Alarm(
+                    user.getId(),
+                    AlarmType.LEVELCHANGE,
+                    "레벨이 상승하였습니다."
+            );
+            alarmRepository.save(levelAlarm3);
+
+            // 알림 메시지를 보낼 DTO 생성
+            AlarmResponseDto alarmResponseDto = AlarmResponseDto.builder()
+                    .alarmId(levelAlarm3.getId())
+                    .type(levelAlarm3.getType().toString())
+                    .message("[알림] 레벨이 상승하였습니다.")
+                    .alarmTargetId(user.getId())
+                    .build();
+
+            redisTemplate.convertAndSend(channelTopic.getTopic(), alarmResponseDto);
+        }
 
         user = userRepository.save(user);
         Post posted = postRepository.findById(post.getId()).orElseThrow(
@@ -103,19 +143,22 @@ public class MainService {
                 .build();
     }
 
+    //샌드백 전체 리스트 페이지로 만들기
     public List<ThandbagResponseDto> showAllThandbag(int page, int size) {
         Pageable sortedByModifiedAtDesc = PageRequest.of(page, size, Sort.by("modifiedAt").descending());
         List<ThandbagResponseDto> allThandbags = new ArrayList<>();
         List<Post> allPosts = postRepository.findAllByShareTrueOrderByCreatedAtDesc(sortedByModifiedAtDesc).getContent();
-        for(Post post : allPosts) {
+        for (Post post : allPosts) {
             ThandbagResponseDto thandbagResponseDto = createThandbagResponseDto(post);
             allThandbags.add(thandbagResponseDto);
         }
         return allThandbags;
     }
 
+    //검색된 샌드백 전체 리스트 페이지로 만들기
     public List<ThandbagResponseDto> searchThandbags(String keyword, int pageNumber, int size) {
         List<Post> posts = postRepository.findAllByShareTrueOrderByCreatedAtDesc();
+        // 키워드가 유저 닉네임, 타이틀, 또는 게시글 내용에 포함되지 않았으면 삭제
         posts.removeIf(post -> !(userRepository.getById(post.getUser().getId()).getNickname().contains(keyword)
                 || post.getContent().contains(keyword) || post.getTitle().contains(keyword)));
         PagedListHolder<Post> page = new PagedListHolder<>(posts);
@@ -130,10 +173,11 @@ public class MainService {
         return searchedPosts;
     }
 
-    public ThandbagResponseDto createThandbagResponseDto (Post post) {
+    // 검색된 샌드백 또는 샌드백 전체 리스트의 dto 작성을 위한 helping function
+    public ThandbagResponseDto createThandbagResponseDto(Post post) {
         List<PostImg> postImgList = postImgRepository.findAllByPostId(post.getId());
         List<String> imgList = new ArrayList<>();
-        for(PostImg postImg : postImgList)
+        for (PostImg postImg : postImgList)
             imgList.add(postImg.getPostImgUrl());
         return ThandbagResponseDto.builder()
                 .postId(post.getId())

@@ -24,12 +24,12 @@ public class RedisSubscriber {
      */
     public void sendMessage(String publishMessage) {
         try {
-            // ChatMessage 객채로 맵핑
+            // 채팅 메세지 보내기의 pub 이라면 채팅 소켓으로 채팅방을 구독한 클라이언트에게 메시지 발송
             if (!publishMessage.contains("[알림]")) {
                 ChatMessageDto chatMessageDto = objectMapper.readValue(publishMessage, ChatMessageDto.class);
                 messagingTemplate.convertAndSend("/sub/chat/room/" + chatMessageDto.getRoomId(), chatMessageDto);
             } else {
-            // 채팅방을 구독한 클라이언트에게 메시지 발송
+            // 알림 메세지 보내기의 pub 이라면 알림 소켓으로 알림 수신자에게 메시지 발송
                 AlarmResponseDto alarmResponseDto = objectMapper.readValue(publishMessage, AlarmResponseDto.class);
                 messagingTemplate.convertAndSend("/sub/alarm/" + alarmResponseDto.getAlarmTargetId(), alarmResponseDto);
             }

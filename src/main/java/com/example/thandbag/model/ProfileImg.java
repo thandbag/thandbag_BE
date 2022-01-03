@@ -18,9 +18,6 @@ public class ProfileImg {
     private Long id;
 
     @Column
-    private String title;
-
-    @Column
     private String profileImgUrl;
 
 
