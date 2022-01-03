@@ -4,7 +4,7 @@ ABSPATH=$(readlink -f $0)
 ABSDIR=$(dirname $ABSPATH)
 source ${ABSDIR}/profile.sh
 
-REPOSITORY=/home/ec2-user/app/step3
+REPOSITORY=/home/ubuntu/app/step3
 PROJECT_NAME=thandbag-webservice
 
 echo "> Build 파일 복사"
