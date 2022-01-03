@@ -39,3 +39,14 @@ deploy:
     acl: private
     local_dir: build_files
     wait-until-deployed: true
+
+  - provider: codedeploy
+    access_key_id: $AWS_ACCESS_KEY
+    secret_access_key: $AWS_SECRET_KEY
+    bucket: thandbag
+    key: thandbag-build.zip
+    bundle-type: zip
+    application: thandbag
+    deployment_group: thandbag-springboot
+    region: ap-northeast-2
+    wait-until-deployed: true
