@@ -64,6 +64,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/ws-stompAlarm/sub/alarm/**").permitAll()
                 .antMatchers("**/pub/chat/room/**").permitAll()
                 .antMatchers("**/sub/chat/room/**").permitAll()
+                .antMatchers("/profile").permitAll()
                 .antMatchers(
                         "/v2/api-docs",
                         "/swagger-resources/**",
