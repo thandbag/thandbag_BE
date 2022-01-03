@@ -1,7 +1,7 @@
 package com.example.thandbag.redis;
 
+import com.example.thandbag.dto.AlarmResponseDto;
 import com.example.thandbag.dto.ChatMessageDto;
-import com.example.thandbag.model.ChatRoom;
 import com.example.thandbag.repository.ChatRoomRepository;
 import com.example.thandbag.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -25,16 +25,17 @@ public class RedisSubscriber {
     public void sendMessage(String publishMessage) {
         try {
             // ChatMessage 객채로 맵핑
-            ChatMessageDto chatMessageDto = objectMapper.readValue(publishMessage, ChatMessageDto.class);
-            ChatRoom chatRoom = chatRoomRepository.findById(chatMessageDto.getRoomId()).get();
-            Long senderId = userRepository.findByNickname(chatMessageDto.getSender()).get().getId();
-            Long targetUserId = chatRoom.getPubUserId().equals(senderId) ? chatRoom.getSubUserId() : chatRoom.getPubUserId();
-
+            if (!publishMessage.contains("[알림]")) {
+                ChatMessageDto chatMessageDto = objectMapper.readValue(publishMessage, ChatMessageDto.class);
+                messagingTemplate.convertAndSend("/sub/chat/room/" + chatMessageDto.getRoomId(), chatMessageDto);
+            } else {
             // 채팅방을 구독한 클라이언트에게 메시지 발송
-            messagingTemplate.convertAndSend("/sub/chat/room/" + chatMessageDto.getRoomId(), chatMessageDto);
-            messagingTemplate.convertAndSend("/sub/alarm/" + targetUserId, "이거슨 알람용 메시지");
+                AlarmResponseDto alarmResponseDto = objectMapper.readValue(publishMessage, AlarmResponseDto.class);
+                messagingTemplate.convertAndSend("/sub/alarm/" + alarmResponseDto.getAlarmTargetId(), alarmResponseDto);
+            }
         } catch (Exception e) {
             log.error("Exception {}", e);
         }
     }
 }
+

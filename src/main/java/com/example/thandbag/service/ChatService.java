@@ -1,7 +1,9 @@
 package com.example.thandbag.service;
 
 
+import com.example.thandbag.Enum.AlarmType;
 import com.example.thandbag.dto.*;
+import com.example.thandbag.model.Alarm;
 import com.example.thandbag.model.ChatContent;
 import com.example.thandbag.model.ChatRoom;
 import com.example.thandbag.model.User;
@@ -16,6 +18,7 @@ import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,6 +32,7 @@ public class ChatService {
     private final UserRepository userRepository;
     private final ChatRoomRepository chatRoomRepository;
     private final ChatContentRepository chatContentRepository;
+    private final AlarmRepository alarmRepository;
 
 
     public String getNickname(String username) {
@@ -61,7 +65,7 @@ public class ChatService {
         } else {
             Optional<User> user = userRepository.findByNickname(nickname);
             Optional<ChatRoom> chatRoom = chatRoomRepository.findById(chatMessageDto.getRoomId());
-            Boolean readCheck = chatMessageDto.getUserCount()==1 ? false : true;
+            Boolean readCheck = chatMessageDto.getUserCount() != 1;
 
             // 입장, 퇴장 알림을 제외한 메시지를 MYSQL에 저장
             ChatContent chatContent = ChatContent.builder()
@@ -79,6 +83,14 @@ public class ChatService {
     // 채팅방 생성
     @Transactional
     public ChatRoomDto createChatRoom(CreateRoomRequestDto roomRequestDto) {
+        // 서로 같은 사람이 다시 생성하려고 하면 안되게 함
+        if (
+                chatRoomRepository.existsAllByPubUserIdAndSubUserId(roomRequestDto.getPubId(), roomRequestDto.getSubId()) ||
+                chatRoomRepository.existsAllByPubUserIdAndSubUserId(roomRequestDto.getSubId(), roomRequestDto.getPubId())
+        ) {
+            throw new IllegalArgumentException("이미 생성된 채팅방입니다.");
+        }
+
         // Redis에 채팅방 저장
         ChatRoomDto chatRoomDto = chatRedisRepository.createChatRoom(roomRequestDto);
         ChatRoom chatRoom = new ChatRoom(
@@ -86,9 +98,29 @@ public class ChatService {
                 roomRequestDto.getPubId(),
                 roomRequestDto.getSubId()
         );
-        // RDB에 저장
         chatRoomRepository.save(chatRoom);
-        redisTemplate.convertAndSend(channelTopic.getTopic(), "이거슨 알람에 대한 메시지다요.");
+
+        // 알림 생성
+        Alarm alarm = Alarm.builder()
+                .userId(roomRequestDto.getSubId())
+                .type(AlarmType.INVITEDCHAT)
+                .pubId(chatRoom.getPubUserId())
+                .alarmMessage(userRepository.getById(roomRequestDto.getPubId()).getNickname() + "님과의 새로운 채팅이 시작되었습니다.")
+                .build();
+
+        alarmRepository.save(alarm);
+
+        // 알림 메시지를 보낼 DTO 생성
+        AlarmResponseDto alarmResponseDto = AlarmResponseDto.builder()
+                        .alarmId(alarm.getId())
+                        .type(AlarmType.INVITEDCHAT.toString())
+                        .message("[알림] 새로운 채팅방 생성 알림")
+                        .chatRoomId(chatRoom.getId())
+                        .alarmTargetId(chatRoom.getSubUserId())
+                        .build();
+
+        redisTemplate.convertAndSend(channelTopic.getTopic(), alarmResponseDto);
+
         return chatRoomDto;
     }
 
@@ -134,10 +166,15 @@ public class ChatService {
             );
             responseDtoList.add(dto);
         }
+
+        // 최신 메시지 시간을 기준으로 내림차순 정렬
+        Collections.sort(responseDtoList);
+        Collections.reverse(responseDtoList);
+
         return responseDtoList;
     }
 
-    // 채팅방 입장 시 이전 대화 목록 불러오기
+    // 채팅방 입장 - 입장시 이전 대화 목록 불러오기
     @Transactional
     public List<ChatHistoryResponseDto> getTotalChatContents(String roomId) {
         ChatRoom room = chatRoomRepository.getById(roomId);

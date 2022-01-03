@@ -1,5 +1,6 @@
 package com.example.thandbag.service;
 
+import com.example.thandbag.Enum.AlarmType;
 import com.example.thandbag.dto.BestUserDto;
 import com.example.thandbag.dto.PunchThangbagResponseDto;
 import com.example.thandbag.dto.ShowCommentDto;
@@ -9,6 +10,8 @@ import com.example.thandbag.repository.*;
 import com.example.thandbag.security.UserDetailsImpl;
 import com.example.thandbag.timeconversion.TimeConversion;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +26,9 @@ public class ThandbagDetailService {
     private final LvImgRepository lvImgRepository;
     private final CommentLikeRepository commentLikeRepository;
     private final UserRepository userRepository;
+    private final AlarmRepository alarmRepository;
+    private final RedisTemplate redisTemplate;
+    private final ChannelTopic channelTopic;
 
     public ThandbagResponseDto getOneThandbag(long postId) {
         Post post = postRepository.findById(postId).orElseThrow(
@@ -76,11 +82,25 @@ public class ThandbagDetailService {
 
         //leveldown
         int totalPosts = user.getTotalCount();
-        if(totalPosts <= 2 && user.getLevel() == 2)
+        if(totalPosts <= 2 && user.getLevel() == 2) {
             user.setLevel(1);
-        else if(totalPosts < 5 && user.getLevel() == 3)
+            Alarm levelDown1 = new Alarm(
+                    user.getId(),
+                    AlarmType.LEVELCHANGE,
+                    "레벨이 하락하였습니다."
+            );
+            alarmRepository.save(levelDown1);
+            redisTemplate.convertAndSend(channelTopic.getTopic(), "이거슨 레벨 하락 대한 메시지다요.");
+        } else if(totalPosts < 5 && user.getLevel() == 3) {
             user.setLevel(2);
-        // leveldown 으로인한 알림 안함
+            Alarm levelDown2 = new Alarm(
+                    user.getId(),
+                    AlarmType.LEVELCHANGE,
+                    "레벨이 하락하였습니다."
+            );
+            alarmRepository.save(levelDown2);
+            redisTemplate.convertAndSend(channelTopic.getTopic(), "이거슨 레벨 하락 대한 메시지다요.");
+        }
     }
 
     public List<BestUserDto> completeThandbag(long postId) {
@@ -97,6 +117,17 @@ public class ThandbagDetailService {
                         comment.getUser().getMbti(),
                         comment.getUser().getNickname());
                 bestUserDtoList.add(bestUserDto);
+
+                // 알림 생성
+                Alarm alarm = Alarm.builder()
+                        .userId(comment.getUser().getId())
+                        .type(AlarmType.PICKED)
+                        .postId(comment.getPost().getId())
+                        .alarmMessage("[" + post.getTitle()  + "] 생드백에서 내 잽이 베스트 잽으로 선정되었습니다.")
+                        .build();
+
+                alarmRepository.save(alarm);
+                redisTemplate.convertAndSend(channelTopic.getTopic(), "이거슨 베스트 잽 선정에 대한 메시지다요.");
             }
         }
         return bestUserDtoList;
@@ -113,7 +144,4 @@ public class ThandbagDetailService {
         boolean ownThangBag = user.getId().equals(post.getUser().getId());
         return new PunchThangbagResponseDto(post.getTotalHitCount(), ownThangBag);
     }
-
-
-
 }

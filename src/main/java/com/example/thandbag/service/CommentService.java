@@ -1,17 +1,15 @@
 package com.example.thandbag.service;
 
+import com.example.thandbag.Enum.AlarmType;
+import com.example.thandbag.dto.AlarmResponseDto;
 import com.example.thandbag.dto.PostCommentDto;
-import com.example.thandbag.model.Comment;
-import com.example.thandbag.model.CommentLike;
-import com.example.thandbag.model.Post;
-import com.example.thandbag.model.User;
-import com.example.thandbag.repository.CommentLikeRepository;
-import com.example.thandbag.repository.CommentRepository;
-import com.example.thandbag.repository.PostRepository;
-import com.example.thandbag.repository.UserRepository;
+import com.example.thandbag.model.*;
+import com.example.thandbag.repository.*;
 import com.example.thandbag.security.UserDetailsImpl;
 import com.example.thandbag.timeconversion.TimeConversion;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,7 +21,11 @@ public class CommentService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
     private final CommentLikeRepository commentLikeRepository;
+    private final AlarmRepository alarmRepository;
+    private final RedisTemplate redisTemplate;
+    private final ChannelTopic channelTopic;
 
+    // 댓글 작성
     @Transactional
     public PostCommentDto postComment(long postId, String content, UserDetailsImpl userDetails) {
         Comment comment = Comment.builder()
@@ -42,12 +44,67 @@ public class CommentService {
 
         //levelup
         int totalPosts = user.getTotalCount();
-        if(totalPosts < 5 && totalPosts > 2 && user.getLevel() == 1)
+        if (totalPosts < 5 && totalPosts > 2 && user.getLevel() == 1) {
             user.setLevel(2);
-        else if(totalPosts >= 5)
-            user.setLevel(3);
 
-        // levelup 으로인한 알림 안함
+            // 레벨업 알림 생성
+            Alarm levelAlarm2 = new Alarm(
+                    user.getId(),
+                    AlarmType.LEVELCHANGE,
+                    "레벨이 상승하였습니다."
+            );
+            alarmRepository.save(levelAlarm2);
+
+            // 알림 메시지를 보낼 DTO 생성
+            AlarmResponseDto alarmResponseDto = AlarmResponseDto.builder()
+                    .alarmId(levelAlarm2.getId())
+                    .type(levelAlarm2.getType().toString())
+                    .message("[알림] 레벨이 상승하였습니다.")
+                    .alarmTargetId(user.getId())
+                    .build();
+
+            redisTemplate.convertAndSend(channelTopic.getTopic(), alarmResponseDto);
+        } else if (totalPosts >= 5) {
+            user.setLevel(3);
+            // 레벨업 알림 생성
+            Alarm levelAlarm3 = new Alarm(
+                    user.getId(),
+                    AlarmType.LEVELCHANGE,
+                    "레벨이 상승하였습니다."
+            );
+            alarmRepository.save(levelAlarm3);
+
+            // 알림 메시지를 보낼 DTO 생성
+            AlarmResponseDto alarmResponseDto = AlarmResponseDto.builder()
+                    .alarmId(levelAlarm3.getId())
+                    .type(levelAlarm3.getType().toString())
+                    .message("[알림] 레벨이 상승하였습니다.")
+                    .alarmTargetId(user.getId())
+                    .build();
+
+            redisTemplate.convertAndSend(channelTopic.getTopic(), alarmResponseDto);
+        }
+
+        User postOwner = userRepository.getById(postId);
+
+        // 알림 생성
+        Alarm alarm = Alarm.builder()
+                .userId(postOwner.getId())
+                .type(AlarmType.LEVELCHANGE)
+                .alarmMessage("[" + postRepository.getById(postId).getTitle() + "] 게시글에 잽이 등록되었습니다.")
+                .build();
+
+        alarmRepository.save(alarm);
+
+        // 알림 메시지를 보낼 DTO 생성
+        AlarmResponseDto alarmResponseDto = AlarmResponseDto.builder()
+                .alarmId(alarm.getId())
+                .type(alarm.getType().toString())
+                .message("[알림] 게시글에 잽 등록 알림")
+                .alarmTargetId(postOwner.getId())
+                .build();
+
+        redisTemplate.convertAndSend(channelTopic.getTopic(), alarmResponseDto);
 
         return new PostCommentDto(
                 userDetails.getUser().getId(),
@@ -65,12 +122,45 @@ public class CommentService {
 
         //leveldown
         int totalPosts = user.getTotalCount();
-        if(totalPosts <= 2 && user.getLevel() == 2)
+        if(totalPosts <= 2 && user.getLevel() == 2) {
             user.setLevel(1);
-        else if(totalPosts < 5 && user.getLevel() == 3)
-            user.setLevel(2);
+            // 레벨다운 알림 생성
+            Alarm levelDown1 = new Alarm(
+                    user.getId(),
+                    AlarmType.LEVELCHANGE,
+                    "레벨이 하락하였습니다."
+            );
+            alarmRepository.save(levelDown1);
 
-        // leveldown 으로인한 알림 안함
+            // 알림 메시지를 보낼 DTO 생성
+            AlarmResponseDto alarmResponseDto = AlarmResponseDto.builder()
+                    .alarmId(levelDown1.getId())
+                    .type(levelDown1.getType().toString())
+                    .message("[알림] 레벨이 하락하였습니다.")
+                    .alarmTargetId(user.getId())
+                    .build();
+
+            redisTemplate.convertAndSend(channelTopic.getTopic(), alarmResponseDto);
+        } else if(totalPosts < 5 && user.getLevel() == 3) {
+            user.setLevel(2);
+            // 레벨다운 알림 생성
+            Alarm levelDown2 = new Alarm(
+                    user.getId(),
+                    AlarmType.LEVELCHANGE,
+                    "레벨이 하락하였습니다."
+            );
+            alarmRepository.save(levelDown2);
+
+            // 알림 메시지를 보낼 DTO 생성
+            AlarmResponseDto alarmResponseDto = AlarmResponseDto.builder()
+                    .alarmId(levelDown2.getId())
+                    .type(levelDown2.getType().toString())
+                    .message("[알림] 레벨이 하락하였습니다.")
+                    .alarmTargetId(user.getId())
+                    .build();
+
+            redisTemplate.convertAndSend(channelTopic.getTopic(), alarmResponseDto);
+        }
     }
 
     @Transactional

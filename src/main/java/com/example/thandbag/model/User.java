@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.mapping.ToOne;
 
 import javax.persistence.*;
 
@@ -72,7 +71,6 @@ public class User extends Timestamped {
         this.mbti = mbti;
         this.totalCount = 0;
         this.level = 1;
-        this.lvImgId = 1L;
         this.auth = Auth.USER;
         this.kakaoId = kakaoId;
     }

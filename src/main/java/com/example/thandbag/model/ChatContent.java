@@ -30,7 +30,4 @@ public class ChatContent extends Timestamped{
     @Column
     private Boolean isRead;
 
-//
-//    @Column
-//    private ChatMessageDto.MessageType chatType;
 }
