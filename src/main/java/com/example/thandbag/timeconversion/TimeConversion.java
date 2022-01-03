@@ -3,6 +3,7 @@ package com.example.thandbag.timeconversion;
 import java.time.Duration;
 import java.time.LocalDateTime;
 
+// 게시글 작성시 작성시간 포맷 변환
 public class TimeConversion {
     public static String timeConversion(LocalDateTime modifiedAt) {
         LocalDateTime currentTime = LocalDateTime.now();

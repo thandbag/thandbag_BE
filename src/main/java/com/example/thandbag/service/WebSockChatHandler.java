@@ -7,6 +7,7 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 
+//필요없는거같은데
 @Slf4j
 @Component
 public class WebSockChatHandler extends TextWebSocketHandler {

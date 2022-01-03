@@ -77,6 +77,7 @@ public class ChatService {
 
             chatContentRepository.save(chatContent);
         }
+        //채팅 메시지를 redis로 publish
         redisTemplate.convertAndSend(channelTopic.getTopic(), chatMessageDto);
     }
 
@@ -121,6 +122,7 @@ public class ChatService {
                         .alarmTargetId(chatRoom.getSubUserId())
                         .build();
 
+        //채팅방 생성 알림을 redis로 pub
         redisTemplate.convertAndSend(channelTopic.getTopic(), alarmResponseDto);
 
         return chatRoomDto;

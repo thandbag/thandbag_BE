@@ -30,6 +30,7 @@ public class ThandbagDetailService {
     private final RedisTemplate redisTemplate;
     private final ChannelTopic channelTopic;
 
+    // 샌드백 상세 가져오기
     public ThandbagResponseDto getOneThandbag(long postId) {
         Post post = postRepository.findById(postId).orElseThrow(
                 () -> new NullPointerException("작성된 게시물이 없습니다"));
@@ -38,6 +39,7 @@ public class ThandbagDetailService {
             imgUrlList.add(postImg.getPostImgUrl());
 
         List<ShowCommentDto> showCommentDtoList = new ArrayList<>();
+        // 게시글에 달린 댓글 가져오기
         for (Comment comment : post.getCommentList()) {
             List<CommentLike> allLikes = commentLikeRepository.findAllByUserId(comment.getUser().getId());
             ShowCommentDto showCommentDto = new ShowCommentDto(
@@ -74,13 +76,14 @@ public class ThandbagDetailService {
                 .build();
     }
 
+    // 게시글 삭제
     @Transactional
     public void removeThandbag(long postId, UserDetailsImpl userDetails) {
         postRepository.deleteById(postId);
         User user = userRepository.getById(userDetails.getUser().getId());
         user.minusTotalPostsAndComments();
 
-        //leveldown
+        //leveldown 및 알림 메시지
         int totalPosts = user.getTotalCount();
         if(totalPosts <= 2 && user.getLevel() == 2) {
             user.setLevel(1);
@@ -99,16 +102,19 @@ public class ThandbagDetailService {
                     "레벨이 하락하였습니다."
             );
             alarmRepository.save(levelDown2);
+            // 알림메시지를 redis로 pub
             redisTemplate.convertAndSend(channelTopic.getTopic(), "이거슨 레벨 하락 대한 메시지다요.");
         }
     }
 
+    //게시자가 작성한 샌드백을 완료로 전환
     public List<BestUserDto> completeThandbag(long postId) {
         Post post = postRepository.findById(postId).orElseThrow(
                 () -> new NullPointerException("게시글이 없습니다"));
         post.closePost();
         postRepository.save(post);
         List<BestUserDto> bestUserDtoList = new ArrayList<>();
+        // 게시자에게 선정된(게시자가 like한 댓글 작성자)를 선별
         for (Comment comment : post.getCommentList()) {
             //게시글 작성자에게 선택된 댓글 이면서 댓글이 작성자가 직접 단경우가 아니라면
             if (comment.getLikedByWriter() && !comment.getUser().getId().equals(post.getUser().getId())) {
@@ -119,6 +125,7 @@ public class ThandbagDetailService {
                 bestUserDtoList.add(bestUserDto);
 
                 // 알림 생성
+                //선택된 댓글 작성자들에게 알림 발송
                 Alarm alarm = Alarm.builder()
                         .userId(comment.getUser().getId())
                         .type(AlarmType.PICKED)
@@ -127,18 +134,21 @@ public class ThandbagDetailService {
                         .build();
 
                 alarmRepository.save(alarm);
+                // redis로 pub
                 redisTemplate.convertAndSend(channelTopic.getTopic(), "이거슨 베스트 잽 선정에 대한 메시지다요.");
             }
         }
         return bestUserDtoList;
     }
 
+    // 센드백 맞은수 업데이트
     public void updateTotalPunch(Long postId, int totalHitCount) {
         Post post = postRepository.getById(postId);
         post.updateTotalHit(totalHitCount);
         postRepository.save(post);
     }
 
+    //현재까지 맞은 수와 함께 샌드백 불러오기(샌드백 떄리기 페이지로 이동하기)
     public PunchThangbagResponseDto getpunchedThandBag(Long postId, User user) {
         Post post = postRepository.getById(postId);
         boolean ownThangBag = user.getId().equals(post.getUser().getId());
