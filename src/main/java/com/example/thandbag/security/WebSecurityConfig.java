@@ -130,6 +130,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         skipPathList.add("GET,configuration/ui");
         skipPathList.add("GET,/configuration/security");
         skipPathList.add("GET,/health");
+        skipPathList.add("GET,/profile");
         // 기본 허용 사항들
         skipPathList.add("GET,/");
         skipPathList.add("GET,/favicon.ico");
