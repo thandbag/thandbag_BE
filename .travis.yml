@@ -44,7 +44,7 @@ deploy:
     access_key_id: $AWS_ACCESS_KEY
     secret_access_key: $AWS_SECRET_KEY
     bucket: thandbag
-    key: thandbag.zip
+    key: thandbag-codeDeploy.zip
     bundle-type: zip
     application: thandbag
     deployment_group: thandbag-springboot
