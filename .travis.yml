@@ -45,7 +45,7 @@ deploy:
     bucket: thandbag # S3 버킷
     key: thandbag-snapshot.zip # 빌드 파일을 압축해서 전달
     bundle_type: zip
-    application: thandbag # 웹 콘솔에서 등록한 CodeDeploy 어플리케이션
-    deployment_group: thandbag-springboot # 웹 콘솔에서 등록한 CodeDeploy 배포 그룹
+    application: thandbag-webservice # 웹 콘솔에서 등록한 CodeDeploy 어플리케이션
+    deployment_group: thandbag-webservice-group # 웹 콘솔에서 등록한 CodeDeploy 배포 그룹
     region: ap-northeast-2
     wait-until-deployed: true

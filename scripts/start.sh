@@ -5,7 +5,7 @@ ABSDIR=$(dirname $ABSPATH)
 source ${ABSDIR}/profile.sh
 
 REPOSITORY=/home/ec2-user/app/step3
-PROJECT_NAME=thandbag
+PROJECT_NAME=thandbag-webservice
 
 echo "> Build 파일 복사"
 echo "> cp $REPOSITORY/zip/*.jar $REPOSITORY/"
