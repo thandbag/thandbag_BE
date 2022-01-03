@@ -79,6 +79,7 @@ public class AlarmService {
         alarm.setIsRead(true);
         AlarmResponseDto alarmDto = new AlarmResponseDto();
 
+        // 새로운 채팅방에 초대 받았을 경우
         if (alarm.getType().equals(AlarmType.INVITEDCHAT)) {
             alarmDto = AlarmResponseDto.builder()
                     .alarmId(alarm.getId())
@@ -96,6 +97,7 @@ public class AlarmService {
                     .isRead(alarm.getIsRead())
                     .postId(alarm.getPostId())
                     .build();
+            // 내 댓글이 작성자에게 선택받았을 때
         } else if (alarm.getType().equals(AlarmType.PICKED)) {
             alarmDto = AlarmResponseDto.builder()
                     .alarmId(alarm.getId())
@@ -104,7 +106,7 @@ public class AlarmService {
                     .isRead(alarm.getIsRead())
                     .postId(alarm.getPostId())
                     .build();
-            // 댓글 선택 받았을 때}
+            // 댓글 선택 받았을 때
         } else {
             alarmDto = AlarmResponseDto.builder()
                     .alarmId(alarm.getId())
