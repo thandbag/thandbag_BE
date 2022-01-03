@@ -104,6 +104,7 @@ public class CommentService {
                 .alarmTargetId(postOwner.getId())
                 .build();
 
+        // redis로 알림메시지 pub
         redisTemplate.convertAndSend(channelTopic.getTopic(), alarmResponseDto);
 
         return new PostCommentDto(
@@ -115,6 +116,7 @@ public class CommentService {
         );
     }
 
+    //댓글 삭제
     public void deleteComment(long commentId, UserDetailsImpl userDetails) {
         commentRepository.deleteById(commentId);
         User user = userRepository.getById(userDetails.getUser().getId());
@@ -122,7 +124,7 @@ public class CommentService {
 
         //leveldown
         int totalPosts = user.getTotalCount();
-        if(totalPosts <= 2 && user.getLevel() == 2) {
+        if (totalPosts <= 2 && user.getLevel() == 2) {
             user.setLevel(1);
             // 레벨다운 알림 생성
             Alarm levelDown1 = new Alarm(
@@ -141,7 +143,7 @@ public class CommentService {
                     .build();
 
             redisTemplate.convertAndSend(channelTopic.getTopic(), alarmResponseDto);
-        } else if(totalPosts < 5 && user.getLevel() == 3) {
+        } else if (totalPosts < 5 && user.getLevel() == 3) {
             user.setLevel(2);
             // 레벨다운 알림 생성
             Alarm levelDown2 = new Alarm(
@@ -159,25 +161,31 @@ public class CommentService {
                     .alarmTargetId(user.getId())
                     .build();
 
+            //레벨 다운 알림 redis로 pub
             redisTemplate.convertAndSend(channelTopic.getTopic(), alarmResponseDto);
         }
     }
 
+    // 댓글 좋아요
     @Transactional
     public void likeComment(long commentId, UserDetailsImpl userDetails) {
         Comment comment = commentRepository.getById(commentId);
         Post post = comment.getPost();
-        if(post.getUser().getId().equals(userDetails.getUser().getId()))
+        // 댓글 좋아요 하는 사람이 게시글 작성자라면 댓글에 작성자에게 선택되었다고 체크
+        if (post.getUser().getId().equals(userDetails.getUser().getId())) {
             comment.selectedByPostOwner();
-        commentRepository.save(comment);
-        if(commentLikeRepository.existsByUserId(userDetails.getUser().getId())) {
+            commentRepository.save(comment);
+        }
+        // 이미 좋아요 햇으면 좋아요 취소
+        if (commentLikeRepository.existsByUserId(userDetails.getUser().getId())) {
             commentLikeRepository.deleteById(commentId);
         } else {
+            // 안했으면 좋아요 + 1
             commentLikeRepository.save(
                     CommentLike.builder()
-                    .userId(userDetails.getUser().getId())
-                    .comment(commentRepository.getById(commentId))
-                    .build());
+                            .userId(userDetails.getUser().getId())
+                            .comment(commentRepository.getById(commentId))
+                            .build());
         }
     }
 }
