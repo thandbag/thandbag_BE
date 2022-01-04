@@ -15,8 +15,8 @@ public class MyPageResponseDto {
 
     private Long userId;
     private String nickname;
-    private List<String> profileImgUrl;
+    private String profileImgUrl;
     private int level;
-    private List<Post> myPostList;
+    private List<MyPagePostDto> myPostList;
 
 }

@@ -16,7 +16,7 @@ public class MyPostListDto {
 
     private Long userId;
     private String nickname;
-    private String lvIcon;
+    private int level;
     private String title;
     private String content;
     private LocalDateTime createdAt;
