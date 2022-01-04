@@ -24,13 +24,13 @@ public class MyPageController {
         return myPageService.getMyPage(userDetails);
     }
 
-    // 마이페이지 -> 회원정보 수정 눌렀을 때, 비밀번호 확인
-    @CrossOrigin("*")
-    @PostMapping("/mypage/authentication")
-    public String accessToInfoPage(@RequestBody String newPassword, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return myPageService.accessToInfoPage(newPassword, userDetails);
-
-    }
+//    // 마이페이지 -> 회원정보 수정 눌렀을 때, 비밀번호 확인
+//    @CrossOrigin("*")
+//    @PostMapping("/mypage/authentication")
+//    public String accessToInfoPage(@RequestBody String newPassword, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+//        return myPageService.accessToInfoPage(newPassword, userDetails);
+//
+//    }
 
     // 마이페이지 -> 회원정보 수정
     @CrossOrigin("*")

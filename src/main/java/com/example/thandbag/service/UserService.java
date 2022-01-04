@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
 import java.util.Optional;
+import java.util.Random;
 
 
 @RequiredArgsConstructor
@@ -50,7 +51,10 @@ public class UserService {
         user.setPassword(password);
 
         //기본 프로필 이미지 세팅
-        user.setProfileImg(profileImgRepository.getById(1L));
+        Random random = new Random();
+        Long randomNum = (long) random.nextInt(3) + 1;
+        ProfileImg profileImg = profileImgRepository.getById(randomNum);
+        user.setProfileImg(profileImg);
         user.setLevel(1);
         userRepository.save(user);
     }
