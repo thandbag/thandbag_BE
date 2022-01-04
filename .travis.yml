@@ -14,6 +14,7 @@ notifications:
     recipients:
     - 5.9.devv@gmail.com
     - ksb3602@gmail.com
+    -
 before_install:
 - openssl aes-256-cbc -K $encrypted_2f692484526a_key -iv $encrypted_2f692484526a_iv
   -in src/main/resources/application.properties.enc -out src/main/resources/application.properties -d
