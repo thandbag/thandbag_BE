@@ -14,13 +14,15 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class MyPostListDto {
 
+    private Long postId;
     private Long userId;
     private String nickname;
     private int level;
     private String title;
     private String content;
-    private LocalDateTime createdAt;
+    private String createdAt;
     private String imgUrl;
     private Boolean closed;
     private Category category;
+    private String mbti;
 }

@@ -138,15 +138,17 @@ public class MyPageService {
             if(postImg.isPresent())
                postImgUrl = postImg.get().getPostImgUrl();
             MyPostListDto dto = new MyPostListDto();
+            dto.setPostId(post.getId());
             dto.setUserId(user.getId());
             dto.setNickname(user.getNickname());
             dto.setLevel(level);
             dto.setTitle(post.getTitle());
             dto.setContent(post.getContent());
-            dto.setCreatedAt(post.getCreatedAt());
+            dto.setCreatedAt(TimeConversion.timeConversion(post.getCreatedAt()));
             dto.setImgUrl(postImgUrl);
             dto.setClosed(post.getClosed());
             dto.setCategory(post.getCategory());
+            dto.setMbti(user.getMbti());
             return dto;
         });
     }
