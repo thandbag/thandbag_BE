@@ -46,6 +46,7 @@ public class ThandbagDetailService {
                     comment.getUser().getNickname(),
                     comment.getUser().getLevel(),
                     comment.getUser().getMbti(),
+                    comment.getId(),
                     comment.getComment(),
                     TimeConversion.timeConversion(comment.getCreatedAt()),
                     allLikes.size()

@@ -10,6 +10,7 @@ public class ShowCommentDto {
     private String nickname;
     private int level;
     private String mbti;
+    private Long commentId;
     private String comment;
     private String createdAt;
     private long like;
