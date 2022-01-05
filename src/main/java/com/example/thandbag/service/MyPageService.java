@@ -58,15 +58,17 @@ public class MyPageService {
     public UpdateProfileResponseDto updateProfile(ProfileUpdateRequestDto updateDto, UserDetailsImpl userDetails) {
         User user = userRepository.getById(userDetails.getUser().getId());
         Long userId = user.getId();
-        String profileImgUrl = updateDto.getProfileImgUrl();
-        if (profileImgUrl == null)
-            profileImgUrl = user.getProfileImg().getProfileImgUrl();
+        String profileImgUrl = user.getProfileImg().getProfileImgUrl();
+        if (updateDto.getProfileImgUrl() != null) {
+            profileImgUrl = updateDto.getProfileImgUrl();
+        }
         ProfileImg profileImg = profileImgRepository.findByProfileImgUrl(profileImgUrl).get();
         user.setProfileImg(profileImg);
 
-        String nickname = updateDto.getNickname();
-        if (nickname == null)
-            nickname = user.getNickname();
+        String nickname = user.getNickname();
+        if (updateDto.getNickname() != null) {
+            nickname = updateDto.getNickname();
+        }
         user.setNickname(nickname);
 
         String mbti = updateDto.getMbti();
