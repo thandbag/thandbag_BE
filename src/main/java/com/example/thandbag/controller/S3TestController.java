@@ -15,6 +15,7 @@ public class S3TestController {
     private final PostService postService;
 
     //이미지 업로드 기능(프론트에서 아직 구현안함)
+    @CrossOrigin(exposedHeaders = "Authorization", originPatterns = "*")
     @PostMapping("/api/test/upload")
     public String uploadImg(@RequestBody MultipartFile file) {
         return postService.uploadFile(file);

@@ -22,6 +22,7 @@ public class ChatController {
     /**
      * websocket "/pub/chat/message"로 들어오는 메시징을 처리한다.
      */
+    @CrossOrigin(exposedHeaders = "Authorization", originPatterns = "*")
     @MessageMapping("/chat/message")
     public void message(ChatMessageDto message, @Header("Authorization") String token) {
         // 토큰 정보 추출

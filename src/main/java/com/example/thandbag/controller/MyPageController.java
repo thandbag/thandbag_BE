@@ -18,6 +18,7 @@ public class MyPageController {
     private final MyPageService myPageService;
 
     // 마이페이지 메인화면
+    @CrossOrigin(exposedHeaders = "Authorization", originPatterns = "*")
     @GetMapping("/mypage")
     public MyPageResponseDto getMyPage(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return myPageService.getMyPage(userDetails);
@@ -31,12 +32,14 @@ public class MyPageController {
 //    }
 
     // 마이페이지 -> 회원정보 수정
+    @CrossOrigin(exposedHeaders = "Authorization", originPatterns = "*")
     @PostMapping("/mypage/profile")
     public UpdateProfileResponseDto updateProfile(@RequestBody ProfileUpdateRequestDto updateDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return myPageService.updateProfile(updateDto, userDetails);
     }
 
     // 마이페이지 -> 내가 쓴 게시글
+    @CrossOrigin(exposedHeaders = "Authorization", originPatterns = "*")
     @GetMapping("/api/myThandbag")
     public Page<MyPostListDto> getMyPostList(@RequestParam int pageNo, @RequestParam int sizeNo, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return myPageService.getMyPostList(pageNo, sizeNo, userDetails);

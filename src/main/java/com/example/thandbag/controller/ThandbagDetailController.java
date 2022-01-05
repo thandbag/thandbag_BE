@@ -17,30 +17,35 @@ public class ThandbagDetailController {
     private final ThandbagDetailService thandbagDetailService;
 
     // 생드백 상세보기
+    @CrossOrigin(exposedHeaders = "Authorization", originPatterns = "*")
     @GetMapping("/api/thandbag/{postId}")
     public ThandbagResponseDto getThandbagDetail(@PathVariable int postId) {
         return thandbagDetailService.getOneThandbag(postId);
     }
 
     // 생드백 삭제하기
+    @CrossOrigin(exposedHeaders = "Authorization", originPatterns = "*")
     @DeleteMapping("/api/thandbag/{postId}")
     public void removeThandbag (@PathVariable int postId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         thandbagDetailService.removeThandbag(postId, userDetails);
     }
 
     // 생드백 터뜨리기
+    @CrossOrigin(exposedHeaders = "Authorization", originPatterns = "*")
     @PostMapping("/api/thandbag")
     public List<BestUserDto> completeThandbag(@RequestParam long postId) {
         return thandbagDetailService.completeThandbag(postId);
     }
 
     // 샌드백 떄리기
+    @CrossOrigin(exposedHeaders = "Authorization", originPatterns = "*")
     @PostMapping("/api/thandbag/punch/{postId}")
     public void punchThandBag(@PathVariable Long postId, @RequestBody int totalHitCount) {
         thandbagDetailService.updateTotalPunch(postId, totalHitCount);
     }
 
     // 샌드백 떄리기 페이지로 이동
+    @CrossOrigin(exposedHeaders = "Authorization", originPatterns = "*")
     @GetMapping("/api/thandbag/punch/{postId}")
     public PunchThangbagResponseDto getpunchedThandBag(@PathVariable Long postId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return thandbagDetailService.getpunchedThandBag(postId, userDetails.getUser());

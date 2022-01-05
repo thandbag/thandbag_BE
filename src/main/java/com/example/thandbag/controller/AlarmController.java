@@ -17,6 +17,7 @@ public class AlarmController {
     private final AlarmService alarmService;
 
     // 알람 리스트 발송
+    @CrossOrigin(exposedHeaders = "Authorization", originPatterns = "*")
     @GetMapping("/api/alarm")
     public List<AlarmResponseDto> getAlarmList(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         User user = userDetails.getUser();
@@ -24,6 +25,7 @@ public class AlarmController {
     }
 
     // 알림 읽음 확인
+    @CrossOrigin(exposedHeaders = "Authorization", originPatterns = "*")
     @PostMapping("/api/alarm/{alarmId}")
     public AlarmResponseDto alarmReadCheck(@PathVariable Long alarmId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return alarmService.alarmReadCheck(alarmId, userDetails);
