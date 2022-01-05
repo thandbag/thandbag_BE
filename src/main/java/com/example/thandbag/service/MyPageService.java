@@ -53,12 +53,6 @@ public class MyPageService {
         return new MyPageResponseDto(userId, nickname, profileImgUrl, level, myPostDtoList);
     }
 
-    // 마이페이지에서 회원정보 변경 시, 비밀번호 확인
-    public void accessToInfoPage(String newPassword, User user) {
-        if (!passwordEncoder.matches(newPassword, user.getPassword()))
-            throw new IllegalArgumentException("비밀번호를 확인해주세요");
-    }
-
     // 회원정보 수정
     @Transactional
     public UpdateProfileResponseDto updateProfile(ProfileUpdateRequestDto updateDto, UserDetailsImpl userDetails) {
@@ -67,20 +61,16 @@ public class MyPageService {
         String profileImgUrl = updateDto.getProfileImgUrl();
         if (profileImgUrl == null)
             profileImgUrl = user.getProfileImg().getProfileImgUrl();
-        String currentPassword = updateDto.getCurrentPassword();
+        ProfileImg profileImg = profileImgRepository.findByProfileImgUrl(profileImgUrl).get();
+        user.setProfileImg(profileImg);
+
         String nickname = updateDto.getNickname();
         if (nickname == null)
             nickname = user.getNickname();
+        user.setNickname(nickname);
+
         String mbti = updateDto.getMbti();
-        String newPassword = updateDto.getNewPassword();
-
-        accessToInfoPage(currentPassword, user);
-
-        // 프로필 이미지가 빈 값이 아니면 수정하기
-//        if (!"".equals(profileImgUrl)) {
-//            Optional<ProfileImg> img = profileImgRepository.findByProfileImgUrl(profileImgUrl);
-//            user.setProfileImg(img.get());
-//        }
+        user.setMbti(mbti);
 
         // 닉네임 중복 검사
         if(!nickname.equals(user.getNickname())) {
@@ -90,35 +80,11 @@ public class MyPageService {
             userValidator.checkNicknameIsValid(nickname);
         }
 
-
-//        // 닉네임이 빈 값이 아니면 수정하기
-//        if (!"".equals(nickname)) {
-//            user.setNickname(nickname);
-//        }
-
-        // MBTI가 빈 값이 아니면 수정하기
-//        if (!"".equals(updateDto.getMbti())) {
-//            user.setMbti(mbti);
-//        }
-
-        // password 현재와 동일한지 확인하기
-        if (passwordEncoder.matches(newPassword, user.getPassword())) {
-            throw new IllegalArgumentException("현재 비밀번호와 동일합니다.");
-        }
-
-        // password 유효성 검사하기
-        if (!"".equals(newPassword)) {
-            userValidator.checkPassword(newPassword);
-            user.setPassword(passwordEncoder.encode(newPassword));
-        }
-
-
         return new UpdateProfileResponseDto(
                 userId,
                 profileImgUrl,
                 nickname,
-                mbti,
-                newPassword
+                mbti
         );
     }
 

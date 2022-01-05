@@ -12,6 +12,4 @@ public class ProfileUpdateRequestDto {
     String profileImgUrl;
     String nickname;
     String mbti;
-    String currentPassword;
-    String newPassword;
 }
