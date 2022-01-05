@@ -12,6 +12,7 @@ public class PostCommentDto {
 
     private long userId;
     private String nickname;
+    private Long commentId;
     private String comment;
     private String createdAt;
     private long totalCount;

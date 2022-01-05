@@ -110,6 +110,7 @@ public class CommentService {
         return new PostCommentDto(
                 userDetails.getUser().getId(),
                 userDetails.getUser().getNickname(),
+                comment.getId(),
                 content,
                 TimeConversion.timeConversion(comment.getCreatedAt()),
                 userDetails.getUser().getTotalCount()
