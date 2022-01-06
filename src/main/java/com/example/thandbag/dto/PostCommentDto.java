@@ -16,5 +16,6 @@ public class PostCommentDto {
     private String comment;
     private String createdAt;
     private long totalCount;
+    private Long totalLike;
 
 }

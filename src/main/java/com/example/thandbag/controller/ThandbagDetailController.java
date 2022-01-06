@@ -19,8 +19,8 @@ public class ThandbagDetailController {
     // 생드백 상세보기
     @CrossOrigin("*")
     @GetMapping("/api/thandbag/{postId}")
-    public ThandbagResponseDto getThandbagDetail(@PathVariable int postId) {
-        return thandbagDetailService.getOneThandbag(postId);
+    public ThandbagResponseDto getThandbagDetail(@PathVariable int postId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return thandbagDetailService.getOneThandbag(postId, userDetails.getUser());
     }
 
     // 생드백 삭제하기

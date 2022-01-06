@@ -14,4 +14,5 @@ public class ShowCommentDto {
     private String comment;
     private String createdAt;
     private long like;
+    private boolean currentUserlike;
 }
