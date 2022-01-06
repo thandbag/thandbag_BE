@@ -51,7 +51,7 @@ public class ChatService {
     }
 
     // 채팅방에 메시지 발송
-    public void 했sendChatMessage(ChatMessageDto chatMessageDto) {
+    public void sendChatMessage(ChatMessageDto chatMessageDto) {
         String nickname = chatMessageDto.getSender();
         System.out.println("메시지 sender : " + chatMessageDto.getSender());
         System.out.println("메시지 메시지 : " + chatMessageDto.getMessage());
@@ -203,4 +203,5 @@ public class ChatService {
         }
         return chatHistoryList;
     }
+
 }
