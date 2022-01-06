@@ -55,7 +55,9 @@ public class KakaoUserService {
         LoginResultDto loginResultDto= new LoginResultDto(
                 kakaoUser.getId(),
                 kakaoUser.getNickname(),
-                kakaoUser.getLevel()
+                kakaoUser.getLevel(),
+                kakaoUser.getMbti(),
+                kakaoUser.getProfileImg().getProfileImgUrl()
         );
 
         return loginResultDto;

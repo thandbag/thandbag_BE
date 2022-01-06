@@ -12,4 +12,6 @@ public class LoginResultDto {
     private Long userId;
     private String nickname;
     private int level;
+    private String mbti;
+    private String profileImgUrl;
 }
