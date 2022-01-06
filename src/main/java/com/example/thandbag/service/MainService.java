@@ -39,7 +39,7 @@ public class MainService {
     private final RedisTemplate redisTemplate;
     private final ChannelTopic channelTopic;
 
-    // 샌드백 생성
+    // 생드백 생성
     @Transactional
     public ThandbagResponseDto createThandbag(ThandbagRequestDto thandbagRequestDto, UserDetailsImpl userDetails) {
 
@@ -58,7 +58,7 @@ public class MainService {
             }
         }
 
-        // 글 저장
+        // 생드백 저장
         Post post = Post.builder()
                 .title(thandbagRequestDto.getTitle())
                 .category(Category.valueOf(thandbagRequestDto.getCategory()))
@@ -143,7 +143,7 @@ public class MainService {
                 .build();
     }
 
-    //샌드백 전체 리스트 페이지로 만들기
+    // 생드백 전체 리스트 페이지로 만들기
     public List<ThandbagResponseDto> showAllThandbag(int page, int size) {
         Pageable sortedByModifiedAtDesc = PageRequest.of(page, size, Sort.by("modifiedAt").descending());
         List<ThandbagResponseDto> allThandbags = new ArrayList<>();
@@ -155,7 +155,7 @@ public class MainService {
         return allThandbags;
     }
 
-    //검색된 샌드백 전체 리스트 페이지로 만들기
+    // 검색된 생드백 전체 리스트 페이지로 만들기
     public List<ThandbagResponseDto> searchThandbags(String keyword, int pageNumber, int size) {
         List<Post> posts = postRepository.findAllByShareTrueOrderByCreatedAtDesc();
         // 키워드가 유저 닉네임, 타이틀, 또는 게시글 내용에 포함되지 않았으면 삭제
@@ -173,7 +173,7 @@ public class MainService {
         return searchedPosts;
     }
 
-    // 검색된 샌드백 또는 샌드백 전체 리스트의 dto 작성을 위한 helping function
+    // 검색된 생드백 또는 생드백 전체 리스트의 dto 작성을 위한 helping function
     public ThandbagResponseDto createThandbagResponseDto(Post post) {
         List<PostImg> postImgList = postImgRepository.findAllByPostId(post.getId());
         List<String> imgList = new ArrayList<>();

@@ -68,6 +68,7 @@ public class UserService {
             throw new IllegalArgumentException("비밀번호를 확인해주세요.");
         }
 
+        // 토큰 생성
         UserDetailsImpl userDetails = new UserDetailsImpl(user);
         String token = JwtTokenUtils.generateJwtToken(userDetails);
         response.addHeader("Authorization", "Bearer " + token);

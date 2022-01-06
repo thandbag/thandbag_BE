@@ -2,7 +2,9 @@ package com.example.thandbag.service;
 
 import com.example.thandbag.dto.KakaoUserInfoDto;
 import com.example.thandbag.dto.LoginResultDto;
+import com.example.thandbag.model.ProfileImg;
 import com.example.thandbag.model.User;
+import com.example.thandbag.repository.ProfileImgRepository;
 import com.example.thandbag.repository.UserRepository;
 import com.example.thandbag.security.UserDetailsImpl;
 import com.example.thandbag.security.jwt.JwtTokenUtils;
@@ -35,18 +37,19 @@ public class KakaoUserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final ProfileImgRepository profileImgRepository;
 
     public LoginResultDto kakaoLogin(String code, HttpServletResponse response) throws JsonProcessingException {
-        // 1. "인가 코드"로 "액세스 토큰" 요청
+        // 인가 코드로 액세스 토큰 요청
         String accessToken = getAccessToken(code);
 
-        // 2. 토큰으로 카카오 API 호출
+        // 토큰으로 카카오 API 호출
         KakaoUserInfoDto kakaoUserInfoDto = getKakaoInfo(accessToken);
 
-        // 3. DB에서 kakao Id User 확인, 필요 시 회원가입
+        // DB에서 kakao Id User 확인, 필요 시 회원가입
         User kakaoUser = registerKakaoUserIfNeeded(kakaoUserInfoDto);
 
-        // 4. 강제 로그인 처리
+        // 강제 로그인 처리
         forceLogin(kakaoUser, response);
 
         LoginResultDto loginResultDto= new LoginResultDto(
@@ -114,6 +117,11 @@ public class KakaoUserService {
                     "맞춰보셈",
                     kakaoId
             );
+            Random random = new Random();
+            Long randomNum = (long) random.nextInt(3) + 1;
+            ProfileImg profileImg = profileImgRepository.getById(randomNum);
+            user.setProfileImg(profileImg);
+            user.setLevel(1);
 
             kakaoUser = userRepository.save(user);
         }
@@ -169,7 +177,7 @@ public class KakaoUserService {
 
     }
 
-    // 카카오 이메일 랜덤으로 생성하도록 만들기
+    // 카카오 로그인 시, 회원용 이메일 랜덤으로 생성하도록 만들기
     protected String getSaltString() {
         String SALTCHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
         StringBuilder salt = new StringBuilder();

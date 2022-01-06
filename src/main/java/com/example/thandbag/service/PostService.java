@@ -29,6 +29,7 @@ public class PostService {
     @Value("${cloud.aws.s3.bucket.url}")
     private String defaultUrl;
 
+    // S3 업로드
     public String uploadFile(MultipartFile file) {
         String origName = file.getOriginalFilename();
         String url;
@@ -56,10 +57,12 @@ public class PostService {
         return url;
     }
 
+    // UUID 생성
     private static String getUuid() {
         return UUID.randomUUID().toString().replaceAll("-", "");
     }
 
+    // S3 업로드
     private void uploadOnS3(final String findName, final File file) {
         // AWS S3 전송 객체 생성
         final TransferManager transferManager = new TransferManager(this.amazonS3Client);

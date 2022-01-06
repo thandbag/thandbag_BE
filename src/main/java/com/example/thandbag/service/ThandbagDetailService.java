@@ -78,7 +78,7 @@ public class ThandbagDetailService {
                 .build();
     }
 
-    // 게시글 삭제
+    // 생드백 삭제
     @Transactional
     public void removeThandbag(long postId, UserDetailsImpl userDetails) {
         postRepository.deleteById(postId);
@@ -109,7 +109,7 @@ public class ThandbagDetailService {
         }
     }
 
-    //게시자가 작성한 샌드백을 완료로 전환
+    //게시자가 작성한 생드백을 완료로 전환
     public List<BestUserDto> completeThandbag(long postId) {
         Post post = postRepository.findById(postId).orElseThrow(
                 () -> new NullPointerException("게시글이 없습니다"));
@@ -118,7 +118,7 @@ public class ThandbagDetailService {
         List<BestUserDto> bestUserDtoList = new ArrayList<>();
         // 게시자에게 선정된(게시자가 like한 댓글 작성자)를 선별
         for (Comment comment : post.getCommentList()) {
-            //게시글 작성자에게 선택된 댓글 이면서 댓글이 작성자가 직접 단경우가 아니라면
+            //생드백 작성자에게 선택된 댓글 이면서, 생드백 작성자가 직접 쓴 잽이 아니라면
             if (comment.getLikedByWriter() && !comment.getUser().getId().equals(post.getUser().getId())) {
                 BestUserDto bestUserDto = new BestUserDto(
                         comment.getUser().getId(),
@@ -143,14 +143,14 @@ public class ThandbagDetailService {
         return bestUserDtoList;
     }
 
-    // 센드백 맞은수 업데이트
+    // 생드백 맞은수 업데이트
     public void updateTotalPunch(Long postId, int totalHitCount) {
         Post post = postRepository.getById(postId);
         post.updateTotalHit(totalHitCount);
         postRepository.save(post);
     }
 
-    //현재까지 맞은 수와 함께 샌드백 불러오기(샌드백 떄리기 페이지로 이동하기)
+    //현재까지 맞은 수와 함께 생드백 불러오기(샌드백 때리기 페이지로 이동하기)
     public PunchThangbagResponseDto getpunchedThandBag(Long postId, User user) {
         Post post = postRepository.getById(postId);
         boolean ownThangBag = user.getId().equals(post.getUser().getId());
