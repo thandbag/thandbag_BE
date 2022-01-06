@@ -114,7 +114,8 @@ public class CommentService {
                 content,
                 TimeConversion.timeConversion(comment.getCreatedAt()),
                 userDetails.getUser().getTotalCount(),
-                0L
+                0L,
+                false
         );
     }
 
