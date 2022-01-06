@@ -11,4 +11,5 @@ public class LoginResultDto {
 
     private Long userId;
     private String nickname;
+    private int level;
 }
