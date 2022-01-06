@@ -31,7 +31,7 @@ public class ThandbagDetailService {
     private final ChannelTopic channelTopic;
 
     // 샌드백 상세 가져오기
-    public ThandbagResponseDto getOneThandbag(long postId) {
+    public ThandbagResponseDto getOneThandbag(long postId, User user) {
         Post post = postRepository.findById(postId).orElseThrow(
                 () -> new NullPointerException("작성된 게시물이 없습니다"));
         List<String> imgUrlList = new ArrayList<>();
@@ -49,7 +49,8 @@ public class ThandbagDetailService {
                     comment.getId(),
                     comment.getComment(),
                     TimeConversion.timeConversion(comment.getCreatedAt()),
-                    allLikes.size()
+                    allLikes.size(),
+                    commentLikeRepository.existsByUserId(user.getId())
             );
             showCommentDtoList.add(showCommentDto);
         }
