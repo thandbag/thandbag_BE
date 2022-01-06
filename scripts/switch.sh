@@ -14,10 +14,14 @@ function switch_proxy() {
     # 포트 전환하면서, 바꾼거말고 다른거 kill
     if [ ${IDLE_PORT} == 8081 ]
     then
-      IDLE_PID=$(lsof -ti tcp:8082)
+      KILL_PORT=8082
+      IDLE_PID=$(lsof -ti tcp:${KILL_PORT})
+      echo "> ${KILL_PORT} 포트를 종료합니다."
       kill -15 ${IDLE_PID}
     else
-      IDLE_PID=$(lsof -ti tcp:8081)
+      KILL_PORT=8081
+      IDLE_PID=$(lsof -ti tcp:${KILL_PORT})
+      echo "> ${KILL_PORT} 포트를 종료합니다."
       kill -15 ${IDLE_PID}
     fi
 
