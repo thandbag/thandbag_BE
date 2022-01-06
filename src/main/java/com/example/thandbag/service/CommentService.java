@@ -3,6 +3,7 @@ package com.example.thandbag.service;
 import com.example.thandbag.Enum.AlarmType;
 import com.example.thandbag.dto.AlarmResponseDto;
 import com.example.thandbag.dto.PostCommentDto;
+import com.example.thandbag.dto.ShowCommentDto;
 import com.example.thandbag.model.*;
 import com.example.thandbag.repository.*;
 import com.example.thandbag.security.UserDetailsImpl;
@@ -171,7 +172,7 @@ public class CommentService {
 
     // 댓글 좋아요
     @Transactional
-    public void likeComment(long commentId, UserDetailsImpl userDetails) {
+    public ShowCommentDto likeComment(long commentId, UserDetailsImpl userDetails) {
         Comment comment = commentRepository.getById(commentId);
         Post post = comment.getPost();
         // 댓글 좋아요 하는 사람이 게시글 작성자라면 댓글에 작성자에게 선택되었다고 체크
@@ -190,5 +191,16 @@ public class CommentService {
                             .comment(commentRepository.getById(commentId))
                             .build());
         }
+
+        return new ShowCommentDto(
+                comment.getUser().getNickname(),
+                comment.getUser().getLevel(),
+                comment.getUser().getMbti(),
+                comment.getId(),
+                comment.getComment(),
+                TimeConversion.timeConversion(comment.getCreatedAt()),
+                commentLikeRepository.findAllByComment(comment).size(),
+                commentLikeRepository.existsByUserId(userDetails.getUser().getId())
+        );
     }
 }
