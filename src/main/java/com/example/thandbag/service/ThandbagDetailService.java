@@ -123,7 +123,10 @@ public class ThandbagDetailService {
                 BestUserDto bestUserDto = new BestUserDto(
                         comment.getUser().getId(),
                         comment.getUser().getMbti(),
-                        comment.getUser().getNickname());
+                        comment.getUser().getNickname(),
+                        comment.getUser().getProfileImg().getProfileImgUrl(),
+                        comment.getUser().getLevel()
+                );
                 bestUserDtoList.add(bestUserDto);
 
                 // 알림 생성
