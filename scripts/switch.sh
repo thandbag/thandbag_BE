@@ -11,6 +11,16 @@ function switch_proxy() {
     echo "> Port 전환"
     echo "set \$service_url http://127.0.0.1:${IDLE_PORT};" | sudo tee /etc/nginx/conf.d/service-url.inc
 
+    # 포트 전환하면서, 바꾼거말고 다른거 kill
+    if [ ${IDLE_PORT} == 8081 ]
+    then
+      IDLE_PID=$(lsof -ti tcp:8082)
+      kill -15 ${IDLE_PID}
+    else
+      IDLE_PID=$(lsof -ti tcp:8081)
+      kill -15 ${IDLE_PID}
+    fi
+
     echo "> 엔진엑스 Reload"
     sudo service nginx reload
 }
