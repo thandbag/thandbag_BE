@@ -181,8 +181,9 @@ public class CommentService {
             commentRepository.save(comment);
         }
         // 이미 좋아요 햇으면 좋아요 취소
-        if (commentLikeRepository.existsByUserId(userDetails.getUser().getId())) {
-            commentLikeRepository.deleteById(commentId);
+        CommentLike commentLike = commentLikeRepository.findByUserIdAndComment(userDetails.getUser().getId(), comment);
+        if (commentLike != null) {
+            commentLikeRepository.delete(commentLike);
         } else {
             // 안했으면 좋아요 + 1
             commentLikeRepository.save(
