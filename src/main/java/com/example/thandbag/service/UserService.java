@@ -72,6 +72,6 @@ public class UserService {
         UserDetailsImpl userDetails = new UserDetailsImpl(user);
         String token = JwtTokenUtils.generateJwtToken(userDetails);
         response.addHeader("Authorization", "Bearer " + token);
-        return new LoginResultDto(user.getId(), user.getNickname(), user.getLevel());
+        return new LoginResultDto(user.getId(), user.getNickname(), user.getLevel(), user.getMbti(), user.getProfileImg().getProfileImgUrl());
     }
 }
