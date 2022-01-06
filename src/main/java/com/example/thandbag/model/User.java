@@ -43,10 +43,6 @@ public class User extends Timestamped {
     @ColumnDefault("1")
     private int level;
 
-//    @Column(nullable = false)
-//    @ColumnDefault("1")
-//    private Long lvImgId;
-
     @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)
     private Auth auth;

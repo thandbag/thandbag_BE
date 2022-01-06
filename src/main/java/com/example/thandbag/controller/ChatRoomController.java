@@ -4,7 +4,7 @@ import com.example.thandbag.dto.ChatHistoryResponseDto;
 import com.example.thandbag.dto.ChatMyRoomListResponseDto;
 import com.example.thandbag.dto.ChatRoomDto;
 import com.example.thandbag.dto.CreateRoomRequestDto;
-import com.example.thandbag.model.LoginInfo;
+import com.example.thandbag.dto.LoginInfo;
 import com.example.thandbag.repository.ChatRedisRepository;
 import com.example.thandbag.security.UserDetailsImpl;
 import com.example.thandbag.security.jwt.JwtTokenUtils;

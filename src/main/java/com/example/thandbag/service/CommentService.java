@@ -26,7 +26,7 @@ public class CommentService {
     private final RedisTemplate redisTemplate;
     private final ChannelTopic channelTopic;
 
-    // 댓글 작성
+    // 잽 작성
     @Transactional
     public PostCommentDto postComment(long postId, String content, UserDetailsImpl userDetails) {
         Comment comment = Comment.builder()
@@ -38,12 +38,12 @@ public class CommentService {
         postRepository.getById(postId).getCommentList().add(comment);
         comment = commentRepository.save(comment);
 
-        // 전체 게시글 수 count
+        // 생드백+잽 수 count
         User user = userDetails.getUser();
         user.plusTotalPostsAndComments();
         userRepository.save(user);
 
-        //levelup
+        // 레벨업
         int totalPosts = user.getTotalCount();
         if (totalPosts < 5 && totalPosts > 2 && user.getLevel() == 1) {
             user.setLevel(2);
@@ -120,7 +120,7 @@ public class CommentService {
         );
     }
 
-    //댓글 삭제
+    // 잽 삭제
     public void deleteComment(long commentId, UserDetailsImpl userDetails) {
         commentRepository.deleteById(commentId);
         User user = userRepository.getById(userDetails.getUser().getId());
@@ -170,7 +170,7 @@ public class CommentService {
         }
     }
 
-    // 댓글 좋아요
+    // 잽 좋아요
     @Transactional
     public ShowCommentDto likeComment(long commentId, UserDetailsImpl userDetails) {
         Comment comment = commentRepository.getById(commentId);
@@ -180,7 +180,7 @@ public class CommentService {
             comment.selectedByPostOwner();
             commentRepository.save(comment);
         }
-        // 이미 좋아요 햇으면 좋아요 취소
+        // 이미 좋아요 했으면 좋아요 취소
         CommentLike commentLike = commentLikeRepository.findByUserIdAndComment(userDetails.getUser().getId(), comment);
         if (commentLike != null) {
             commentLikeRepository.delete(commentLike);

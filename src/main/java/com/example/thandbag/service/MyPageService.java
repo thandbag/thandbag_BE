@@ -30,7 +30,7 @@ public class MyPageService {
     private final ProfileImgRepository profileImgRepository;
     private final UserValidator userValidator;
 
-    // 마이페이지 접속 시 필요 정보
+    // 마이페이지 접속
     public MyPageResponseDto getMyPage(UserDetailsImpl userDetails) {
         User user = userDetails.getUser();
         Long userId = user.getId();
@@ -39,7 +39,7 @@ public class MyPageService {
         int level = user.getLevel();
         List<MyPagePostDto> myPostDtoList = new ArrayList<>();
         List<Post> myPostList = postRepository.findAllByUser(user);
-        //if (myPostList == null) { myPostList = new ArrayList<>(); }
+
         for (Post post : myPostList) {
             MyPagePostDto myPagePostDto = new MyPagePostDto(
                     post.getId(),

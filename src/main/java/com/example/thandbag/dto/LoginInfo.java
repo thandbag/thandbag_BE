@@ -1,4 +1,4 @@
-package com.example.thandbag.model;
+package com.example.thandbag.dto;
 
 import lombok.Builder;
 import lombok.Getter;

@@ -37,14 +37,14 @@ public class ThandbagDetailController {
         return thandbagDetailService.completeThandbag(postId);
     }
 
-    // 샌드백 떄리기
+    // 생드백 때리기
     @CrossOrigin(exposedHeaders = "Authorization", originPatterns = "*")
     @PostMapping("/api/thandbag/punch/{postId}")
     public void punchThandBag(@PathVariable Long postId, @RequestBody int totalHitCount) {
         thandbagDetailService.updateTotalPunch(postId, totalHitCount);
     }
 
-    // 샌드백 떄리기 페이지로 이동
+    // 생드백 때리기 페이지로 이동
     @CrossOrigin(exposedHeaders = "Authorization", originPatterns = "*")
     @GetMapping("/api/thandbag/punch/{postId}")
     public PunchThangbagResponseDto getpunchedThandBag(@PathVariable Long postId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
