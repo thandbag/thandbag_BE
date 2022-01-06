@@ -27,7 +27,8 @@ public class Comment extends Timestamped {
     @ManyToOne
     private User user;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn
     private Post post;
 
     public void selectedByPostOwner() {
