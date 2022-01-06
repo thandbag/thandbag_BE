@@ -1,6 +1,7 @@
 package com.example.thandbag.controller;
 
 import com.example.thandbag.dto.PostCommentDto;
+import com.example.thandbag.dto.ShowCommentDto;
 import com.example.thandbag.security.UserDetailsImpl;
 import com.example.thandbag.service.CommentService;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +31,7 @@ public class CommentController {
     // 댓글에 좋아요 누르기
     @CrossOrigin(exposedHeaders = "Authorization", originPatterns = "*")
     @PostMapping("/api/{commentId}/like")
-    public void likeComment(@PathVariable long commentId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        commentService.likeComment(commentId, userDetails);
+    public ShowCommentDto likeComment(@PathVariable long commentId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return commentService.likeComment(commentId, userDetails);
     }
 }

@@ -10,4 +10,5 @@ import java.util.Optional;
 public interface CommentLikeRepository extends JpaRepository<CommentLike, Long> {
     List<CommentLike> findAllByUserId(long userId);
     boolean existsByUserId(long userId);
+    List<CommentLike> findAllByComment(Comment comment);
 }
