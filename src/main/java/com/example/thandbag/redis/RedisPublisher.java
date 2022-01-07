@@ -1,6 +1,6 @@
 package com.example.thandbag.redis;
 
-import com.example.thandbag.dto.ChatMessageDto;
+import com.example.thandbag.dto.chat.ChatMessageDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;

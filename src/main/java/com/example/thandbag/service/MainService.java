@@ -2,9 +2,9 @@ package com.example.thandbag.service;
 
 import com.example.thandbag.Enum.AlarmType;
 import com.example.thandbag.Enum.Category;
-import com.example.thandbag.dto.AlarmResponseDto;
-import com.example.thandbag.dto.ThandbagRequestDto;
-import com.example.thandbag.dto.ThandbagResponseDto;
+import com.example.thandbag.dto.alarm.AlarmResponseDto;
+import com.example.thandbag.dto.post.ThandbagRequestDto;
+import com.example.thandbag.dto.post.ThandbagResponseDto;
 import com.example.thandbag.model.Alarm;
 import com.example.thandbag.model.Post;
 import com.example.thandbag.model.PostImg;

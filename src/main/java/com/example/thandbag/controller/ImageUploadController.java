@@ -10,7 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RequiredArgsConstructor
 @RestController
-public class S3TestController {
+public class ImageUploadController {
 
     private final PostService postService;
 

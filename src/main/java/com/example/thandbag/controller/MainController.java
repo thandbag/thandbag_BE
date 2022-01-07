@@ -1,7 +1,7 @@
 package com.example.thandbag.controller;
 
-import com.example.thandbag.dto.ThandbagRequestDto;
-import com.example.thandbag.dto.ThandbagResponseDto;
+import com.example.thandbag.dto.post.ThandbagRequestDto;
+import com.example.thandbag.dto.post.ThandbagResponseDto;
 import com.example.thandbag.security.UserDetailsImpl;
 import com.example.thandbag.service.MainService;
 import lombok.RequiredArgsConstructor;

@@ -1,6 +1,6 @@
 package com.example.thandbag.controller;
 
-import com.example.thandbag.dto.ChatMessageDto;
+import com.example.thandbag.dto.chat.ChatMessageDto;
 import com.example.thandbag.repository.ChatRedisRepository;
 import com.example.thandbag.security.jwt.JwtDecoder;
 import com.example.thandbag.service.ChatService;

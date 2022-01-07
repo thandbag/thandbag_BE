@@ -1,10 +1,10 @@
 package com.example.thandbag.controller;
 
-import com.example.thandbag.dto.ChatHistoryResponseDto;
-import com.example.thandbag.dto.ChatMyRoomListResponseDto;
-import com.example.thandbag.dto.ChatRoomDto;
-import com.example.thandbag.dto.CreateRoomRequestDto;
-import com.example.thandbag.dto.LoginInfo;
+import com.example.thandbag.dto.chat.ChatHistoryResponseDto;
+import com.example.thandbag.dto.chat.ChatMyRoomListResponseDto;
+import com.example.thandbag.dto.chat.chatroom.ChatRoomDto;
+import com.example.thandbag.dto.chat.chatroom.CreateRoomRequestDto;
+import com.example.thandbag.dto.login.LoginInfo;
 import com.example.thandbag.repository.ChatRedisRepository;
 import com.example.thandbag.security.UserDetailsImpl;
 import com.example.thandbag.security.jwt.JwtTokenUtils;

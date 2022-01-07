@@ -1,7 +1,7 @@
 package com.example.thandbag.controller;
 
-import com.example.thandbag.dto.PostCommentDto;
-import com.example.thandbag.dto.ShowCommentDto;
+import com.example.thandbag.dto.comment.PostCommentDto;
+import com.example.thandbag.dto.comment.ShowCommentDto;
 import com.example.thandbag.security.UserDetailsImpl;
 import com.example.thandbag.service.CommentService;
 import lombok.RequiredArgsConstructor;

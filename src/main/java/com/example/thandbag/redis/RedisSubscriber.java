@@ -1,7 +1,7 @@
 package com.example.thandbag.redis;
 
-import com.example.thandbag.dto.AlarmResponseDto;
-import com.example.thandbag.dto.ChatMessageDto;
+import com.example.thandbag.dto.alarm.AlarmResponseDto;
+import com.example.thandbag.dto.chat.ChatMessageDto;
 import com.example.thandbag.repository.ChatRoomRepository;
 import com.example.thandbag.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;

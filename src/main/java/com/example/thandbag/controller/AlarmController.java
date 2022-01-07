@@ -1,6 +1,6 @@
 package com.example.thandbag.controller;
 
-import com.example.thandbag.dto.AlarmResponseDto;
+import com.example.thandbag.dto.alarm.AlarmResponseDto;
 import com.example.thandbag.model.User;
 import com.example.thandbag.security.UserDetailsImpl;
 import com.example.thandbag.service.AlarmService;

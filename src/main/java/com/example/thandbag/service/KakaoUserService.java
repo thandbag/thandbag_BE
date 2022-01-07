@@ -1,7 +1,7 @@
 package com.example.thandbag.service;
 
-import com.example.thandbag.dto.KakaoUserInfoDto;
-import com.example.thandbag.dto.LoginResultDto;
+import com.example.thandbag.dto.login.kakao.KakaoUserInfoDto;
+import com.example.thandbag.dto.login.LoginResultDto;
 import com.example.thandbag.model.ProfileImg;
 import com.example.thandbag.model.User;
 import com.example.thandbag.repository.ProfileImgRepository;

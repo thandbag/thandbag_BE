@@ -1,8 +1,8 @@
 package com.example.thandbag.controller;
 
-import com.example.thandbag.dto.BestUserDto;
-import com.example.thandbag.dto.PunchThangbagResponseDto;
-import com.example.thandbag.dto.ThandbagResponseDto;
+import com.example.thandbag.dto.post.BestUserDto;
+import com.example.thandbag.dto.post.PunchThangbagResponseDto;
+import com.example.thandbag.dto.post.ThandbagResponseDto;
 import com.example.thandbag.security.UserDetailsImpl;
 import com.example.thandbag.service.ThandbagDetailService;
 import lombok.RequiredArgsConstructor;

@@ -1,9 +1,9 @@
 package com.example.thandbag.service;
 
 import com.example.thandbag.Enum.AlarmType;
-import com.example.thandbag.dto.AlarmResponseDto;
-import com.example.thandbag.dto.PostCommentDto;
-import com.example.thandbag.dto.ShowCommentDto;
+import com.example.thandbag.dto.alarm.AlarmResponseDto;
+import com.example.thandbag.dto.comment.PostCommentDto;
+import com.example.thandbag.dto.comment.ShowCommentDto;
 import com.example.thandbag.model.*;
 import com.example.thandbag.repository.*;
 import com.example.thandbag.security.UserDetailsImpl;

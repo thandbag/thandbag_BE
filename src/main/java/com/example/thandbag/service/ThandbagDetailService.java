@@ -1,10 +1,10 @@
 package com.example.thandbag.service;
 
 import com.example.thandbag.Enum.AlarmType;
-import com.example.thandbag.dto.BestUserDto;
-import com.example.thandbag.dto.PunchThangbagResponseDto;
-import com.example.thandbag.dto.ShowCommentDto;
-import com.example.thandbag.dto.ThandbagResponseDto;
+import com.example.thandbag.dto.post.BestUserDto;
+import com.example.thandbag.dto.post.PunchThangbagResponseDto;
+import com.example.thandbag.dto.comment.ShowCommentDto;
+import com.example.thandbag.dto.post.ThandbagResponseDto;
 import com.example.thandbag.model.*;
 import com.example.thandbag.repository.*;
 import com.example.thandbag.security.UserDetailsImpl;

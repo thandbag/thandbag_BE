@@ -1,7 +1,7 @@
 package com.example.thandbag.repository;
 
-import com.example.thandbag.dto.ChatRoomDto;
-import com.example.thandbag.dto.CreateRoomRequestDto;
+import com.example.thandbag.dto.chat.chatroom.ChatRoomDto;
+import com.example.thandbag.dto.chat.chatroom.CreateRoomRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.ValueOperations;
