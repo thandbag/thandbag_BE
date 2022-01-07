@@ -15,4 +15,5 @@ public class ShowCommentDto {
     private String createdAt;
     private long like;
     private boolean currentUserlike;
+    private String profileImgUrl;
 }

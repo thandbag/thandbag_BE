@@ -20,6 +20,7 @@ public class ThandbagResponseDto {
     private String title;
     private String content;
     private String createdAt;
+    private String profileImgUrl;
     private List<String> imgUrl;
     private boolean closed;
     private String category;

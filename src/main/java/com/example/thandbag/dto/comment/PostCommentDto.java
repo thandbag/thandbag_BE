@@ -18,5 +18,6 @@ public class PostCommentDto {
     private long totalCount;
     private Long like;
     private boolean currentUserlike;
+    private String profileImgUrl;
 
 }

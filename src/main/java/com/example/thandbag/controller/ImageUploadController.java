@@ -1,6 +1,6 @@
 package com.example.thandbag.controller;
 
-import com.example.thandbag.service.PostService;
+import com.example.thandbag.service.ImageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,12 +12,12 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 public class ImageUploadController {
 
-    private final PostService postService;
+    private final ImageService imageService;
 
     //이미지 업로드 기능(프론트에서 아직 구현안함)
     @CrossOrigin(exposedHeaders = "Authorization", originPatterns = "*")
     @PostMapping("/api/test/upload")
     public String uploadImg(@RequestBody MultipartFile file) {
-        return postService.uploadFile(file);
+        return imageService.uploadFile(file);
     }
 }
