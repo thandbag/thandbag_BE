@@ -28,7 +28,7 @@ public class TimeConversion {
     // 채팅 시간 '오전, 오후' 표시
     public static String ampmConversion(LocalDateTime createdAt) {
         LocalDateTime currentTime = LocalDateTime.now();
-        String resultConversion = currentTime.format(DateTimeFormatter.ofPattern("HH시 mm분").withLocale(Locale.forLanguageTag("ko")));
+        String resultConversion = currentTime.format(DateTimeFormatter.ofPattern("HH:mm A").withLocale(Locale.forLanguageTag("en")));
 
         return resultConversion;
     }
