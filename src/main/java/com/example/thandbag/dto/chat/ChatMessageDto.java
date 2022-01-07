@@ -15,7 +15,7 @@ import java.time.format.DateTimeFormatter;
 public class ChatMessageDto {
 
     @Builder
-    public ChatMessageDto(MessageType type, String roomId, String sender, String message, long userCount) {
+    public ChatMessageDto(MessageType type, String roomId, String sender, String message, long userCount, String createdAt) {
         DateTimeFormatter newFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");
         this.type = type;
         this.roomId = roomId;

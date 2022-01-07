@@ -11,6 +11,7 @@ import com.example.thandbag.model.ChatContent;
 import com.example.thandbag.model.ChatRoom;
 import com.example.thandbag.model.User;
 import com.example.thandbag.repository.*;
+import com.example.thandbag.timeconversion.TimeConversion;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -190,15 +191,16 @@ public class ChatService {
         List<ChatContent> chatContentList = chatContentRepository.findAllByChatRoomOrderByCreatedAtAsc(room);
         System.out.println(chatContentList);
         List<ChatHistoryResponseDto> chatHistoryList = new ArrayList<>();
-        DateTimeFormatter newFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");
+//        DateTimeFormatter newFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");
         for (ChatContent chat : chatContentList) {
-            String createdTime = newFormatter.format(chat.getCreatedAt());
+            String createdTime = TimeConversion.ampmConversion(chat.getCreatedAt());
+//            String createdTime = newFormatter.format(chat.getCreatedAt());
             if (!chat.getIsRead()) {
                 chat.setIsRead(true);
             }
             ChatHistoryResponseDto historyResponseDto = new ChatHistoryResponseDto(
                     chat.getUser().getNickname(),
-                    "www.naver.com/dsjd.jpg",
+                    chat.getUser().getProfileImg().getProfileImgUrl(),
                     chat.getContent(),
                     createdTime
             );
@@ -206,5 +208,4 @@ public class ChatService {
         }
         return chatHistoryList;
     }
-
 }
