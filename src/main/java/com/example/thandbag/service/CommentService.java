@@ -127,7 +127,8 @@ public class CommentService {
                 0L,
                 userDetails.getUser().getMbti(),
                 false,
-                comment.getUser().getProfileImg().getProfileImgUrl()
+                comment.getUser().getProfileImg().getProfileImgUrl(),
+                userDetails.getUser().getLevel()
         );
     }
 
