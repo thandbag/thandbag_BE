@@ -19,7 +19,6 @@ public class AlarmResponseDto {
     private Long postId;
     private Long alarmTargetId;
 
-
     public AlarmResponseDto(Long alarmId, String type, String message) {
             this.alarmId = alarmId;
             this.type = type;

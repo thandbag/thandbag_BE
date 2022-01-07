@@ -39,6 +39,7 @@ public class KakaoUserService {
     private final PasswordEncoder passwordEncoder;
     private final ProfileImgRepository profileImgRepository;
 
+    // 카카오 로그인
     public LoginResultDto kakaoLogin(String code, HttpServletResponse response) throws JsonProcessingException {
         // 인가 코드로 액세스 토큰 요청
         String accessToken = getAccessToken(code);

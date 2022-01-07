@@ -3,7 +3,9 @@ package com.example.thandbag.service;
 
 import com.example.thandbag.Enum.AlarmType;
 import com.example.thandbag.dto.alarm.AlarmResponseDto;
-import com.example.thandbag.dto.chat.*;
+import com.example.thandbag.dto.chat.ChatHistoryResponseDto;
+import com.example.thandbag.dto.chat.ChatMessageDto;
+import com.example.thandbag.dto.chat.ChatMyRoomListResponseDto;
 import com.example.thandbag.dto.chat.chatroom.ChatRoomDto;
 import com.example.thandbag.dto.chat.chatroom.CreateRoomRequestDto;
 import com.example.thandbag.model.Alarm;
@@ -19,8 +21,6 @@ import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -147,18 +147,17 @@ public class ChatService {
             // 내가 pub 이면 sub아이디 찾아야 하고, sub이면 pub아이디 찾아야 함
             roomId = room.getId();
             User subUser = user.getId().equals(room.getSubUserId()) ? userRepository.getById(room.getPubUserId()) : userRepository.getById(room.getSubUserId());
-            DateTimeFormatter newFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");
             subNickname = subUser.getNickname();
-//            subProfileImgUrl = subUser.getProfileImg().getProfileImgUrl();
-            subProfileImgUrl = "naver.com/asdfasdf.jpg";
+            subProfileImgUrl = subUser.getProfileImg().getProfileImgUrl();
 
+            // 시간 표시 형식 변경
             Optional<ChatContent> lastCont = chatContentRepository.findFirstByChatRoomOrderByCreatedAtDesc(room);
             if (lastCont.isPresent()) {
                 lastContent = lastCont.get().getContent();
-                lastContentCreatedTime = newFormatter.format(lastCont.get().getCreatedAt());
+                lastContentCreatedTime = TimeConversion.chattingListTimeConversion(lastCont.get().getCreatedAt());
             } else {
                 lastContent = "";
-                lastContentCreatedTime = newFormatter.format(LocalDateTime.now());
+                lastContentCreatedTime = TimeConversion.chattingListTimeConversion(room.getCreatedAt());
             }
 
             // 읽지 않은 메시지 수

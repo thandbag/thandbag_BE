@@ -136,10 +136,12 @@ public class ThandbagDetailService {
     }
 
     //게시자가 작성한 생드백을 완료로 전환
-    public List<BestUserDto> completeThandbag(long postId) {
+    public List<BestUserDto> completeThandbag(long postId, int totalHitCount) {
         Post post = postRepository.findById(postId).orElseThrow(
                 () -> new NullPointerException("게시글이 없습니다"));
+        post.updateTotalHit(totalHitCount);
         post.closePost();
+
         postRepository.save(post);
         List<BestUserDto> bestUserDtoList = new ArrayList<>();
         // 게시자에게 선정된(게시자가 like한 댓글 작성자)를 선별

@@ -33,8 +33,8 @@ public class ThandbagDetailController {
     // 생드백 터뜨리기
     @CrossOrigin(exposedHeaders = "Authorization", originPatterns = "*")
     @PostMapping("/api/thandbag")
-    public List<BestUserDto> completeThandbag(@RequestParam long postId) {
-        return thandbagDetailService.completeThandbag(postId);
+    public List<BestUserDto> completeThandbag(@RequestParam long postId, @RequestBody int totalHitCount) {
+        return thandbagDetailService.completeThandbag(postId, totalHitCount);
     }
 
     // 생드백 때리기

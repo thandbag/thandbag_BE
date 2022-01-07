@@ -125,6 +125,7 @@ public class CommentService {
                 TimeConversion.timeConversion(comment.getCreatedAt()),
                 userDetails.getUser().getTotalCount(),
                 0L,
+                userDetails.getUser().getMbti(),
                 false,
                 comment.getUser().getProfileImg().getProfileImgUrl()
         );

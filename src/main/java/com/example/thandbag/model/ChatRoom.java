@@ -12,7 +12,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class ChatRoom {
+public class ChatRoom extends Timestamped {
 
     @Id
     private String id;
