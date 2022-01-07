@@ -1,12 +1,10 @@
 package com.example.thandbag.dto.chat;
 
-import com.example.thandbag.timeconversion.TimeConversion;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 @Getter
@@ -22,7 +20,7 @@ public class ChatMessageDto {
         this.sender = sender;
         this.message = message;
         this.userCount = userCount;
-        this.createdAt = TimeConversion.ampmConversion(LocalDateTime.now());
+        this.createdAt = createdAt;
     }
 
     // 메시지 타입 : 입장, 퇴장, 채팅
