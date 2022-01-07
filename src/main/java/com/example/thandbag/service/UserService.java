@@ -1,8 +1,8 @@
 package com.example.thandbag.service;
 
-import com.example.thandbag.dto.LoginRequestDto;
-import com.example.thandbag.dto.LoginResultDto;
-import com.example.thandbag.dto.SignupRequestDto;
+import com.example.thandbag.dto.login.LoginRequestDto;
+import com.example.thandbag.dto.login.LoginResultDto;
+import com.example.thandbag.dto.signup.SignupRequestDto;
 import com.example.thandbag.model.ProfileImg;
 import com.example.thandbag.model.User;
 import com.example.thandbag.repository.ProfileImgRepository;

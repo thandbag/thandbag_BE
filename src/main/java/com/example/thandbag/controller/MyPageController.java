@@ -1,9 +1,9 @@
 package com.example.thandbag.controller;
 
-import com.example.thandbag.dto.MyPageResponseDto;
-import com.example.thandbag.dto.MyPostListDto;
-import com.example.thandbag.dto.ProfileUpdateRequestDto;
-import com.example.thandbag.dto.UpdateProfileResponseDto;
+import com.example.thandbag.dto.mypage.MyPageResponseDto;
+import com.example.thandbag.dto.mypage.MyPostListDto;
+import com.example.thandbag.dto.mypage.profile.ProfileUpdateRequestDto;
+import com.example.thandbag.dto.mypage.profile.ProfileUpdateResponseDto;
 import com.example.thandbag.security.UserDetailsImpl;
 import com.example.thandbag.service.MyPageService;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +27,7 @@ public class MyPageController {
     // 마이페이지 -> 회원정보 수정
     @CrossOrigin(exposedHeaders = "Authorization", originPatterns = "*")
     @PostMapping("/mypage/profile")
-    public UpdateProfileResponseDto updateProfile(@RequestBody ProfileUpdateRequestDto updateDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public ProfileUpdateResponseDto updateProfile(@RequestBody ProfileUpdateRequestDto updateDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return myPageService.updateProfile(updateDto, userDetails);
     }
 

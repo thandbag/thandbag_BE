@@ -1,8 +1,8 @@
 package com.example.thandbag.controller;
 
-import com.example.thandbag.dto.LoginRequestDto;
-import com.example.thandbag.dto.LoginResultDto;
-import com.example.thandbag.dto.SignupRequestDto;
+import com.example.thandbag.dto.login.LoginRequestDto;
+import com.example.thandbag.dto.login.LoginResultDto;
+import com.example.thandbag.dto.signup.SignupRequestDto;
 import com.example.thandbag.service.KakaoUserService;
 import com.example.thandbag.service.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;

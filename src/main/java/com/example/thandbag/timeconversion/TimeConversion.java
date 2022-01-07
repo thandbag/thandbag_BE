@@ -2,9 +2,11 @@ package com.example.thandbag.timeconversion;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
-// 게시글 작성시 작성시간 포맷 변환
 public class TimeConversion {
+    // 게시글 작성시 작성시간 포맷 변환
     public static String timeConversion(LocalDateTime modifiedAt) {
         LocalDateTime currentTime = LocalDateTime.now();
         Long timeDiff = Duration.between(modifiedAt, currentTime).getSeconds();
@@ -19,6 +21,14 @@ public class TimeConversion {
         } else {
             resultConversion = timeDiff + "초 전";
         }
+
+        return resultConversion;
+    }
+
+    // 채팅 시간 '오전, 오후' 표시
+    public static String ampmConversion(LocalDateTime createdAt) {
+        LocalDateTime currentTime = LocalDateTime.now();
+        String resultConversion = currentTime.format(DateTimeFormatter.ofPattern("a HH시 mm분").withLocale(Locale.forLanguageTag("ko")));
 
         return resultConversion;
     }

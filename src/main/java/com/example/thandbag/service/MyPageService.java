@@ -1,6 +1,8 @@
 package com.example.thandbag.service;
 
-import com.example.thandbag.dto.*;
+import com.example.thandbag.dto.mypage.*;
+import com.example.thandbag.dto.mypage.profile.ProfileUpdateRequestDto;
+import com.example.thandbag.dto.mypage.profile.ProfileUpdateResponseDto;
 import com.example.thandbag.model.Post;
 import com.example.thandbag.model.PostImg;
 import com.example.thandbag.model.ProfileImg;
@@ -55,7 +57,7 @@ public class MyPageService {
 
     // 회원정보 수정
     @Transactional
-    public UpdateProfileResponseDto updateProfile(ProfileUpdateRequestDto updateDto, UserDetailsImpl userDetails) {
+    public ProfileUpdateResponseDto updateProfile(ProfileUpdateRequestDto updateDto, UserDetailsImpl userDetails) {
         User user = userRepository.getById(userDetails.getUser().getId());
         Long userId = user.getId();
         String profileImgUrl = user.getProfileImg().getProfileImgUrl();
@@ -82,7 +84,7 @@ public class MyPageService {
             userValidator.checkNicknameIsValid(nickname);
         }
 
-        return new UpdateProfileResponseDto(
+        return new ProfileUpdateResponseDto(
                 userId,
                 profileImgUrl,
                 nickname,

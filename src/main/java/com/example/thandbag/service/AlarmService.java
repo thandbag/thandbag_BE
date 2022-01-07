@@ -1,7 +1,7 @@
 package com.example.thandbag.service;
 
 import com.example.thandbag.Enum.AlarmType;
-import com.example.thandbag.dto.AlarmResponseDto;
+import com.example.thandbag.dto.alarm.AlarmResponseDto;
 import com.example.thandbag.model.Alarm;
 import com.example.thandbag.model.User;
 import com.example.thandbag.repository.AlarmRepository;

@@ -1,4 +1,4 @@
-package com.example.thandbag.dto;
+package com.example.thandbag.dto.alarm;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;

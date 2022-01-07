@@ -1,4 +1,4 @@
-package com.example.thandbag.dto;
+package com.example.thandbag.dto.signup;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

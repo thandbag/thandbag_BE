@@ -1,5 +1,6 @@
-package com.example.thandbag.dto;
+package com.example.thandbag.dto.post;
 
+import com.example.thandbag.dto.comment.ShowCommentDto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Getter;
