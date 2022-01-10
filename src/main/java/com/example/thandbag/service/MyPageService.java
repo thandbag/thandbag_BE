@@ -67,22 +67,25 @@ public class MyPageService {
         ProfileImg profileImg = profileImgRepository.findByProfileImgUrl(profileImgUrl).get();
         user.setProfileImg(profileImg);
 
+        // 닉네임 중복검사용
+        Optional<User> foundNickname = userRepository.findByNickname(updateDto.getNickname());
+
         String nickname = user.getNickname();
         if (updateDto.getNickname() != null) {
+            // 변경하고자 하는 닉네임과 동일하면 유효성 검사하지 않음
+            if (!updateDto.getNickname().equals(user.getNickname())){
+            // 닉네임 중복 검사
+            userValidator.checkNickname(foundNickname);
+            // 닉네임 유효성 검사
+            userValidator.checkNicknameIsValid(updateDto.getNickname());
+            }
             nickname = updateDto.getNickname();
         }
+
         user.setNickname(nickname);
 
         String mbti = updateDto.getMbti();
         user.setMbti(mbti);
-
-        // 닉네임 중복 검사
-        if(!nickname.equals(user.getNickname())) {
-            Optional<User> foundNickname = userRepository.findByNickname(nickname);
-            userValidator.checkNickname(foundNickname);
-            // 닉네임 유효성 검사
-            userValidator.checkNicknameIsValid(nickname);
-        }
 
         return new ProfileUpdateResponseDto(
                 userId,

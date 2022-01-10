@@ -56,6 +56,6 @@ public class TimeConversion {
             resultConversion = lastContentTime.format(formatter);
         }
 
-        return "";
+        return resultConversion;
     }
 }
