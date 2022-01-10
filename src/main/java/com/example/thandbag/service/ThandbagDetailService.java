@@ -1,9 +1,10 @@
 package com.example.thandbag.service;
 
 import com.example.thandbag.Enum.AlarmType;
+import com.example.thandbag.dto.alarm.AlarmResponseDto;
+import com.example.thandbag.dto.comment.ShowCommentDto;
 import com.example.thandbag.dto.post.BestUserDto;
 import com.example.thandbag.dto.post.PunchThangbagResponseDto;
-import com.example.thandbag.dto.comment.ShowCommentDto;
 import com.example.thandbag.dto.post.ThandbagResponseDto;
 import com.example.thandbag.model.*;
 import com.example.thandbag.repository.*;
@@ -41,7 +42,7 @@ public class ThandbagDetailService {
         List<ShowCommentDto> showCommentDtoList = new ArrayList<>();
         // 게시글에 달린 댓글 가져오기
         for (Comment comment : post.getCommentList()) {
-            List<CommentLike> allLikes = commentLikeRepository.findAllByUserId(comment.getUser().getId());
+            List<CommentLike> allLikes = commentLikeRepository.findAllByComment(comment);
             ShowCommentDto showCommentDto = new ShowCommentDto(
                     comment.getUser().getNickname(),
                     comment.getUser().getLevel(),
@@ -50,7 +51,8 @@ public class ThandbagDetailService {
                     comment.getComment(),
                     TimeConversion.timeConversion(comment.getCreatedAt()),
                     allLikes.size(),
-                    commentLikeRepository.existsByUserId(user.getId())
+                    commentLikeRepository.existsByCommentAndUserId(comment, user.getId()),
+                    comment.getUser().getProfileImg().getProfileImgUrl()
             );
             showCommentDtoList.add(showCommentDto);
         }
@@ -67,6 +69,7 @@ public class ThandbagDetailService {
                 .title(post.getTitle())
                 .content(post.getContent())
                 .imgUrl(imgUrlList)
+                .profileImgUrl(post.getUser().getProfileImg().getProfileImgUrl())
                 .lvImg(bannerLv)
                 .hitCount(post.getTotalHitCount())
                 .createdAt(TimeConversion.timeConversion(post.getCreatedAt()))
@@ -83,37 +86,62 @@ public class ThandbagDetailService {
     public void removeThandbag(long postId, UserDetailsImpl userDetails) {
         postRepository.deleteById(postId);
         User user = userRepository.getById(userDetails.getUser().getId());
-        user.minusTotalPostsAndComments();
+        user.setTotalCount(user.getTotalCount()-1);
 
         //leveldown 및 알림 메시지
         int totalPosts = user.getTotalCount();
         if(totalPosts <= 2 && user.getLevel() == 2) {
             user.setLevel(1);
-            Alarm levelDown1 = new Alarm(
-                    user.getId(),
-                    AlarmType.LEVELCHANGE,
-                    "레벨이 하락하였습니다."
-            );
+            Alarm levelDown1 = Alarm.builder()
+                    .userId(user.getId())
+                    .type(AlarmType.LEVELCHANGE)
+                    .alarmMessage("레벨이 " + user.getLevel() + "로 하락하였습니다.")
+                    .isRead(false)
+                    .build();
+
             alarmRepository.save(levelDown1);
-            redisTemplate.convertAndSend(channelTopic.getTopic(), "이거슨 레벨 하락 대한 메시지다요.");
+
+            // 알림 메시지를 보낼 DTO 생성
+            AlarmResponseDto alarmResponseDto = AlarmResponseDto.builder()
+                    .alarmId(levelDown1.getId())
+                    .type(levelDown1.getType().toString())
+                    .message("[알림] 레벨이 " + user.getLevel() + "로 하락하였습니다.")
+                    .alarmTargetId(user.getId())
+                    .isRead(levelDown1.getIsRead())
+                    .build();
+
+            redisTemplate.convertAndSend(channelTopic.getTopic(), alarmResponseDto);
         } else if(totalPosts < 5 && user.getLevel() == 3) {
             user.setLevel(2);
-            Alarm levelDown2 = new Alarm(
-                    user.getId(),
-                    AlarmType.LEVELCHANGE,
-                    "레벨이 하락하였습니다."
-            );
+            Alarm levelDown2 = Alarm.builder()
+                    .userId(user.getId())
+                    .type(AlarmType.LEVELCHANGE)
+                    .alarmMessage("레벨이 " + user.getLevel() + "로 하락하였습니다.")
+                    .isRead(false)
+                    .build();
+
             alarmRepository.save(levelDown2);
-            // 알림메시지를 redis로 pub
-            redisTemplate.convertAndSend(channelTopic.getTopic(), "이거슨 레벨 하락 대한 메시지다요.");
+
+            // 알림 메시지를 보낼 DTO 생성
+            AlarmResponseDto alarmResponseDto = AlarmResponseDto.builder()
+                    .alarmId(levelDown2.getId())
+                    .type(levelDown2.getType().toString())
+                    .message("[알림] 레벨이 " + user.getLevel() + "로 하락하였습니다.")
+                    .alarmTargetId(user.getId())
+                    .isRead(levelDown2.getIsRead())
+                    .build();
+
+            redisTemplate.convertAndSend(channelTopic.getTopic(), alarmResponseDto);
         }
     }
 
     //게시자가 작성한 생드백을 완료로 전환
-    public List<BestUserDto> completeThandbag(long postId) {
+    public List<BestUserDto> completeThandbag(long postId, int totalHitCount) {
         Post post = postRepository.findById(postId).orElseThrow(
                 () -> new NullPointerException("게시글이 없습니다"));
+        post.updateTotalHit(totalHitCount);
         post.closePost();
+
         postRepository.save(post);
         List<BestUserDto> bestUserDtoList = new ArrayList<>();
         // 게시자에게 선정된(게시자가 like한 댓글 작성자)를 선별
@@ -136,11 +164,22 @@ public class ThandbagDetailService {
                         .type(AlarmType.PICKED)
                         .postId(comment.getPost().getId())
                         .alarmMessage("[" + post.getTitle()  + "] 생드백에서 내 잽이 베스트 잽으로 선정되었습니다.")
+                        .isRead(false)
                         .build();
 
                 alarmRepository.save(alarm);
+
+                // 알림 메시지를 보낼 DTO 생성
+                AlarmResponseDto alarmResponseDto = AlarmResponseDto.builder()
+                        .alarmId(alarm.getId())
+                        .type(alarm.getType().toString())
+                        .postId(alarm.getPostId())
+                        .message("[알림] [" + post.getTitle()  + "] 생드백에서 내 잽이 베스트 잽으로 선정되었습니다.")
+                        .alarmTargetId(alarm.getUserId())
+                        .isRead(alarm.getIsRead())
+                        .build();
                 // redis로 pub
-                redisTemplate.convertAndSend(channelTopic.getTopic(), "이거슨 베스트 잽 선정에 대한 메시지다요.");
+                redisTemplate.convertAndSend(channelTopic.getTopic(), alarmResponseDto);
             }
         }
         return bestUserDtoList;

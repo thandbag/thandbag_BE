@@ -22,6 +22,7 @@ public class Alarm extends Timestamped {
     private Long userId;
 
     @Column
+    @Enumerated(value = EnumType.STRING)
     private AlarmType type;
 
     // 채팅방 생성자

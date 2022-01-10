@@ -20,7 +20,7 @@ public class CommentLike extends Timestamped {
 
     private Long userId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Comment comment;
 
 }

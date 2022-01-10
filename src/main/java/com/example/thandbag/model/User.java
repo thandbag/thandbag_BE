@@ -2,16 +2,14 @@ package com.example.thandbag.model;
 
 import com.example.thandbag.Enum.Auth;
 import com.example.thandbag.dto.signup.SignupRequestDto;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
 
 @Setter
 @Getter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity

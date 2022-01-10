@@ -17,7 +17,7 @@ import java.util.UUID;
 // AWS S3에 게시글 작성시 이미지 업로드 기능
 @RequiredArgsConstructor
 @Service
-public class PostService {
+public class ImageService {
 
     private final AmazonS3Client amazonS3Client;
 

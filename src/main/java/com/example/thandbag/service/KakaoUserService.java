@@ -39,6 +39,7 @@ public class KakaoUserService {
     private final PasswordEncoder passwordEncoder;
     private final ProfileImgRepository profileImgRepository;
 
+    // 카카오 로그인
     public LoginResultDto kakaoLogin(String code, HttpServletResponse response) throws JsonProcessingException {
         // 인가 코드로 액세스 토큰 요청
         String accessToken = getAccessToken(code);
@@ -73,7 +74,7 @@ public class KakaoUserService {
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("grant_type", "authorization_code");
         body.add("client_id", "2bbe979f5fff3c4ab9f79ad6a7be6729");
-        body.add("redirect_uri", "http://localhost:3000/user/kakao/callback");
+        body.add("redirect_uri", "http://junmyung.site.s3-website.ap-northeast-2.amazonaws.com/user/kakao/callback");
         body.add("code", code);
 
         // HTTP 요청 보내기

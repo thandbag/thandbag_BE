@@ -17,6 +17,9 @@ public class PostCommentDto {
     private String createdAt;
     private long totalCount;
     private Long like;
+    private String mbti;
     private boolean currentUserlike;
+    private String profileImgUrl;
+    private int level;
 
 }

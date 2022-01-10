@@ -28,7 +28,7 @@ public class AlarmService {
         List<AlarmResponseDto> alarmResponseDtoList = new ArrayList<>();
 
         for (Alarm alarm : alarmList) {
-            // 채팅룸 생성알림일때 if 문으로 빌더 생성
+            // 채팅룸 생성알림일 때
             if (alarm.getType().equals(AlarmType.INVITEDCHAT)) {
                 AlarmResponseDto alarmDto = AlarmResponseDto.builder()
                         .alarmId(alarm.getId())
@@ -77,6 +77,7 @@ public class AlarmService {
         Alarm alarm = alarmRepository.getById(alarmId);
         User user = userDetails.getUser();
         alarm.setIsRead(true);
+        alarmRepository.save(alarm);
         AlarmResponseDto alarmDto = new AlarmResponseDto();
 
         // 새로운 채팅방에 초대 받았을 경우
