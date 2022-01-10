@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 @Service
@@ -86,11 +87,11 @@ public class ThandbagDetailService {
     public void removeThandbag(long postId, UserDetailsImpl userDetails) {
         postRepository.deleteById(postId);
         User user = userRepository.getById(userDetails.getUser().getId());
-        user.setTotalCount(user.getTotalCount()-1);
+        user.setTotalCount(user.getTotalCount() - 1);
 
         //leveldown 및 알림 메시지
         int totalPosts = user.getTotalCount();
-        if(totalPosts <= 2 && user.getLevel() == 2) {
+        if (totalPosts <= 2 && user.getLevel() == 2) {
             user.setLevel(1);
             Alarm levelDown1 = Alarm.builder()
                     .userId(user.getId())
@@ -111,7 +112,7 @@ public class ThandbagDetailService {
                     .build();
 
             redisTemplate.convertAndSend(channelTopic.getTopic(), alarmResponseDto);
-        } else if(totalPosts < 5 && user.getLevel() == 3) {
+        } else if (totalPosts < 5 && user.getLevel() == 3) {
             user.setLevel(2);
             Alarm levelDown2 = Alarm.builder()
                     .userId(user.getId())
@@ -144,6 +145,7 @@ public class ThandbagDetailService {
 
         postRepository.save(post);
         List<BestUserDto> bestUserDtoList = new ArrayList<>();
+        HashSet<String> commenterName = new HashSet<>();
         // 게시자에게 선정된(게시자가 like한 댓글 작성자)를 선별
         for (Comment comment : post.getCommentList()) {
             //생드백 작성자에게 선택된 댓글 이면서, 생드백 작성자가 직접 쓴 잽이 아니라면
@@ -155,7 +157,10 @@ public class ThandbagDetailService {
                         comment.getUser().getProfileImg().getProfileImgUrl(),
                         comment.getUser().getLevel()
                 );
-                bestUserDtoList.add(bestUserDto);
+                if (!commenterName.contains(bestUserDto.getNickname())) {
+                    bestUserDtoList.add(bestUserDto);
+                    commenterName.add(bestUserDto.getNickname());
+                }
 
                 // 알림 생성
                 //선택된 댓글 작성자들에게 알림 발송
@@ -163,7 +168,7 @@ public class ThandbagDetailService {
                         .userId(comment.getUser().getId())
                         .type(AlarmType.PICKED)
                         .postId(comment.getPost().getId())
-                        .alarmMessage("[" + post.getTitle()  + "] 생드백에서 내 잽이 베스트 잽으로 선정되었습니다.")
+                        .alarmMessage("[" + post.getTitle() + "] 생드백에서 내 잽이 베스트 잽으로 선정되었습니다.")
                         .isRead(false)
                         .build();
 
@@ -174,7 +179,7 @@ public class ThandbagDetailService {
                         .alarmId(alarm.getId())
                         .type(alarm.getType().toString())
                         .postId(alarm.getPostId())
-                        .message("[알림] [" + post.getTitle()  + "] 생드백에서 내 잽이 베스트 잽으로 선정되었습니다.")
+                        .message("[알림] [" + post.getTitle() + "] 생드백에서 내 잽이 베스트 잽으로 선정되었습니다.")
                         .alarmTargetId(alarm.getUserId())
                         .isRead(alarm.getIsRead())
                         .build();
