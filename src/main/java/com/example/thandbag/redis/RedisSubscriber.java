@@ -2,7 +2,6 @@ package com.example.thandbag.redis;
 
 import com.example.thandbag.dto.alarm.AlarmResponseDto;
 import com.example.thandbag.dto.chat.ChatMessageDto;
-import com.example.thandbag.repository.ChatRoomRepository;
 import com.example.thandbag.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +16,6 @@ public class RedisSubscriber {
     private final ObjectMapper objectMapper;
     private final SimpMessageSendingOperations messagingTemplate;
     private final UserRepository userRepository;
-    private final ChatRoomRepository chatRoomRepository;
 
     /**
      * Redis에서 메시지가 발행(publish)되면 대기하고 있던 Redis Subscriber가 해당 메시지를 받아 처리한다.
@@ -28,6 +26,7 @@ public class RedisSubscriber {
             if (!publishMessage.contains("[알림]")) {
                 ChatMessageDto chatMessageDto = objectMapper.readValue(publishMessage, ChatMessageDto.class);
                 System.out.println("메시지 발송 시간 : " + chatMessageDto.getCreatedAt());
+                chatMessageDto.setSenderProfileImg(userRepository.findByNickname(chatMessageDto.getSender()).get().getProfileImg().getProfileImgUrl());
                 messagingTemplate.convertAndSend("/sub/chat/room/" + chatMessageDto.getRoomId(), chatMessageDto);
             } else {
             // 알림 메세지 보내기의 pub 이라면 알림 소켓으로 알림 수신자에게 메시지 발송

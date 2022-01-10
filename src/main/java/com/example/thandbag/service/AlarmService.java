@@ -23,7 +23,7 @@ public class AlarmService {
 
     // 알림 목록
     public List<AlarmResponseDto> getAlamList(User user) {
-        List<Alarm> alarmList = alarmRepository.findAllByUserId(user.getId());
+        List<Alarm> alarmList = alarmRepository.findAllByUserIdOrderByIdDesc(user.getId());
 
         List<AlarmResponseDto> alarmResponseDtoList = new ArrayList<>();
 
