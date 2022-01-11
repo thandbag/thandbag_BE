@@ -20,5 +20,5 @@ public class ChattingUser {
     private User user;
 
     @ManyToOne
-    private ChattingRoom chatRoom;
+    private ChatRoom chatRoom;
 }

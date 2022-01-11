@@ -20,6 +20,8 @@ public class ProfileImg {
     @Column
     private String profileImgUrl;
 
-    @OneToOne
-    private User user;
+
+    public ProfileImg(String profileImgUrl) {
+        this.profileImgUrl = profileImgUrl;
+    }
 }

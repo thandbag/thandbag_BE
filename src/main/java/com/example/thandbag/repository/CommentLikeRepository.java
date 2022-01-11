@@ -5,9 +5,10 @@ import com.example.thandbag.model.CommentLike;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface CommentLikeRepository extends JpaRepository<CommentLike, Long> {
     List<CommentLike> findAllByUserId(long userId);
-    boolean existsByUserId(long userId);
+    CommentLike findByUserIdAndComment(long userId, Comment comment);
+    List<CommentLike> findAllByComment(Comment comment);
+    boolean existsByCommentAndUserId(Comment comment, Long userId);
 }

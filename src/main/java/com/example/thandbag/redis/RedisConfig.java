@@ -34,7 +34,7 @@ public class RedisConfig {
     }
 
     /**
-     * 단일 Topic 사용을 위한 Bean 설정
+     * 단일 Topic 사용을 위한 Bean 설정을 했었으나, 토픽 여러개 만들려고 Bean 등록 안함
      */
     @Bean
     public ChannelTopic channelTopic() {

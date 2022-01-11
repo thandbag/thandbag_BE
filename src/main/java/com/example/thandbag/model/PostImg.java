@@ -19,6 +19,9 @@ public class PostImg {
     @Column
     private String postImgUrl;
 
+//    @Column
+//    private int level;
+
     @ManyToOne
     private Post post;
 

@@ -1,6 +1,6 @@
 package com.example.thandbag.validator;
 
-import com.example.thandbag.dto.SignupRequestDto;
+import com.example.thandbag.dto.signup.SignupRequestDto;
 import com.example.thandbag.model.User;
 import org.springframework.stereotype.Component;
 

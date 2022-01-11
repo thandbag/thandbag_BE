@@ -1,0 +1,49 @@
+language: java
+jdk:
+- openjdk8
+branches:
+  only:
+  - master
+cache:
+  directories:
+  - "$HOME/.m2/repository"
+  - "$HOME/.gradle"
+script: "./gradlew clean build"
+notifications:
+  email:
+    recipients:
+    - 5.9.devv@gmail.com
+    - ksb3602@gmail.com
+    - 
+before_install:
+- openssl aes-256-cbc -K $encrypted_2f692484526a_key -iv $encrypted_2f692484526a_iv
+  -in src/main/resources/application.properties.enc -out src/main/resources/application.properties -d
+
+before_deploy:
+- mkdir -p before-deploy
+- cp scripts/*.sh before-deploy/
+- cp appspec.yml before-deploy/
+- cp build/libs/*.jar before-deploy/
+- cd before-deploy && zip -r before-deploy *
+- cd ../ && mkdir -p deploy
+- mv before-deploy/before-deploy.zip deploy/thandbag-snapshot.zip
+deploy:
+- provider: s3
+  access_key_id: "$AWS_ACCESS_KEY"
+  secret_access_key: "$AWS_SECRET_KEY"
+  bucket: thandbag
+  region: ap-northeast-2
+  skip_cleanup: true
+  acl: private
+  local_dir: deploy
+  wait-until-deployed: true
+- provider: codedeploy
+  access_key_id: "$AWS_ACCESS_KEY"
+  secret_access_key: "$AWS_SECRET_KEY"
+  bucket: thandbag
+  key: thandbag-snapshot.zip
+  bundle_type: zip
+  application: thandbag-webservice
+  deployment_group: thandbag-webservice-group
+  region: ap-northeast-2
+  wait-until-deployed: true

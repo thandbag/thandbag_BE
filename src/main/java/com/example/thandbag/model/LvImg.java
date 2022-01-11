@@ -17,9 +17,17 @@ public class LvImg {
     private Long id;
 
     @Column
+    private String title;
+
+    @Column
     private String lvImgUrl;
 
-    public LvImg(String lvImgUrl) {
+    @Column
+    private int level;
+
+    public LvImg(String title, String lvImgUrl, int level) {
+        this.title = title;
         this.lvImgUrl = lvImgUrl;
+        this.level = level;
     }
 }

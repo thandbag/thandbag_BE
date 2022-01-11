@@ -1,9 +1,11 @@
 package com.example.thandbag.service;
 
-import com.example.thandbag.dto.LoginRequestDto;
-import com.example.thandbag.dto.LoginResultDto;
-import com.example.thandbag.dto.SignupRequestDto;
+import com.example.thandbag.dto.login.LoginRequestDto;
+import com.example.thandbag.dto.login.LoginResultDto;
+import com.example.thandbag.dto.signup.SignupRequestDto;
+import com.example.thandbag.model.ProfileImg;
 import com.example.thandbag.model.User;
+import com.example.thandbag.repository.ProfileImgRepository;
 import com.example.thandbag.repository.UserRepository;
 import com.example.thandbag.security.UserDetailsImpl;
 import com.example.thandbag.security.jwt.JwtTokenUtils;
@@ -15,6 +17,7 @@ import org.springframework.stereotype.Service;
 import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
 import java.util.Optional;
+import java.util.Random;
 
 
 @RequiredArgsConstructor
@@ -24,6 +27,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final UserValidator userValidator;
+    private final ProfileImgRepository profileImgRepository;
 
     // 회원가입
     @Transactional
@@ -45,6 +49,13 @@ public class UserService {
         //유저 저장 (회원가입 완료)
         User user = new User(signupRequestDto);
         user.setPassword(password);
+
+        //기본 프로필 이미지 세팅
+        Random random = new Random();
+        Long randomNum = (long) random.nextInt(3) + 1;
+        ProfileImg profileImg = profileImgRepository.getById(randomNum);
+        user.setProfileImg(profileImg);
+        user.setLevel(1);
         userRepository.save(user);
     }
 
@@ -57,9 +68,10 @@ public class UserService {
             throw new IllegalArgumentException("비밀번호를 확인해주세요.");
         }
 
+        // 토큰 생성
         UserDetailsImpl userDetails = new UserDetailsImpl(user);
         String token = JwtTokenUtils.generateJwtToken(userDetails);
         response.addHeader("Authorization", "Bearer " + token);
-        return new LoginResultDto(user.getId(), user.getNickname());
+        return new LoginResultDto(user.getId(), user.getNickname(), user.getLevel(), user.getMbti(), user.getProfileImg().getProfileImgUrl());
     }
 }

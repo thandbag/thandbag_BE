@@ -1,7 +1,7 @@
 package com.example.thandbag.controller;
 
-import com.example.thandbag.dto.ThandbagRequestDto;
-import com.example.thandbag.dto.ThandbagResponseDto;
+import com.example.thandbag.dto.post.ThandbagRequestDto;
+import com.example.thandbag.dto.post.ThandbagResponseDto;
 import com.example.thandbag.security.UserDetailsImpl;
 import com.example.thandbag.service.MainService;
 import lombok.RequiredArgsConstructor;
@@ -16,19 +16,22 @@ public class MainController {
 
     private final MainService mainService;
 
-    @CrossOrigin("*")
+    // 생드백 만들기
+    @CrossOrigin(exposedHeaders = "Authorization", originPatterns = "*")
     @PostMapping("/api/newThandbag")
     public ThandbagResponseDto createThandbag(@RequestBody ThandbagRequestDto thandbagRequestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return mainService.createThandbag(thandbagRequestDto, userDetails.getUser());
     }
 
-    @CrossOrigin("*")
+    // 공개된 생드백 전체 리스트 보기
+    @CrossOrigin(exposedHeaders = "Authorization", originPatterns = "*")
     @GetMapping("/api/thandbagList")
     public List<ThandbagResponseDto> allSharedThandbag(@RequestParam int page, @RequestParam int size) {
         return mainService.showAllThandbag(page, size);
     }
 
-    @CrossOrigin("*")
+    // 검색된 생드백 보기
+    @CrossOrigin(exposedHeaders = "Authorization", originPatterns = "*")
     @GetMapping("/api/thandbag")
     public List<ThandbagResponseDto> searchThandbags(@RequestParam String keyword, @RequestParam int page, @RequestParam int size) {
         return mainService.searchThandbags(keyword, page, size);

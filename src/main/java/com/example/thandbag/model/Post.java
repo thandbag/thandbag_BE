@@ -35,16 +35,19 @@ public class Post extends Timestamped {
     @Column
     private Category category;
 
+    @Column
+    private int totalHitCount;
 
     //api 작성시 추가된 부분
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL)
     List<PostImg> imgList;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     private List<Comment> commentList;
 
     public void closePost() {
         this.closed = true;
     }
+    public void updateTotalHit(int totalHitCount) { this.totalHitCount = totalHitCount;}
 
 }

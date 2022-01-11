@@ -1,6 +1,7 @@
 package com.example.thandbag.controller;
 
-import com.example.thandbag.dto.PostCommentDto;
+import com.example.thandbag.dto.comment.PostCommentDto;
+import com.example.thandbag.dto.comment.ShowCommentDto;
 import com.example.thandbag.security.UserDetailsImpl;
 import com.example.thandbag.service.CommentService;
 import lombok.RequiredArgsConstructor;
@@ -13,21 +14,24 @@ public class CommentController {
 
     private final CommentService commentService;
 
-    @CrossOrigin("*")
+    // 생드백에 댓글 달기
+    @CrossOrigin(exposedHeaders = "Authorization", originPatterns = "*")
     @PostMapping("/api/{postId}/newComment")
     public PostCommentDto postComment(@PathVariable long postId, @RequestBody String comment, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return commentService.postComment(postId, comment, userDetails);
     }
 
-    @CrossOrigin("*")
+    // 댓글 삭제하기
+    @CrossOrigin(exposedHeaders = "Authorization", originPatterns = "*")
     @DeleteMapping("/api/uncomment/{commentId}")
     public void deleteComment(@PathVariable long commentId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         commentService.deleteComment(commentId, userDetails.getUser());
     }
 
-    @CrossOrigin("*")
+    // 댓글에 좋아요 누르기
+    @CrossOrigin(exposedHeaders = "Authorization", originPatterns = "*")
     @PostMapping("/api/{commentId}/like")
-    public void likeComment(@PathVariable long commentId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        commentService.likeComment(commentId, userDetails);
+    public ShowCommentDto likeComment(@PathVariable long commentId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return commentService.likeComment(commentId, userDetails);
     }
 }
