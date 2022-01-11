@@ -51,6 +51,10 @@ public class Post extends Timestamped {
     public void closePost() {
         this.closed = true;
     }
-    public void updateTotalHit(int totalHitCount) { this.totalHitCount = totalHitCount;}
 
+    public void updateTotalHit(int totalHitCount) {
+        synchronized (this) {
+            this.totalHitCount += totalHitCount;
+        }
+    }
 }
