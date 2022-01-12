@@ -28,7 +28,7 @@ public class ThandbagDetailController {
     @CrossOrigin(exposedHeaders = "Authorization", originPatterns = "*")
     @DeleteMapping("/api/thandbag/{postId}")
     public void removeThandbag (@PathVariable int postId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        thandbagDetailService.removeThandbag(postId, userDetails);
+        thandbagDetailService.removeThandbag(postId, userDetails.getUser());
     }
 
     // 생드백 터뜨리기

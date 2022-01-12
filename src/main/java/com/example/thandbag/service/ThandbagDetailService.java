@@ -9,7 +9,6 @@ import com.example.thandbag.dto.post.PunchThangbagResponseDto;
 import com.example.thandbag.dto.post.ThandbagResponseDto;
 import com.example.thandbag.model.*;
 import com.example.thandbag.repository.*;
-import com.example.thandbag.security.UserDetailsImpl;
 import com.example.thandbag.timeconversion.TimeConversion;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -28,7 +27,6 @@ public class ThandbagDetailService {
     private final PostRepository postRepository;
     private final LvImgRepository lvImgRepository;
     private final CommentLikeRepository commentLikeRepository;
-    private final UserRepository userRepository;
     private final AlarmRepository alarmRepository;
     private final RedisTemplate redisTemplate;
     private final ChannelTopic channelTopic;
@@ -85,9 +83,8 @@ public class ThandbagDetailService {
 
     // 생드백 삭제
     @Transactional
-    public void removeThandbag(long postId, UserDetailsImpl userDetails) {
+    public void removeThandbag(long postId, User user) {
         postRepository.deleteById(postId);
-        User user = userRepository.getById(userDetails.getUser().getId());
         user.setTotalCount(user.getTotalCount() - 1);
 
         //leveldown 및 알림 메시지
