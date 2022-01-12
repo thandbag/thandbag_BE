@@ -35,7 +35,6 @@ public class CommentService {
                 .user(userDetails.getUser())
                 .post(postRepository.getById(postId))
                 .build();
-        postRepository.getById(postId).getCommentList().add(comment);
         comment = commentRepository.save(comment);
 
         // 생드백+잽 수 count
