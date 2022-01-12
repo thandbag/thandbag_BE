@@ -1,6 +1,7 @@
 package com.example.thandbag.model;
 
 import com.example.thandbag.Enum.Category;
+import com.example.thandbag.dto.post.HitCountDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -51,6 +52,12 @@ public class Post extends Timestamped {
     public void closePost() {
         this.closed = true;
     }
-    public void updateTotalHit(int totalHitCount) { this.totalHitCount = totalHitCount;}
 
+    public void updateTotalHit(HitCountDto hitCountDto) {
+        synchronized (this) {
+            System.out.println(hitCountDto.getNewHitCount() - hitCountDto.getPrevHitCount());
+            this.totalHitCount += (hitCountDto.getNewHitCount() - hitCountDto.getPrevHitCount());
+            System.out.println("totalHitCount:" + this.totalHitCount);
+        }
+    }
 }

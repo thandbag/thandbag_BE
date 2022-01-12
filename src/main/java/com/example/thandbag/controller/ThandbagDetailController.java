@@ -1,6 +1,7 @@
 package com.example.thandbag.controller;
 
 import com.example.thandbag.dto.post.BestUserDto;
+import com.example.thandbag.dto.post.HitCountDto;
 import com.example.thandbag.dto.post.PunchThangbagResponseDto;
 import com.example.thandbag.dto.post.ThandbagResponseDto;
 import com.example.thandbag.security.UserDetailsImpl;
@@ -33,15 +34,15 @@ public class ThandbagDetailController {
     // 생드백 터뜨리기
     @CrossOrigin(exposedHeaders = "Authorization", originPatterns = "*")
     @PostMapping("/api/thandbag")
-    public List<BestUserDto> completeThandbag(@RequestParam long postId, @RequestBody int totalHitCount) {
-        return thandbagDetailService.completeThandbag(postId, totalHitCount);
+    public List<BestUserDto> completeThandbag(@RequestParam long postId, @RequestBody HitCountDto hitCountDto) {
+        return thandbagDetailService.completeThandbag(postId, hitCountDto);
     }
 
     // 생드백 때리기
     @CrossOrigin(exposedHeaders = "Authorization", originPatterns = "*")
     @PostMapping("/api/thandbag/punch/{postId}")
-    public void punchThandBag(@PathVariable Long postId, @RequestBody int totalHitCount) {
-        thandbagDetailService.updateTotalPunch(postId, totalHitCount);
+    public void punchThandBag(@PathVariable Long postId, @RequestBody HitCountDto hitCountDto) {
+        thandbagDetailService.updateTotalPunch(postId, hitCountDto);
     }
 
     // 생드백 때리기 페이지로 이동
