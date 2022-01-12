@@ -1,11 +1,9 @@
 package com.example.thandbag.dto.mypage;
 
 import com.example.thandbag.Enum.Category;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
+@Builder
 @Setter
 @Getter
 @NoArgsConstructor

@@ -35,7 +35,6 @@ public class CommentService {
                 .user(userDetails.getUser())
                 .post(postRepository.getById(postId))
                 .build();
-        postRepository.getById(postId).getCommentList().add(comment);
         comment = commentRepository.save(comment);
 
         // 생드백+잽 수 count
@@ -114,7 +113,10 @@ public class CommentService {
                 .build();
 
         // redis로 알림메시지 pub
-        redisTemplate.convertAndSend(channelTopic.getTopic(), alarmResponseDto);
+        // 단, 게시글 작성자와 댓글 작성자가 일치할 경우는 제외
+        if (!alarmResponseDto.getAlarmTargetId().equals(postOwner.getId())) {
+            redisTemplate.convertAndSend(channelTopic.getTopic(), alarmResponseDto);
+        }
         userRepository.save(user);
 
         return new PostCommentDto(

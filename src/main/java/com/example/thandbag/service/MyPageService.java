@@ -1,25 +1,30 @@
 package com.example.thandbag.service;
 
-import com.example.thandbag.dto.mypage.*;
+import com.example.thandbag.dto.mypage.MyPostListDto;
+import com.example.thandbag.dto.mypage.MyPageResponseDto;
 import com.example.thandbag.dto.mypage.profile.ProfileUpdateRequestDto;
 import com.example.thandbag.dto.mypage.profile.ProfileUpdateResponseDto;
 import com.example.thandbag.model.Post;
-import com.example.thandbag.model.PostImg;
 import com.example.thandbag.model.ProfileImg;
 import com.example.thandbag.model.User;
-import com.example.thandbag.repository.*;
+import com.example.thandbag.repository.PostImgRepository;
+import com.example.thandbag.repository.PostRepository;
+import com.example.thandbag.repository.ProfileImgRepository;
+import com.example.thandbag.repository.UserRepository;
 import com.example.thandbag.security.UserDetailsImpl;
 import com.example.thandbag.timeconversion.TimeConversion;
 import com.example.thandbag.validator.UserValidator;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -31,29 +36,6 @@ public class MyPageService {
     private final PasswordEncoder passwordEncoder;
     private final ProfileImgRepository profileImgRepository;
     private final UserValidator userValidator;
-
-    // 마이페이지 접속
-    public MyPageResponseDto getMyPage(UserDetailsImpl userDetails) {
-        User user = userDetails.getUser();
-        Long userId = user.getId();
-        String nickname = user.getNickname();
-        String profileImgUrl = user.getProfileImg().getProfileImgUrl();
-        int level = user.getLevel();
-        List<MyPagePostDto> myPostDtoList = new ArrayList<>();
-        List<Post> myPostList = postRepository.findAllByUser(user);
-
-        for (Post post : myPostList) {
-            MyPagePostDto myPagePostDto = new MyPagePostDto(
-                    post.getId(),
-                    post.getTitle(),
-                    post.getContent(),
-                    TimeConversion.timeConversion(post.getCreatedAt()),
-                    post.getCategory().getCategory()
-            );
-            myPostDtoList.add(myPagePostDto);
-        }
-        return new MyPageResponseDto(userId, nickname, profileImgUrl, level, myPostDtoList);
-    }
 
     // 회원정보 수정
     @Transactional
@@ -96,33 +78,39 @@ public class MyPageService {
     }
 
     // 내가 작성한 생드백 리스트
-    public Page<MyPostListDto> getMyPostList(int pageNo, int sizeNo, UserDetailsImpl userDetails) {
+    public MyPageResponseDto getMyPostList(int pageNo, int sizeNo, UserDetailsImpl userDetails) {
 
         User user = userDetails.getUser();
-        int level = user.getLevel();
 
-        Pageable pageable = PageRequest.of(pageNo, sizeNo);
-        Page<Post> myPostPage = postRepository.findAllByUserOrderByCreatedAtDesc(user, pageable);
+        Pageable sortedByModifiedAtDesc = PageRequest.of(pageNo, sizeNo, Sort.by("modifiedAt").descending());
+        List<MyPostListDto> postDtoList = new ArrayList<>();
+        List<Post> myPostPage = postRepository.findAllByUserOrderByCreatedAtDesc(user, sortedByModifiedAtDesc).getContent();
+        for (Post post: myPostPage) {
+            MyPostListDto postDto = MyPostListDto.builder()
+                    .postId(post.getId())
+                    .userId(post.getUser().getId())
+                    .nickname(post.getUser().getNickname())
+                    .level(post.getUser().getLevel())
+                    .title(post.getTitle())
+                    .content(post.getContent())
+                    .createdAt(TimeConversion.timeConversion(post.getCreatedAt()))
+                    .imgUrl(post.getImgList().size()!=0 ? post.getImgList().get(0).getPostImgUrl() : "")
+                    .closed(post.getClosed())
+                    .category(post.getCategory())
+                    .mbti(post.getUser().getMbti())
+                    .build();
+            postDtoList.add(postDto);
+        }
 
-        // Page<Post> 를 Page<Dto>로 바꾸는 로직
-        return myPostPage.map(post -> {
-            Optional<PostImg> postImg = postImgRepository.findByPost(post);
-            String postImgUrl = "";
-            if(postImg.isPresent())
-               postImgUrl = postImg.get().getPostImgUrl();
-            MyPostListDto dto = new MyPostListDto();
-            dto.setPostId(post.getId());
-            dto.setUserId(user.getId());
-            dto.setNickname(user.getNickname());
-            dto.setLevel(level);
-            dto.setTitle(post.getTitle());
-            dto.setContent(post.getContent());
-            dto.setCreatedAt(TimeConversion.timeConversion(post.getCreatedAt()));
-            dto.setImgUrl(postImgUrl);
-            dto.setClosed(post.getClosed());
-            dto.setCategory(post.getCategory());
-            dto.setMbti(user.getMbti());
-            return dto;
-        });
+        MyPageResponseDto responseDto = MyPageResponseDto.builder()
+                .userId(user.getId())
+                .nickname(user.getNickname())
+                .profileImgUrl(user.getProfileImg().getProfileImgUrl())
+                .level(user.getLevel())
+                .mbti(user.getMbti())
+                .myPostList(postDtoList)
+                .build();
+
+        return responseDto;
     }
 }

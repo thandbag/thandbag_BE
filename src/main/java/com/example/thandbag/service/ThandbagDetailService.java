@@ -4,6 +4,7 @@ import com.example.thandbag.Enum.AlarmType;
 import com.example.thandbag.dto.alarm.AlarmResponseDto;
 import com.example.thandbag.dto.comment.ShowCommentDto;
 import com.example.thandbag.dto.post.BestUserDto;
+import com.example.thandbag.dto.post.HitCountDto;
 import com.example.thandbag.dto.post.PunchThangbagResponseDto;
 import com.example.thandbag.dto.post.ThandbagResponseDto;
 import com.example.thandbag.model.*;
@@ -134,10 +135,10 @@ public class ThandbagDetailService {
     }
 
     //게시자가 작성한 생드백을 완료로 전환
-    public List<BestUserDto> completeThandbag(long postId, int totalHitCount) {
+    public List<BestUserDto> completeThandbag(long postId, HitCountDto hitCountDto) {
         Post post = postRepository.findById(postId).orElseThrow(
                 () -> new NullPointerException("게시글이 없습니다"));
-        post.updateTotalHit(totalHitCount);
+        post.updateTotalHit(hitCountDto);
         post.closePost();
 
         postRepository.save(post);
@@ -188,9 +189,10 @@ public class ThandbagDetailService {
     }
 
     // 생드백 맞은수 업데이트
-    public void updateTotalPunch(Long postId, int totalHitCount) {
+    // 프론트엔드에서 샌드백 터뜨리기를 진입했을때, 떄리기 전의 전체 hit수와 뒤로가기를 눌렀을때의 전체hit수를 보내주면 처리가능
+    public void updateTotalPunch(Long postId, HitCountDto hitCountDto) {
         Post post = postRepository.getById(postId);
-        post.updateTotalHit(totalHitCount);
+        post.updateTotalHit(hitCountDto);
         postRepository.save(post);
     }
 
