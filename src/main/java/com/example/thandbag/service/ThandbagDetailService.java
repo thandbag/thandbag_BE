@@ -58,19 +58,17 @@ public class ThandbagDetailService {
         }
 
         // 얼빡배너가 상태에 따라 변화함
-        String lvImgTitle = "";
+        String lvImgTitle = "얼빡배너 기본";
 
-        // 생드백 터졌을 경우
-        if (post.getClosed()) {
-            lvImgTitle = "터짐";
-        }
-
-        // TotalHitCount에 따라 변경됨
-        if (post.getTotalHitCount() < 10) {
-            lvImgTitle = "기본";
+        if (!post.getClosed()) {
+            // TotalHitCount에 따라 변경됨
+            if (post.getTotalHitCount() >= 10) {
+                lvImgTitle = "얼빡배너 쳐맞음";
+            }
         } else {
-            lvImgTitle = "쳐맞음";
+            lvImgTitle = "얼빡배너 터짐";
         }
+
 
         String bannerLv = lvImgRepository.findByTitleAndLevel(lvImgTitle, post.getUser().getLevel()).getLvImgUrl();
 

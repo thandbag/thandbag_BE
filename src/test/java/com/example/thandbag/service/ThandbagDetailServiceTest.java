@@ -2,7 +2,6 @@ package com.example.thandbag.service;
 
 import com.example.thandbag.Enum.Auth;
 import com.example.thandbag.Enum.Category;
-import com.example.thandbag.dto.post.BestUserDto;
 import com.example.thandbag.dto.post.ThandbagRequestDto;
 import com.example.thandbag.dto.post.ThandbagResponseDto;
 import com.example.thandbag.model.*;
@@ -22,9 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -98,6 +96,7 @@ class ThandbagDetailServiceTest {
                 .share(thandbagRequestDto.isShare())
                 .user(user)
                 .commentList(commentList)
+                .totalHitCount(0)
                 .build();
         post.setCreatedAt(LocalDateTime.now());
 
@@ -120,8 +119,9 @@ class ThandbagDetailServiceTest {
         comment.setCreatedAt(LocalDateTime.now());
         when(postRepository.findById(post.getId()))
                 .thenReturn(Optional.of(post));
-        when(lvImgRepository.findByTitleAndLevel("얼빡배너 기본",1))
+        when(lvImgRepository.findByTitleAndLevel("얼빡배너 터짐",1))
                 .thenReturn(new LvImg("asdf", "asdf", 1));
+
         thandbagDetailService = new ThandbagDetailService(postRepository, lvImgRepository, commentLikeRepository, alarmRepository, redisTemplate, channelTopic);
         ThandbagResponseDto thandbagResponseDto = thandbagDetailService.getOneThandbag(post.getId(), user);
 
