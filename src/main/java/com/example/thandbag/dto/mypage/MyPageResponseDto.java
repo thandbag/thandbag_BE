@@ -1,12 +1,11 @@
 package com.example.thandbag.dto.mypage;
 
-
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 
+@Builder
+@Setter
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -16,6 +15,7 @@ public class MyPageResponseDto {
     private String nickname;
     private String profileImgUrl;
     private int level;
-    private List<MyPagePostDto> myPostList;
+    private String mbti;
+    private List<MyPostListDto> myPostList;
 
 }

@@ -1,13 +1,11 @@
 package com.example.thandbag.controller;
 
 import com.example.thandbag.dto.mypage.MyPageResponseDto;
-import com.example.thandbag.dto.mypage.MyPostListDto;
 import com.example.thandbag.dto.mypage.profile.ProfileUpdateRequestDto;
 import com.example.thandbag.dto.mypage.profile.ProfileUpdateResponseDto;
 import com.example.thandbag.security.UserDetailsImpl;
 import com.example.thandbag.service.MyPageService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,13 +14,6 @@ import org.springframework.web.bind.annotation.*;
 public class MyPageController {
 
     private final MyPageService myPageService;
-
-    // 마이페이지 메인화면
-    @CrossOrigin(exposedHeaders = "Authorization", originPatterns = "*")
-    @GetMapping("/mypage")
-    public MyPageResponseDto getMyPage(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return myPageService.getMyPage(userDetails);
-    }
 
     // 마이페이지 -> 회원정보 수정
     @CrossOrigin(exposedHeaders = "Authorization", originPatterns = "*")
@@ -34,7 +25,7 @@ public class MyPageController {
     // 마이페이지 -> 내가 쓴 게시글
     @CrossOrigin(exposedHeaders = "Authorization", originPatterns = "*")
     @GetMapping("/api/myThandbag")
-    public Page<MyPostListDto> getMyPostList(@RequestParam int pageNo, @RequestParam int sizeNo, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public MyPageResponseDto getMyPostList(@RequestParam int pageNo, @RequestParam int sizeNo, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return myPageService.getMyPostList(pageNo, sizeNo, userDetails);
     }
 }

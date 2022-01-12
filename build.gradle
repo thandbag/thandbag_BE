@@ -61,6 +61,9 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 	implementation group: 'it.ozimov', name: 'embedded-redis', version: '0.7.2'
 	testImplementation 'it.ozimov:embedded-redis:0.7.2'
+
+	// Pusher
+	implementation 'com.pusher:pusher-http-java:1.0.0'
 }
 
 
