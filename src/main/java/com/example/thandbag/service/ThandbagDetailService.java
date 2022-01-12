@@ -57,8 +57,22 @@ public class ThandbagDetailService {
             showCommentDtoList.add(showCommentDto);
         }
 
-        //얼빡배너
-        String bannerLv = lvImgRepository.findByTitleAndLevel("얼빡배너 기본", post.getUser().getLevel()).getLvImgUrl();
+        // 얼빡배너가 상태에 따라 변화함
+        String lvImgTitle = "";
+
+        // 생드백 터졌을 경우
+        if (post.getClosed()) {
+            lvImgTitle = "터짐";
+        }
+
+        // TotalHitCount에 따라 변경됨
+        if (post.getTotalHitCount() < 10) {
+            lvImgTitle = "기본";
+        } else {
+            lvImgTitle = "쳐맞음";
+        }
+
+        String bannerLv = lvImgRepository.findByTitleAndLevel(lvImgTitle, post.getUser().getLevel()).getLvImgUrl();
 
         return ThandbagResponseDto.builder()
                 .userId(post.getUser().getId())
