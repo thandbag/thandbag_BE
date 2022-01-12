@@ -41,10 +41,9 @@ public class MainService {
 
     // 생드백 생성
     @Transactional
-    public ThandbagResponseDto createThandbag(ThandbagRequestDto thandbagRequestDto, UserDetailsImpl userDetails) {
+    public ThandbagResponseDto createThandbag(ThandbagRequestDto thandbagRequestDto, User user) {
 
         // 헌재 사용자 가져오기
-        User user = userDetails.getUser();
         List<PostImg> postImgList = new ArrayList<>();
         List<String> fileUrlList = new ArrayList<>();
 

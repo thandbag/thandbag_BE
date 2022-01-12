@@ -134,9 +134,8 @@ public class CommentService {
 
     // 잽 삭제
     @Transactional
-    public void deleteComment(long commentId, UserDetailsImpl userDetails) {
+    public void deleteComment(long commentId, User user) {
         commentRepository.deleteById(commentId);
-        User user = userRepository.getById(userDetails.getUser().getId());
         user.minusTotalPostsAndComments();
 
         //leveldown

@@ -4,10 +4,7 @@ import com.example.thandbag.Enum.Auth;
 import com.example.thandbag.Enum.Category;
 import com.example.thandbag.model.Post;
 import com.example.thandbag.model.User;
-import com.example.thandbag.repository.CommentLikeRepository;
-import com.example.thandbag.repository.CommentRepository;
-import com.example.thandbag.repository.PostRepository;
-import com.example.thandbag.repository.UserRepository;
+import com.example.thandbag.repository.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Order;
@@ -15,6 +12,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.listener.ChannelTopic;
 
 import java.util.ArrayList;
 
@@ -32,6 +31,10 @@ class CommentServiceTest {
     UserRepository userRepository;
     @Mock
     CommentLikeRepository commentLikeRepository;
+    @Mock
+    AlarmRepository alarmRepository;
+    RedisTemplate redisTemplate;
+    ChannelTopic channelTopic;
     CommentService commentService;
 
     private String comment;
@@ -51,7 +54,6 @@ class CommentServiceTest {
                 .mbti("INTP")
                 .totalCount(1)
                 .level(1)
-                .lvImgId(1)
                 .auth(Auth.USER).build();
         post = Post.builder()
                 .id(1L)
@@ -64,7 +66,8 @@ class CommentServiceTest {
                 .user(user)
                 .commentList(new ArrayList<>())
                 .build();
-        commentService = new CommentService(commentRepository, postRepository, userRepository, commentLikeRepository);
+        commentService = new CommentService(commentRepository, postRepository,
+                userRepository, commentLikeRepository, alarmRepository, redisTemplate, channelTopic);
     }
 
     @DisplayName("댓글 작성")

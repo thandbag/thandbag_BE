@@ -3,20 +3,19 @@ package com.example.thandbag.service;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.example.thandbag.Enum.Auth;
 import com.example.thandbag.Enum.Category;
-import com.example.thandbag.dto.ThandbagRequestDto;
-import com.example.thandbag.dto.ThandbagResponseDto;
+import com.example.thandbag.dto.post.ThandbagRequestDto;
 import com.example.thandbag.model.*;
-import com.example.thandbag.repository.LvImgRepository;
-import com.example.thandbag.repository.PostImgRepository;
-import com.example.thandbag.repository.PostRepository;
-import com.example.thandbag.repository.UserRepository;
+import com.example.thandbag.repository.*;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.listener.ChannelTopic;
 
 import javax.persistence.*;
 
+import java.nio.channels.Channel;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +37,10 @@ class MainServiceTest {
     UserRepository userRepository;
     @Mock
     LvImgRepository lvImgRepository;
-    //  private final PostService postService;
+    @Mock
+    AlarmRepository alarmRepository;
+    RedisTemplate redisTemplate;
+    ChannelTopic channelTopic;
 
     private Long id;
     private String title;
@@ -64,10 +66,17 @@ class MainServiceTest {
                 .mbti("INTP")
                 .totalCount(0)
                 .level(1)
-                .lvImgId(1)
+                .profileImg(new ProfileImg(1L, "asdf"))
                 .auth(Auth.USER).build();
         category = Category.LOVE;
-        mainService = new MainService(postRepository, postImgRepository, userRepository, lvImgRepository, new PostService(new AmazonS3Client()));
+        mainService = new MainService(postRepository,
+                postImgRepository,
+                userRepository,
+                lvImgRepository,
+                new ImageService(new AmazonS3Client()),
+                alarmRepository,
+                redisTemplate,
+                channelTopic);
 
     }
 
@@ -138,8 +147,6 @@ class MainServiceTest {
                     .thenReturn(allposts);
             when(userRepository.getById(1L))
                     .thenReturn(post.getUser());
-            when(lvImgRepository.findById(1L))
-                    .thenReturn(Optional.of(new LvImg()));
             assertEquals(1, mainService.searchThandbags("노잼", 0, 1).size());
         }
 
