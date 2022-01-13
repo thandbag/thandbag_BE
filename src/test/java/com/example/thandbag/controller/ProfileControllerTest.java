@@ -1,6 +1,7 @@
 package com.example.thandbag.controller;
 
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -9,7 +10,7 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -21,12 +22,11 @@ public class ProfileControllerTest {
     @Autowired
     private TestRestTemplate restTemplate;
 
+    @DisplayName("ActiveProfile 없음")
     @Test
-    public void profile_시큐리티인증제외_확인() throws Exception {
-        String expected = "alpha";
-
+    public void allowSecurity() throws Exception {
         ResponseEntity<String> response = restTemplate.getForEntity("/profile", String.class);
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).isEqualTo(expected);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("alpha", response.getBody());
     }
 }

@@ -1,13 +1,12 @@
 package com.example.thandbag.service;
 
-import com.example.thandbag.dto.mypage.MyPostListDto;
 import com.example.thandbag.dto.mypage.MyPageResponseDto;
+import com.example.thandbag.dto.mypage.MyPostListDto;
 import com.example.thandbag.dto.mypage.profile.ProfileUpdateRequestDto;
 import com.example.thandbag.dto.mypage.profile.ProfileUpdateResponseDto;
 import com.example.thandbag.model.Post;
 import com.example.thandbag.model.ProfileImg;
 import com.example.thandbag.model.User;
-import com.example.thandbag.repository.PostImgRepository;
 import com.example.thandbag.repository.PostRepository;
 import com.example.thandbag.repository.ProfileImgRepository;
 import com.example.thandbag.repository.UserRepository;
@@ -18,7 +17,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -30,10 +28,8 @@ import java.util.Optional;
 @Service
 public class MyPageService {
 
-    private final PostImgRepository postImgRepository;
     private final UserRepository userRepository;
     private final PostRepository postRepository;
-    private final PasswordEncoder passwordEncoder;
     private final ProfileImgRepository profileImgRepository;
     private final UserValidator userValidator;
 

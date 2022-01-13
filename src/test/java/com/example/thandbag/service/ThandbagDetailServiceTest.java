@@ -2,6 +2,8 @@ package com.example.thandbag.service;
 
 import com.example.thandbag.Enum.Auth;
 import com.example.thandbag.Enum.Category;
+import com.example.thandbag.dto.post.BestUserDto;
+import com.example.thandbag.dto.post.HitCountDto;
 import com.example.thandbag.dto.post.ThandbagRequestDto;
 import com.example.thandbag.dto.post.ThandbagResponseDto;
 import com.example.thandbag.model.*;
@@ -40,9 +42,11 @@ class ThandbagDetailServiceTest {
     UserRepository userRepository;
     @Mock
     AlarmRepository alarmRepository;
-
+    @Mock
     RedisTemplate redisTemplate;
+    @Mock
     ChannelTopic channelTopic;
+
     ThandbagDetailService thandbagDetailService;
 
     private Long id;
@@ -141,48 +145,46 @@ class ThandbagDetailServiceTest {
         assertEquals(0, user.getTotalCount());
     }
 
-//    @DisplayName("샌드백 떠트리기")
-//    @Test
-//    @Order(3)
-//    void completeThandbag() {
-//
-//        post.getCommentList().add(comment);
-//        comment.setCreatedAt(LocalDateTime.now());
-//
-//        User user1 = User.builder()
-//                .id(2L)
-//                .username("hh@hoho.haha")
-//                .password("1234")
-//                .nickname("뀨류잼")
-//                .mbti("ESFJ")
-//                .totalCount(1)
-//                .level(1)
-//                .profileImg(new ProfileImg(2L, "asdf"))
-//                .auth(Auth.USER).build();
-//
-//        Comment comment2 = Comment.builder()
-//                .comment("테케 레알 꿀잼")
-//                .likedByWriter(true)
-//                .user(user1)
-//                .post(post)
-//                .id(2L)
-//                .build();
-//
-//        post.getCommentList().add(comment2);
-//        comment2.setCreatedAt(LocalDateTime.now());
-//
-//        when(postRepository.findById(post.getId()))
-//                .thenReturn(Optional.of(post));
-//        when(commentRepository.getById(2L))
-//                .thenReturn(comment2);
-//        //channelTopic = new ChannelTopic("aside");
-//        when(channelTopic.getTopic())
-//                .thenReturn("aside");
-//        thandbagDetailService = new ThandbagDetailService(postRepository, lvImgRepository, commentLikeRepository, alarmRepository, redisTemplate, channelTopic);
-//        List<BestUserDto> bestUserDtoList = thandbagDetailService.completeThandbag(post.getId(),10);
-//
-//        assertEquals(1, bestUserDtoList.size());
-//        assertEquals("뀨류잼", bestUserDtoList.get(0).getNickname());
-//        assertEquals("ESFJ", bestUserDtoList.get(0).getMbti());
-//    }
+    @DisplayName("샌드백 떠트리기")
+    @Test
+    @Order(3)
+    void completeThandbag() {
+
+        post.getCommentList().add(comment);
+        comment.setCreatedAt(LocalDateTime.now());
+
+        User user1 = User.builder()
+                .id(2L)
+                .username("hh@hoho.haha")
+                .password("1234")
+                .nickname("뀨류잼")
+                .mbti("ESFJ")
+                .totalCount(1)
+                .level(1)
+                .profileImg(new ProfileImg(2L, "asdf"))
+                .auth(Auth.USER).build();
+
+        Comment comment2 = Comment.builder()
+                .comment("테케 레알 꿀잼")
+                .likedByWriter(true)
+                .user(user1)
+                .post(post)
+                .id(2L)
+                .build();
+
+        post.getCommentList().add(comment2);
+        comment2.setCreatedAt(LocalDateTime.now());
+
+        when(postRepository.findById(post.getId()))
+                .thenReturn(Optional.of(post));
+        when(channelTopic.getTopic())
+                .thenReturn("aside");
+        thandbagDetailService = new ThandbagDetailService(postRepository, lvImgRepository, commentLikeRepository, alarmRepository, redisTemplate, channelTopic);
+        HitCountDto hitCountDto = new HitCountDto(5, 10);
+        List<BestUserDto> bestUserDtoList = thandbagDetailService.completeThandbag(post.getId(),hitCountDto);
+
+        assertEquals(1, bestUserDtoList.size());
+        assertEquals("뀨류잼", bestUserDtoList.get(0).getNickname());
+        assertEquals("ESFJ", bestUserDtoList.get(0).getMbti());
+    }
 }

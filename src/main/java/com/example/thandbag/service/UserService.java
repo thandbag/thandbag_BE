@@ -31,7 +31,7 @@ public class UserService {
 
     // 회원가입
     @Transactional
-    public void userRegister(SignupRequestDto signupRequestDto) {
+    public String userRegister(SignupRequestDto signupRequestDto) {
 
         Optional<User> foundUsername = userRepository.findByUsername(signupRequestDto.getUsername());
         Optional<User> foundNickname = userRepository.findByNickname(signupRequestDto.getNickname());
@@ -57,6 +57,8 @@ public class UserService {
         user.setProfileImg(profileImg);
         user.setLevel(1);
         userRepository.save(user);
+
+        return "회원가입 성공";
     }
 
     // 로그인

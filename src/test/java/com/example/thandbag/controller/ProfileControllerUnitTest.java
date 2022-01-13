@@ -1,18 +1,19 @@
 package com.example.thandbag.controller;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.env.MockEnvironment;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ProfileControllerUnitTest {
 
+    @DisplayName("RealProfile 조회")
     @Test
-    public void real_profile_조회() {
+    public void getRealProfile() {
         //given
-        String expectedProfile = "real";
         MockEnvironment env = new MockEnvironment();
-        env.addActiveProfile(expectedProfile);
+        env.addActiveProfile("real");
         env.addActiveProfile("oauth");
         env.addActiveProfile("real-db");
 
@@ -22,16 +23,16 @@ public class ProfileControllerUnitTest {
         String profile = controller.profile();
 
         //then
-        assertThat(profile).isEqualTo(expectedProfile);
+        assertEquals("real", profile);
     }
 
+    @DisplayName("RealProfile 조회안됨")
     @Test
-    public void real_profile_조회안됨() {
+    public void getRealProfileFail() {
         //given
-        String expectedProfile = "oauth";
         MockEnvironment env = new MockEnvironment();
 
-        env.addActiveProfile(expectedProfile);
+        env.addActiveProfile("oauth");
 
         ProfileController controller = new ProfileController(env);
 
@@ -39,13 +40,13 @@ public class ProfileControllerUnitTest {
         String profile = controller.profile();
 
         //then
-        assertThat(profile).isEqualTo(expectedProfile);
+        assertEquals("oauth", profile);
     }
 
+    @DisplayName("ActiveProfile 없음")
     @Test
-    public void active_profile_없음() {
+    public void noActiveProfile() {
         //given
-        String expectedProfile = "default";
         MockEnvironment env = new MockEnvironment();
         ProfileController controller = new ProfileController(env);
 
@@ -53,6 +54,6 @@ public class ProfileControllerUnitTest {
         String profile = controller.profile();
 
         //then
-        assertThat(profile).isEqualTo(expectedProfile);
+        assertEquals("default", profile);
     }
 }
