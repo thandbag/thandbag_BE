@@ -57,7 +57,7 @@ public class AlarmService {
                         .postId(alarm.getPostId())
                         .build();
                 alarmResponseDtoList.add(alarmDto);
-                // 댓글 선택 받았을 때}
+                // 레벨업 했을 때
             } else {
                 AlarmResponseDto alarmDto = AlarmResponseDto.builder()
                         .alarmId(alarm.getId())
@@ -107,7 +107,7 @@ public class AlarmService {
                     .isRead(alarm.getIsRead())
                     .postId(alarm.getPostId())
                     .build();
-            // 댓글 선택 받았을 때
+            // 레벨업 했을 때
         } else {
             alarmDto = AlarmResponseDto.builder()
                     .alarmId(alarm.getId())

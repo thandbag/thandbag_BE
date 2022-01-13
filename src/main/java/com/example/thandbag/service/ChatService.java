@@ -57,8 +57,6 @@ public class ChatService {
     // 채팅방에 메시지 발송
     public void sendChatMessage(ChatMessageDto chatMessageDto) {
         String nickname = chatMessageDto.getSender();
-        System.out.println("메시지 sender : " + chatMessageDto.getSender());
-        System.out.println("메시지 메시지 : " + chatMessageDto.getMessage());
         chatMessageDto.setUserCount(chatRedisRepository.getUserCount(chatMessageDto.getRoomId()));
         if (ChatMessageDto.MessageType.ENTER.equals(chatMessageDto.getType())) {
             chatMessageDto.setMessage(chatMessageDto.getSender() + "님이 방에 입장했습니다.");
@@ -185,10 +183,7 @@ public class ChatService {
     @Transactional
     public List<ChatHistoryResponseDto> getTotalChatContents(String roomId) {
         ChatRoom room = chatRoomRepository.getById(roomId);
-        System.out.println("roomId : " + roomId);
-        System.out.println(room.getId());
         List<ChatContent> chatContentList = chatContentRepository.findAllByChatRoomOrderByCreatedAtAsc(room);
-        System.out.println(chatContentList);
         List<ChatHistoryResponseDto> chatHistoryList = new ArrayList<>();
 //        DateTimeFormatter newFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");
         for (ChatContent chat : chatContentList) {

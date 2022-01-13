@@ -1,4 +1,4 @@
-package com.example.thandbag.service;
+package com.example.thandbag.config;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;

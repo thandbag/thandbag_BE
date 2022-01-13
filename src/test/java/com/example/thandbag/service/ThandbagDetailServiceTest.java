@@ -39,11 +39,16 @@ class ThandbagDetailServiceTest {
     @Mock
     CommentLikeRepository commentLikeRepository;
     @Mock
+    CommentRepository commentRepository;
+    @Mock
+    UserRepository userRepository;
+    @Mock
     AlarmRepository alarmRepository;
     @Mock
     RedisTemplate redisTemplate;
     @Mock
     ChannelTopic channelTopic;
+
     ThandbagDetailService thandbagDetailService;
 
     private Long id;
@@ -97,6 +102,7 @@ class ThandbagDetailServiceTest {
                 .share(thandbagRequestDto.isShare())
                 .user(user)
                 .commentList(commentList)
+                .totalHitCount(0)
                 .build();
         post.setCreatedAt(LocalDateTime.now());
 
@@ -128,7 +134,7 @@ class ThandbagDetailServiceTest {
         thandbagDetailService = new ThandbagDetailService(postRepository, lvImgRepository, commentLikeRepository, alarmRepository, redisTemplate, channelTopic);
         ThandbagResponseDto thandbagResponseDto = thandbagDetailService.getOneThandbag(post.getId(), user);
 
-        //return
+        //then
         assertNotNull(thandbagResponseDto);
         assertEquals(thandbagResponseDto.getUserId(), 1);
         assertEquals(1, thandbagResponseDto.getComments().size());
@@ -155,6 +161,7 @@ class ThandbagDetailServiceTest {
 
         post.getCommentList().add(comment);
         comment.setCreatedAt(LocalDateTime.now());
+
 
         //given
         HitCountDto hitCountDto = new HitCountDto(0, 10);
@@ -192,6 +199,7 @@ class ThandbagDetailServiceTest {
         List<BestUserDto> bestUserDtoList = thandbagDetailService.completeThandbag(post.getId(),hitCountDto);
 
         //then
+
         assertEquals(1, bestUserDtoList.size());
         assertEquals("뀨류잼", bestUserDtoList.get(0).getNickname());
         assertEquals("ESFJ", bestUserDtoList.get(0).getMbti());

@@ -24,11 +24,14 @@ public class UserValidator {
 
     public void checkValid(SignupRequestDto signupRequestDto) {
         // 공백 입력 관련 유효성 검사
-        if (signupRequestDto.getUsername().trim().equals("")) {
+        if (signupRequestDto.getUsername().equals("")) {
             throw new IllegalArgumentException("아이디는 필수 입력 값 입니다.");
         }
-        if (signupRequestDto.getPassword().trim().equals("")) {
+        if (signupRequestDto.getPassword().equals("")) {
             throw new IllegalArgumentException("비밀번호는 필수 입력 값 입니다.");
+        }
+        if (signupRequestDto.getNickname().equals("")) {
+            throw new IllegalArgumentException("닉네임은 필수 입력 값 입니다.");
         }
         if (signupRequestDto.getUsername().contains(" ")) {
             throw new IllegalArgumentException("아이디는 공백을 포함할 수 없습니다.");

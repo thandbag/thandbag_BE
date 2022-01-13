@@ -23,8 +23,7 @@ public class UserController {
     @CrossOrigin(exposedHeaders = "Authorization", originPatterns = "*")
     @PostMapping("/api/user/signup")
     public String userRegister(@RequestBody SignupRequestDto signupRequestDto){
-        userService.userRegister(signupRequestDto);
-        return "회원가입 성공";
+        return userService.userRegister(signupRequestDto);
     }
 
     // 로그인
