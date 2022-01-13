@@ -55,10 +55,10 @@ public class Post extends Timestamped {
     }
 
     public void updateTotalHit(HitCountDto hitCountDto) {
-        synchronized (this) {
+     //   synchronized (this) {
             System.out.println(hitCountDto.getNewHitCount() - hitCountDto.getPrevHitCount());
             this.totalHitCount += (hitCountDto.getNewHitCount() - hitCountDto.getPrevHitCount());
             System.out.println("totalHitCount:" + this.totalHitCount);
-        }
+    //    }
     }
 }

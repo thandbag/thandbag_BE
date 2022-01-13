@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -202,10 +203,11 @@ public class ThandbagDetailService {
 
     // 생드백 맞은수 업데이트
     // 프론트엔드에서 샌드백 터뜨리기를 진입했을때, 떄리기 전의 전체 hit수와 뒤로가기를 눌렀을때의 전체hit수를 보내주면 처리가능
+    @Transactional
     public void updateTotalPunch(Long postId, HitCountDto hitCountDto) {
-        Post post = postRepository.getById(postId);
-        post.updateTotalHit(hitCountDto);
-        postRepository.save(post);
+        Optional<Post> post = postRepository.findByIdForHitCount(postId);
+        post.get().updateTotalHit(hitCountDto);
+        postRepository.save(post.get());
     }
 
     //현재까지 맞은 수와 함께 생드백 불러오기(샌드백 때리기 페이지로 이동하기)

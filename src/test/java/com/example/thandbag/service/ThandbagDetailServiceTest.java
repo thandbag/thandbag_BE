@@ -23,8 +23,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -121,14 +123,18 @@ class ThandbagDetailServiceTest {
 
         post.getCommentList().add(comment);
         comment.setCreatedAt(LocalDateTime.now());
-        when(postRepository.findById(post.getId()))
-                .thenReturn(Optional.of(post));
-        when(lvImgRepository.findByTitleAndLevel("얼빡배너 터짐",1))
-                .thenReturn(new LvImg("asdf", "asdf", 1));
 
+        //given
+        given(postRepository.findById(post.getId()))
+                .willReturn(Optional.of(post));
+        given(lvImgRepository.findByTitleAndLevel("얼빡배너 기본",1))
+                .willReturn(new LvImg("asdf", "asdf", 1));
+
+        //when
         thandbagDetailService = new ThandbagDetailService(postRepository, lvImgRepository, commentLikeRepository, alarmRepository, redisTemplate, channelTopic);
         ThandbagResponseDto thandbagResponseDto = thandbagDetailService.getOneThandbag(post.getId(), user);
 
+        //then
         assertNotNull(thandbagResponseDto);
         assertEquals(thandbagResponseDto.getUserId(), 1);
         assertEquals(1, thandbagResponseDto.getComments().size());
@@ -141,7 +147,10 @@ class ThandbagDetailServiceTest {
     @Order(2)
     void removeThandbag() {
 
+        //when
         thandbagDetailService.removeThandbag(1, user);
+
+        //then
         assertEquals(0, user.getTotalCount());
     }
 
@@ -152,6 +161,10 @@ class ThandbagDetailServiceTest {
 
         post.getCommentList().add(comment);
         comment.setCreatedAt(LocalDateTime.now());
+
+
+        //given
+        HitCountDto hitCountDto = new HitCountDto(0, 10);
 
         User user1 = User.builder()
                 .id(2L)
@@ -175,13 +188,17 @@ class ThandbagDetailServiceTest {
         post.getCommentList().add(comment2);
         comment2.setCreatedAt(LocalDateTime.now());
 
-        when(postRepository.findById(post.getId()))
-                .thenReturn(Optional.of(post));
-        when(channelTopic.getTopic())
-                .thenReturn("aside");
+        given(postRepository.findById(post.getId()))
+                .willReturn(Optional.of(post));
+
+        given(channelTopic.getTopic())
+                .willReturn("aside");
+
+        //when
         thandbagDetailService = new ThandbagDetailService(postRepository, lvImgRepository, commentLikeRepository, alarmRepository, redisTemplate, channelTopic);
-        HitCountDto hitCountDto = new HitCountDto(5, 10);
         List<BestUserDto> bestUserDtoList = thandbagDetailService.completeThandbag(post.getId(),hitCountDto);
+
+        //then
 
         assertEquals(1, bestUserDtoList.size());
         assertEquals("뀨류잼", bestUserDtoList.get(0).getNickname());
