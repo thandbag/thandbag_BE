@@ -25,7 +25,7 @@ public class CommentController {
     @CrossOrigin(exposedHeaders = "Authorization", originPatterns = "*")
     @DeleteMapping("/api/uncomment/{commentId}")
     public void deleteComment(@PathVariable long commentId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        commentService.deleteComment(commentId, userDetails);
+        commentService.deleteComment(commentId, userDetails.getUser());
     }
 
     // 댓글에 좋아요 누르기

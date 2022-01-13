@@ -20,8 +20,7 @@ public class MainController {
     @CrossOrigin(exposedHeaders = "Authorization", originPatterns = "*")
     @PostMapping("/api/newThandbag")
     public ThandbagResponseDto createThandbag(@RequestBody ThandbagRequestDto thandbagRequestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        // @AuthenticationPrincipal UserDetailsImpl userDetails
-        return mainService.createThandbag(thandbagRequestDto, userDetails);
+        return mainService.createThandbag(thandbagRequestDto, userDetails.getUser());
     }
 
     // 공개된 생드백 전체 리스트 보기
