@@ -26,6 +26,8 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
 
@@ -127,7 +129,7 @@ class ThandbagDetailServiceTest {
         //given
         given(postRepository.findById(post.getId()))
                 .willReturn(Optional.of(post));
-        given(lvImgRepository.findByTitleAndLevel("얼빡배너 기본",1))
+        given(lvImgRepository.findByTitleAndLevel(anyString(),anyInt()))
                 .willReturn(new LvImg("asdf", "asdf", 1));
 
         //when
