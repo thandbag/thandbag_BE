@@ -15,7 +15,6 @@ import com.example.thandbag.repository.PostRepository;
 import com.example.thandbag.repository.UserRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -177,6 +176,7 @@ public class CommentControllerTest {
             assertEquals(HttpStatus.OK, response.getStatusCode());
             assertEquals(requestBody, postCommentDto.getComment());
             commentId = postCommentDto.getCommentId();
+            System.out.println(commentId);
         }
 
         @Test
@@ -189,23 +189,24 @@ public class CommentControllerTest {
 
             //when
             ResponseEntity<PostCommentDto> response = restTemplate.postForEntity(
-                    "/api/" + postId + "/like",
+                    "/api/" + commentId + "/like",
                     request,
                     PostCommentDto.class);
 
             //then
+            Optional<User> user = userRepository.findByUsername("xxx@naver.com");
             assertEquals(HttpStatus.OK, response.getStatusCode());
-            assertTrue(commentLikeRepository.existsByCommentAndUserId(commentRepository.getById(1L), 1L));
+            assertTrue(commentLikeRepository.existsByCommentAndUserId(commentRepository.getById(commentId), user.get().getId()));
 
             //when
             response = restTemplate.postForEntity(
-                    "/api/" + postId + "/like",
+                    "/api/" + commentId + "/like",
                     request,
                     PostCommentDto.class);
 
             //then
             assertEquals(HttpStatus.OK, response.getStatusCode());
-            assertFalse(commentLikeRepository.existsByCommentAndUserId(commentRepository.getById(1L), 1L));
+            assertFalse(commentLikeRepository.existsByCommentAndUserId(commentRepository.getById(commentId), user.get().getId()));
         }
 
         @Test
@@ -216,7 +217,7 @@ public class CommentControllerTest {
             //when
             headers.set("Authorization", token);
             HttpEntity request = new HttpEntity(headers);
-            ResponseEntity<String> response = restTemplate.exchange("/api/uncomment/" + postId,
+            ResponseEntity<String> response = restTemplate.exchange("/api/uncomment/" + commentId,
                     HttpMethod.DELETE, request, String.class);
 
             //then

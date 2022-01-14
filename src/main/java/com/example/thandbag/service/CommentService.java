@@ -14,6 +14,8 @@ import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class CommentService {
@@ -192,15 +194,15 @@ public class CommentService {
     // 잽 좋아요
     @Transactional
     public ShowCommentDto likeComment(long commentId, UserDetailsImpl userDetails) {
-        Comment comment = commentRepository.getById(commentId);
-        Post post = comment.getPost();
+        Optional<Comment> comment = commentRepository.findById(commentId);
+        Post post = comment.get().getPost();
         // 댓글 좋아요 하는 사람이 게시글 작성자라면 댓글에 작성자에게 선택되었다고 체크
         if (post.getUser().getId().equals(userDetails.getUser().getId())) {
-            comment.selectedByPostOwner();
-            commentRepository.save(comment);
+            comment.get().selectedByPostOwner();
+            commentRepository.save(comment.get());
         }
         // 이미 좋아요 했으면 좋아요 취소
-        CommentLike commentLike = commentLikeRepository.findByUserIdAndComment(userDetails.getUser().getId(), comment);
+        CommentLike commentLike = commentLikeRepository.findByUserIdAndComment(userDetails.getUser().getId(), comment.get());
         if (commentLike != null) {
             commentLikeRepository.delete(commentLike);
         } else {
@@ -213,15 +215,15 @@ public class CommentService {
         }
 
         return new ShowCommentDto(
-                comment.getUser().getNickname(),
-                comment.getUser().getLevel(),
-                comment.getUser().getMbti(),
-                comment.getId(),
-                comment.getComment(),
-                TimeConversion.timeConversion(comment.getCreatedAt()),
-                commentLikeRepository.findAllByComment(comment).size(),
-                commentLikeRepository.existsByCommentAndUserId(comment, userDetails.getUser().getId()),
-                comment.getUser().getProfileImg().getProfileImgUrl()
+                comment.get().getUser().getNickname(),
+                comment.get().getUser().getLevel(),
+                comment.get().getUser().getMbti(),
+                comment.get().getId(),
+                comment.get().getComment(),
+                TimeConversion.timeConversion(comment.get().getCreatedAt()),
+                commentLikeRepository.findAllByComment(comment.get()).size(),
+                commentLikeRepository.existsByCommentAndUserId(comment.get(), userDetails.getUser().getId()),
+                comment.get().getUser().getProfileImg().getProfileImgUrl()
         );
     }
 }

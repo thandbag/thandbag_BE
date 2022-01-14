@@ -74,7 +74,7 @@ public class ThandbagDetailControllerTest {
     public void cleanup() {
         Optional<User> user = userRepository.findByUsername("aaa@naver.com");
         Optional<User> user2 = userRepository.findByUsername("xxx@naver.com");
-        List<Post> postList = postRepository.findAllByUser(user.get());
+        List<Post> postList = postRepository.findAllByUser(user2.get());
         postRepository.deleteById(postId);
         userRepository.deleteById(user.get().getId());
         userRepository.deleteById(user2.get().getId());
