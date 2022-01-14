@@ -126,6 +126,7 @@ public class MainService {
                 () -> new NullPointerException("post가 없습니다"));
 
         //얼빡배너 lv
+        System.out.println("level: " + user.getLevel());
         String bannerLv = lvImgRepository.findByTitleAndLevel("얼빡배너 기본", user.getLevel()).getLvImgUrl();
 
         return ThandbagResponseDto.builder()
