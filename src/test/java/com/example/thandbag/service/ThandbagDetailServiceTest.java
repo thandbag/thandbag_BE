@@ -23,11 +23,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class ThandbagDetailServiceTest {
@@ -127,7 +125,7 @@ class ThandbagDetailServiceTest {
         //given
         given(postRepository.findById(post.getId()))
                 .willReturn(Optional.of(post));
-        given(lvImgRepository.findByTitleAndLevel("얼빡배너 기본",1))
+        given(lvImgRepository.findByTitleAndLevel("얼빡배너 터짐",1))
                 .willReturn(new LvImg("asdf", "asdf", 1));
 
         //when
