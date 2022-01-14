@@ -15,6 +15,7 @@ import com.example.thandbag.repository.PostRepository;
 import com.example.thandbag.repository.UserRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -33,16 +34,12 @@ public class CommentControllerTest {
 
     @Autowired
     private TestRestTemplate restTemplate;
-
     @Autowired
     private PostRepository postRepository;
-
     @Autowired
     private UserRepository userRepository;
-
     @Autowired
     private CommentLikeRepository commentLikeRepository;
-
     @Autowired
     private CommentRepository commentRepository;
 
@@ -50,6 +47,10 @@ public class CommentControllerTest {
     private final ObjectMapper mapper = new ObjectMapper();
 
     private String token = "";
+
+    private Long postId;
+
+    private Long commentId;
 
     private SignupRequestDto user1 = SignupRequestDto.builder()
             .username("xxx@naver.com")
@@ -67,7 +68,7 @@ public class CommentControllerTest {
     public void cleanup() {
         Optional<User> user = userRepository.findByUsername("xxx@naver.com");
         List<Post> postList = postRepository.findAllByUser(user.get());
-        postRepository.deleteById(1L);
+        postRepository.deleteById(postId);
         userRepository.deleteById(user.get().getId());
         assertEquals(Optional.empty(), userRepository.findById(user.get().getId()));
         assertEquals(Optional.empty(), postRepository.findById(postList.get(0).getId()));
@@ -146,9 +147,13 @@ public class CommentControllerTest {
                     ThandbagResponseDto.class);
 
             //then
-            Optional<Post> post = postRepository.findById(1L);
             assertEquals(HttpStatus.OK, response.getStatusCode());
-            assertNotNull(post);
+            Optional<User> user = userRepository.findByUsername("xxx@naver.com");
+            List<Post> postList = postRepository.findAllByUser(user.get());
+            postId = postList.get(0).getId();
+            System.out.println(postId);
+            assertNotNull(postId);
+
 
         }
 
@@ -163,7 +168,7 @@ public class CommentControllerTest {
 
             //when
             ResponseEntity<PostCommentDto> response = restTemplate.postForEntity(
-                    "/api/1/newComment",
+                    "/api/" + postId + "/newComment",
                     request,
                     PostCommentDto.class);
 
@@ -171,6 +176,7 @@ public class CommentControllerTest {
             PostCommentDto postCommentDto = response.getBody();
             assertEquals(HttpStatus.OK, response.getStatusCode());
             assertEquals(requestBody, postCommentDto.getComment());
+            commentId = postCommentDto.getCommentId();
         }
 
         @Test
@@ -183,7 +189,7 @@ public class CommentControllerTest {
 
             //when
             ResponseEntity<PostCommentDto> response = restTemplate.postForEntity(
-                    "/api/1/like",
+                    "/api/" + postId + "/like",
                     request,
                     PostCommentDto.class);
 
@@ -193,7 +199,7 @@ public class CommentControllerTest {
 
             //when
             response = restTemplate.postForEntity(
-                    "/api/1/like",
+                    "/api/" + postId + "/like",
                     request,
                     PostCommentDto.class);
 
@@ -210,12 +216,12 @@ public class CommentControllerTest {
             //when
             headers.set("Authorization", token);
             HttpEntity request = new HttpEntity(headers);
-            ResponseEntity<String> response = restTemplate.exchange("/api/uncomment/1",
+            ResponseEntity<String> response = restTemplate.exchange("/api/uncomment/" + postId,
                     HttpMethod.DELETE, request, String.class);
 
             //then
             assertEquals(HttpStatus.OK, response.getStatusCode());
-            assertEquals(0, commentRepository.findAll().size());
+            assertEquals(Optional.empty(), commentRepository.findById(commentId));
         }
 
     }

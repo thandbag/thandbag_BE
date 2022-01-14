@@ -11,6 +11,7 @@ import com.example.thandbag.repository.PostRepository;
 import com.example.thandbag.repository.UserRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -29,12 +30,12 @@ public class MainControllerTest {
 
     @Autowired
     private TestRestTemplate restTemplate;
-
     @Autowired
     private PostRepository postRepository;
-
     @Autowired
     private UserRepository userRepository;
+
+    private Long postId;
 
     private HttpHeaders headers;
     private final ObjectMapper mapper = new ObjectMapper();
@@ -57,7 +58,7 @@ public class MainControllerTest {
     public void cleanup() {
         Optional<User> user = userRepository.findByUsername("xxx@naver.com");
         List<Post> postList = postRepository.findAllByUser(user.get());
-        postRepository.deleteById(1L);
+        postRepository.deleteById(postId);
         userRepository.deleteById(user.get().getId());
         assertEquals(Optional.empty(), userRepository.findById(user.get().getId()));
         assertEquals(Optional.empty(), postRepository.findById(postList.get(0).getId()));
@@ -136,12 +137,12 @@ public class MainControllerTest {
                     ThandbagResponseDto.class);
 
             //then
-            Optional<Post> post = postRepository.findById(1L);
             assertEquals(HttpStatus.OK, response.getStatusCode());
-            assertNotNull(post);
-            //assertEquals("아아아", post.getTitle());
-            // assertEquals(thandbagRequestDto.getContent(), post.getContent());
-            // assertTrue(post.getShare());
+            Optional<User> user = userRepository.findByUsername("xxx@naver.com");
+            List<Post> postList = postRepository.findAllByUser(user.get());
+            postId = postList.get(0).getId();
+            System.out.println(postId);
+            assertNotNull(postId);
 
         }
 
@@ -171,7 +172,7 @@ public class MainControllerTest {
                     "/api/thandbag?keyword=아아&page=0&size=2", HttpMethod.GET, request, Object.class);
             List<ThandbagResponseDto> searchedThandbag = (List<ThandbagResponseDto>) response.getBody();
             assertEquals(HttpStatus.OK, response.getStatusCode());
-            assertEquals(1, searchedThandbag.size());
+            assertTrue(searchedThandbag.size() >= 1);
         }
 
     }
