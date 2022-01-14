@@ -12,6 +12,7 @@ import com.example.thandbag.repository.PostRepository;
 import com.example.thandbag.repository.UserRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -31,10 +32,8 @@ public class ThandbagDetailControllerTest {
 
     @Autowired
     private TestRestTemplate restTemplate;
-
     @Autowired
     private PostRepository postRepository;
-
     @Autowired
     private UserRepository userRepository;
 
@@ -44,6 +43,8 @@ public class ThandbagDetailControllerTest {
 
     private String token = "";
     private String token2 = "";
+    private Long postId;
+    private Long postId2;
 
     private SignupRequestDto user1 = SignupRequestDto.builder()
             .username("xxx@naver.com")
@@ -73,12 +74,13 @@ public class ThandbagDetailControllerTest {
     public void cleanup() {
         Optional<User> user = userRepository.findByUsername("aaa@naver.com");
         Optional<User> user2 = userRepository.findByUsername("xxx@naver.com");
-        List<Post> postList = postRepository.findAllByUser(user2.get());
-        postRepository.deleteById(2L);
+        List<Post> postList = postRepository.findAllByUser(user.get());
+        postRepository.deleteById(postId);
         userRepository.deleteById(user.get().getId());
         userRepository.deleteById(user2.get().getId());
-        assertEquals(0, userRepository.findAll().size());
-        assertEquals(0, postRepository.findAll().size());
+        assertEquals(Optional.empty(), userRepository.findById(user.get().getId()));
+        assertEquals(Optional.empty(), userRepository.findById(user2.get().getId()));
+        assertEquals(Optional.empty(), postRepository.findById(postList.get(0).getId()));
     }
 
     @BeforeEach
@@ -187,7 +189,7 @@ public class ThandbagDetailControllerTest {
                     .build();
 
             String requestBody = mapper.writeValueAsString(thandbagRequestDto);
-            headers.set("Authorization", token);
+            headers.set("Authorization", token2);
             HttpEntity<String> request = new HttpEntity<>(requestBody, headers);
 
             //when
@@ -197,12 +199,13 @@ public class ThandbagDetailControllerTest {
                     ThandbagResponseDto.class);
 
             //then
-            Optional<Post> post = postRepository.findById(1L);
             assertEquals(HttpStatus.OK, response.getStatusCode());
-            assertNotNull(post);
-            //assertEquals("아아아", post.getTitle());
-            // assertEquals(thandbagRequestDto.getContent(), post.getContent());
-            // assertTrue(post.getShare());
+            Optional<User> user = userRepository.findByUsername("xxx@naver.com");
+            System.out.println("user:" + user.get().getNickname());
+            List<Post> postList = postRepository.findAllByUser(user.get());
+            postId = postList.get(0).getId();
+            System.out.println(postId);
+            assertNotNull(postId);
 
         }
 
@@ -230,12 +233,12 @@ public class ThandbagDetailControllerTest {
                     ThandbagResponseDto.class);
 
             //then
-            Optional<Post> post = postRepository.findById(2L);
             assertEquals(HttpStatus.OK, response.getStatusCode());
-            assertNotNull(post);
-            //assertEquals("아아아", post.getTitle());
-            // assertEquals(thandbagRequestDto.getContent(), post.getContent());
-            // assertTrue(post.getShare());
+            Optional<User> user = userRepository.findByUsername("aaa@naver.com");
+            List<Post> postList = postRepository.findAllByUser(user.get());
+            postId2 = postList.get(0).getId();
+            System.out.println(postId2);
+            assertNotNull(postId2);
 
         }
 
@@ -248,13 +251,13 @@ public class ThandbagDetailControllerTest {
             headers.set("Authorization", token);
             HttpEntity request = new HttpEntity(headers);
             ResponseEntity<Object> response2 = restTemplate.exchange(
-                    "/api/thandbag/1", HttpMethod.GET, request, Object.class);
+                    "/api/thandbag/" + postId2, HttpMethod.GET, request, Object.class);
 
             //then
             assertEquals(HttpStatus.OK, response2.getStatusCode());
 
             //when
-            ResponseEntity<String> response = restTemplate.exchange("/api/thandbag/1",
+            ResponseEntity<String> response = restTemplate.exchange("/api/thandbag/" + postId2,
                     HttpMethod.DELETE, request, String.class);
 
             //then
@@ -264,7 +267,7 @@ public class ThandbagDetailControllerTest {
             //when
             headers.set("Authorization", token);
             response2 = restTemplate.exchange(
-                    "/api/thandbag/1", HttpMethod.GET, request, Object.class);
+                    "/api/thandbag/" + postId2, HttpMethod.GET, request, Object.class);
 
             //then
             assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response2.getStatusCode());
@@ -302,15 +305,15 @@ public class ThandbagDetailControllerTest {
 
 
             ResponseEntity<Object> response1 = restTemplate.exchange(
-                    "/api/thandbag/punch/2", HttpMethod.POST, request1, Object.class);
+                    "/api/thandbag/punch/" + postId, HttpMethod.POST, request1, Object.class);
             ResponseEntity<Object> response2 = restTemplate.exchange(
-                    "/api/thandbag/punch/2", HttpMethod.POST, request2, Object.class);
+                    "/api/thandbag/punch/" + postId, HttpMethod.POST, request2, Object.class);
             ResponseEntity<Object> response3 = restTemplate.exchange(
-                    "/api/thandbag/punch/2", HttpMethod.POST, request3, Object.class);
+                    "/api/thandbag/punch/" + postId, HttpMethod.POST, request3, Object.class);
             ResponseEntity<Object> response4 = restTemplate.exchange(
-                    "/api/thandbag/punch/2", HttpMethod.POST, request4, Object.class);
+                    "/api/thandbag/punch/" + postId, HttpMethod.POST, request4, Object.class);
             ResponseEntity<Object> response = restTemplate.exchange(
-                    "/api/thandbag/punch/2", HttpMethod.GET, request, Object.class);
+                    "/api/thandbag/punch/" + postId, HttpMethod.GET, request, Object.class);
 
 
             //System.out.println("total:" + postRepository.findById(2L).get().getTotalHitCount());
@@ -319,7 +322,7 @@ public class ThandbagDetailControllerTest {
             assertEquals(HttpStatus.OK, response2.getStatusCode());
             assertEquals(HttpStatus.OK, response3.getStatusCode());
             assertEquals(HttpStatus.OK, response4.getStatusCode());
-            assertEquals(33, postRepository.findById(2L).get().getTotalHitCount());
+            assertEquals(33, postRepository.findById(postId).get().getTotalHitCount());
             assertEquals(HttpStatus.OK, response.getStatusCode());
         }
 
@@ -336,12 +339,12 @@ public class ThandbagDetailControllerTest {
 
             //when
             ResponseEntity<Object> response = restTemplate.postForEntity(
-                    "/api/thandbag?postId=2",
+                    "/api/thandbag?postId=" + postId,
                     request,
                     Object.class);
 
             assertEquals(HttpStatus.OK, response.getStatusCode());
-            assertTrue(postRepository.findById(2L).get().getClosed());
+            assertTrue(postRepository.findById(postId).get().getClosed());
         }
     }
 }
