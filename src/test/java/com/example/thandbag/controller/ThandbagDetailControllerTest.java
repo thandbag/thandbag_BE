@@ -1,4 +1,4 @@
-package com.example.thandbag.IntegrationTest;
+package com.example.thandbag.controller;
 
 import com.example.thandbag.dto.login.LoginRequestDto;
 import com.example.thandbag.dto.login.LoginResultDto;

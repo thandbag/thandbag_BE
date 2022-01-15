@@ -1,13 +1,13 @@
-package com.example.thandbag.IntegrationTest;
+package com.example.thandbag.controller;
 
+import com.example.thandbag.Enum.AlarmType;
+import com.example.thandbag.dto.alarm.AlarmResponseDto;
 import com.example.thandbag.dto.login.LoginRequestDto;
 import com.example.thandbag.dto.login.LoginResultDto;
-import com.example.thandbag.dto.post.ThandbagRequestDto;
-import com.example.thandbag.dto.post.ThandbagResponseDto;
 import com.example.thandbag.dto.signup.SignupRequestDto;
-import com.example.thandbag.model.Post;
+import com.example.thandbag.model.Alarm;
 import com.example.thandbag.model.User;
-import com.example.thandbag.repository.PostRepository;
+import com.example.thandbag.repository.AlarmRepository;
 import com.example.thandbag.repository.UserRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -25,21 +25,25 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class MainControllerTest {
+class AlarmControllerTest {
 
     @Autowired
     private TestRestTemplate restTemplate;
     @Autowired
-    private PostRepository postRepository;
-    @Autowired
     private UserRepository userRepository;
-
-    private Long postId;
+    @Autowired
+    private AlarmRepository alarmRepository;
 
     private HttpHeaders headers;
     private final ObjectMapper mapper = new ObjectMapper();
 
     private String token = "";
+
+    private Alarm alarm;
+    private Alarm alarm2;
+    private Long alarmId;
+    private Long alarm2Id;
+
 
     private SignupRequestDto user1 = SignupRequestDto.builder()
             .username("xxx@naver.com")
@@ -56,17 +60,35 @@ public class MainControllerTest {
     @AfterAll
     public void cleanup() {
         Optional<User> user = userRepository.findByUsername("xxx@naver.com");
-        List<Post> postList = postRepository.findAllByUser(user.get());
-        postRepository.deleteById(postId);
         userRepository.deleteById(user.get().getId());
+        alarmRepository.deleteById(alarmId);
+        alarmRepository.deleteById(alarm2Id);
         assertEquals(Optional.empty(), userRepository.findById(user.get().getId()));
-        assertEquals(Optional.empty(), postRepository.findById(postList.get(0).getId()));
+        assertEquals(Optional.empty(), alarmRepository.findById(alarmId));
+        assertEquals(Optional.empty(), alarmRepository.findById(alarm2Id));
+
     }
 
     @BeforeEach
     public void setup() {
         headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
+        alarm = Alarm.builder()
+                .type(AlarmType.REPLY)
+                .alarmMessage("hihi")
+                .isRead(false)
+                .postId(2000L)
+                .userId(2000L)
+                .pubId(2000L)
+                .build();
+        alarm2 = Alarm.builder()
+                .type(AlarmType.REPLY)
+                .alarmMessage("hellohello")
+                .isRead(true)
+                .postId(3000L)
+                .userId(3000L)
+                .pubId(3000L)
+                .build();
     }
 
     @Test
@@ -110,70 +132,60 @@ public class MainControllerTest {
     }
 
     @Nested
-    @DisplayName("생드백 테스트 - main controller")
-    class PostThandbag {
+    @DisplayName("알람기능 - alarm controller")
+    class AlarmTest {
         @Test
         @Order(1)
-        @DisplayName("생드백 만들기 1")
+        @DisplayName("알람 리스트 1 - reply")
         void test1() throws JsonProcessingException {
 
             //given
-            ThandbagRequestDto thandbagRequestDto = ThandbagRequestDto.builder()
-                    .title("아아아")
-                    .content("호호호")
-                    .category("LOVE")
-                    .share(true)
-                    .build();
-
-            String requestBody = mapper.writeValueAsString(thandbagRequestDto);
-            headers.set("Authorization", token);
-            HttpEntity<String> request = new HttpEntity<>(requestBody, headers);
+            Optional<User> user = userRepository.findByUsername("xxx@naver.com");
+            alarm.setUserId(user.get().getId());
+            alarm2.setUserId(user.get().getId());
+            alarm = alarmRepository.save(alarm);
+            alarm2 = alarmRepository.save(alarm2);
+            alarmId = alarm.getId();
+            alarm2Id = alarm2.getId();
 
             //when
-            ResponseEntity<ThandbagResponseDto> response = restTemplate.postForEntity(
-                    "/api/newThandbag",
-                    request,
-                    ThandbagResponseDto.class);
+            headers.set("Authorization", token);
+            HttpEntity request = new HttpEntity(headers);
+            ResponseEntity<Object> response = restTemplate.exchange(
+                    "/api/alarm", HttpMethod.GET, request, Object.class);
 
             //then
             assertEquals(HttpStatus.OK, response.getStatusCode());
-            Optional<User> user = userRepository.findByUsername("xxx@naver.com");
-            List<Post> postList = postRepository.findAllByUser(user.get());
-            postId = postList.get(0).getId();
-            System.out.println(postId);
-            assertNotNull(postId);
-
+            List<AlarmResponseDto> temp = (List<AlarmResponseDto>) response.getBody();
+            assertEquals(2, temp.size());
         }
 
         @Test
         @Order(2)
-        @DisplayName("생드백 불러오기")
+        @DisplayName("알람 읽음 1")
         void test2() throws JsonProcessingException {
-            // 상품 정보에 있는 댓글 조회
+
+            //given
+            Optional<User> user = userRepository.findByUsername("xxx@naver.com");
+            alarm.setUserId(user.get().getId());
+            alarm2.setUserId(user.get().getId());
+            alarm = alarmRepository.save(alarm);
+            alarm2 = alarmRepository.save(alarm2);
+            alarmId = alarm.getId();
+            alarm2Id = alarm2.getId();
+
+            //when
             headers.set("Authorization", token);
             HttpEntity request = new HttpEntity(headers);
-            //header받는 http get요청 방식
-            ResponseEntity<Object> response = restTemplate.exchange(
-                    "/api/thandbagList?page=0&size=2", HttpMethod.GET, request, Object.class);
+            ResponseEntity<AlarmResponseDto> response = restTemplate.postForEntity(
+                    "/api/alarm/" + alarmId,
+                    request,
+                    AlarmResponseDto.class
+            );
 
+            //then
             assertEquals(HttpStatus.OK, response.getStatusCode());
+            assertTrue(response.getBody().getIsRead());
         }
-
-        @Test
-        @Order(3)
-        @DisplayName("생드백 검색")
-        void test3() throws JsonProcessingException {
-
-            headers.set("Authorization", token);
-            HttpEntity request = new HttpEntity(headers);
-            //header받는 http get요청 방식
-            ResponseEntity<Object> response = restTemplate.exchange(
-                    "/api/thandbag?keyword=아아&page=0&size=2", HttpMethod.GET, request, Object.class);
-            List<ThandbagResponseDto> searchedThandbag = (List<ThandbagResponseDto>) response.getBody();
-            assertEquals(HttpStatus.OK, response.getStatusCode());
-            assertTrue(searchedThandbag.size() >= 1);
-        }
-
     }
-
 }
