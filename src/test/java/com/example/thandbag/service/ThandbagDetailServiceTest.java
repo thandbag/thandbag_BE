@@ -25,9 +25,10 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.times;
 
 @ExtendWith(MockitoExtension.class)
 class ThandbagDetailServiceTest {
@@ -146,12 +147,16 @@ class ThandbagDetailServiceTest {
     @Test
     @Order(2)
     void removeThandbag() {
+        //given
+        Long postId = 1L;
 
         //when
-        thandbagDetailService.removeThandbag(1, user);
+        thandbagDetailService.removeThandbag(postId, user);
 
         //then
         assertEquals(0, user.getTotalCount());
+        //생드백삭제 후, 해당 포스트에 대한 알림이 삭제되는지 확인
+        then(alarmRepository).should(times(1)).deleteAllByPostId(postId);
     }
 
     @DisplayName("샌드백 떠트리기")
