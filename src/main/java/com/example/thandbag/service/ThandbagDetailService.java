@@ -99,6 +99,7 @@ public class ThandbagDetailService {
     public void removeThandbag(long postId, User user) {
         postRepository.deleteById(postId);
         user.setTotalCount(user.getTotalCount() - 1);
+        alarmRepository.deleteAllByPostId(postId);
 
         //leveldown 및 알림 메시지
         int totalPosts = user.getTotalCount();

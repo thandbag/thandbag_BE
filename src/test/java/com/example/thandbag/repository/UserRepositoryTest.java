@@ -96,10 +96,12 @@ class UserRepositoryTest {
 
         //when
         List<User> result = userRepository.findAll();
+        for (User u : result) {
+            System.out.println("닉네임: " + u.getNickname() + ", ID : " + u.getId());
+        }
 
         //then
         assertEquals(6, result.size());
-        assertEquals(1L, result.get(0).getId());
         assertEquals(11111L, result.get(3).getKakaoId());
     }
 

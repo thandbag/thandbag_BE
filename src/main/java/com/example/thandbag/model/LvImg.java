@@ -1,14 +1,16 @@
 package com.example.thandbag.model;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
-
+@Builder
 @Getter
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity
 public class LvImg {
 
