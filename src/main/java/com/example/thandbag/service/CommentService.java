@@ -102,7 +102,6 @@ public class CommentService {
                 .alarmMessage("[" + postRepository.getById(postId).getTitle() + "] 게시글에 잽이 등록되었습니다. 확인해보세요.")
                 .build();
 
-        alarmRepository.save(alarm);
 
         // 알림 메시지를 보낼 DTO 생성
         AlarmResponseDto alarmResponseDto = AlarmResponseDto.builder()
@@ -114,9 +113,10 @@ public class CommentService {
                 .postId(alarm.getPostId())
                 .build();
 
-        // redis로 알림메시지 pub
+        // redis로 알림메시지 pub, alarmRepository에 저장
         // 단, 게시글 작성자와 댓글 작성자가 일치할 경우는 제외
         if (!alarmResponseDto.getAlarmTargetId().equals(postOwner.getId())) {
+            alarmRepository.save(alarm);
             redisTemplate.convertAndSend(channelTopic.getTopic(), alarmResponseDto);
         }
         userRepository.save(user);

@@ -13,6 +13,7 @@ import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +32,7 @@ class AlarmServiceTest {
     @Mock
     ChatRoomRepository chatRoomRepository;
 
+
     @Order(1)
     @DisplayName("알림목록")
     @Test
@@ -38,15 +40,22 @@ class AlarmServiceTest {
         //given
         AlarmService alarmService = new AlarmService(alarmRepository, chatRoomRepository);
 
+        int pageNo = 0;
+        int sizeNo = 2;
+        Long userId = user.getId();
+        Pageable pageable = PageRequest.of(pageNo, sizeNo, Sort.by("createdAt").descending());
+
         List<Alarm> alarmList = new ArrayList<>();
         alarmList.add(alarm1);
         alarmList.add(alarm2);
         alarmList.add(alarm3);
 
-        given(alarmRepository.findAllByUserIdOrderByIdDesc(user.getId())).willReturn(alarmList);
+        Page<Alarm> alarmPage = new PageImpl<>(alarmList);
+
+        given(alarmRepository.findAllByUserIdOrderByIdDesc(userId, pageable)).willReturn(alarmPage);
 
         //when
-        List<AlarmResponseDto> result = alarmService.getAlamList(user);
+        List<AlarmResponseDto> result = alarmService.getAlamList(user, pageNo, sizeNo);
 
         //then
         assertEquals(3, result.size());

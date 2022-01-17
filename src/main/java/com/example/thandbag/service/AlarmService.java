@@ -8,6 +8,9 @@ import com.example.thandbag.repository.AlarmRepository;
 import com.example.thandbag.repository.ChatRoomRepository;
 import com.example.thandbag.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -22,12 +25,15 @@ public class AlarmService {
     private final ChatRoomRepository chatRoomRepository;
 
     // 알림 목록
-    public List<AlarmResponseDto> getAlamList(User user) {
-        List<Alarm> alarmList = alarmRepository.findAllByUserIdOrderByIdDesc(user.getId());
+    public List<AlarmResponseDto> getAlamList(User user, int page, int size) {
+        Long userId = user.getId();
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        List<Alarm> alarmListPage = alarmRepository.findAllByUserIdOrderByIdDesc(userId, pageable).getContent();
 
         List<AlarmResponseDto> alarmResponseDtoList = new ArrayList<>();
 
-        for (Alarm alarm : alarmList) {
+        for (Alarm alarm : alarmListPage) {
             // 채팅룸 생성알림일 때
             if (alarm.getType().equals(AlarmType.INVITEDCHAT)) {
                 AlarmResponseDto alarmDto = AlarmResponseDto.builder()
@@ -48,6 +54,7 @@ public class AlarmService {
                         .postId(alarm.getPostId())
                         .build();
                 alarmResponseDtoList.add(alarmDto);
+                // 내 잽이 작성자에게 선택받은 후 종료되었을 때
             } else if (alarm.getType().equals(AlarmType.PICKED)) {
                 AlarmResponseDto alarmDto = AlarmResponseDto.builder()
                         .alarmId(alarm.getId())

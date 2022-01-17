@@ -19,9 +19,9 @@ public class AlarmController {
     // 알람 리스트 발송
     @CrossOrigin(exposedHeaders = "Authorization", originPatterns = "*")
     @GetMapping("/api/alarm")
-    public List<AlarmResponseDto> getAlarmList(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public List<AlarmResponseDto> getAlarmList(@RequestParam int page, @RequestParam int size, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         User user = userDetails.getUser();
-        return alarmService.getAlamList(user);
+        return alarmService.getAlamList(user, page, size);
     }
 
     // 알림 읽음 확인
