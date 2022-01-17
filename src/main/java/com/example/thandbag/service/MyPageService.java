@@ -1,5 +1,6 @@
 package com.example.thandbag.service;
 
+import com.example.thandbag.dto.mypage.profile.ProfileImgUpdageDto;
 import com.example.thandbag.dto.mypage.MyPageResponseDto;
 import com.example.thandbag.dto.mypage.MyPostListDto;
 import com.example.thandbag.dto.mypage.profile.ProfileUpdateRequestDto;
@@ -18,6 +19,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
@@ -32,6 +34,7 @@ public class MyPageService {
     private final PostRepository postRepository;
     private final ProfileImgRepository profileImgRepository;
     private final UserValidator userValidator;
+    private final ImageService imageService;
 
     // 회원정보 수정
     @Transactional
@@ -39,10 +42,18 @@ public class MyPageService {
         User user = userRepository.getById(userDetails.getUser().getId());
         Long userId = user.getId();
         String profileImgUrl = user.getProfileImg().getProfileImgUrl();
-        if (updateDto.getProfileImgUrl() != null) {
-            profileImgUrl = updateDto.getProfileImgUrl();
+
+        // 프로필 이미지를 직접 업로드 했을 경우
+        if (updateDto.getFile() != null) {
+            profileImgUrl = imageService.uploadFile(updateDto.getFile());
         }
-        ProfileImg profileImg = profileImgRepository.findByProfileImgUrl(profileImgUrl).get();
+
+        ProfileImg profileImg = new ProfileImg(profileImgUrl);
+
+        if (!profileImgRepository.findByProfileImgUrl(profileImgUrl).isPresent()) {
+            profileImgRepository.save(profileImg);
+        }
+
         user.setProfileImg(profileImg);
 
         // 닉네임 중복검사용
@@ -65,6 +76,8 @@ public class MyPageService {
         String mbti = updateDto.getMbti();
         user.setMbti(mbti);
 
+        userRepository.save(user);
+
         return new ProfileUpdateResponseDto(
                 userId,
                 profileImgUrl,
@@ -72,6 +85,22 @@ public class MyPageService {
                 mbti
         );
     }
+
+    // 이미지 업로드
+    @Transactional
+    public ProfileImgUpdageDto updateProfileImg(MultipartFile multipartFile, UserDetailsImpl userDetails) {
+        User user = userRepository.getById(userDetails.getUser().getId());
+
+        String profileImgUrl = imageService.uploadFile(multipartFile);
+        ProfileImg profileImg = new ProfileImg(profileImgUrl);
+        profileImgRepository.save(profileImg);
+
+        user.setProfileImg(profileImg);
+        userRepository.save(user);
+
+        return new ProfileImgUpdageDto(profileImgUrl);
+    }
+
 
     // 내가 작성한 생드백 리스트
     public MyPageResponseDto getMyPostList(int pageNo, int sizeNo, UserDetailsImpl userDetails) {

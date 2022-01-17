@@ -1,17 +1,19 @@
 package com.example.thandbag.dto.mypage.profile;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.*;
+import org.springframework.web.multipart.MultipartFile;
 
+@Setter
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ProfileUpdateRequestDto {
 
-    String profileImgUrl;
-    String nickname;
-    String mbti;
+    private String nickname;
+    private MultipartFile file;
+    private String mbti;
+
 }

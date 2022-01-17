@@ -18,6 +18,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.*;
+import org.springframework.mock.web.MockMultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -41,6 +42,13 @@ class MyPageServiceTest {
     @Mock
     ProfileImgRepository profileImgRepository;
 
+    @Mock
+    ImageService imageService;
+
+    @Mock
+    MockMultipartFile multipartFile;
+
+
     UserValidator userValidator;
     UserDetailsImpl userDetails;
 
@@ -60,18 +68,21 @@ class MyPageServiceTest {
         @Test
         void updateProfileSuccess() {
             //given
-            MyPageService myPageService = new MyPageService(userReository, postRepository, profileImgRepository, userValidator);
+            MyPageService myPageService = new MyPageService(userReository, postRepository, profileImgRepository, userValidator, imageService);
 
             ProfileUpdateRequestDto updateDto = new ProfileUpdateRequestDto(
-                    "modifiedImgUrl",
                     "수정된닉네임",
+                    multipartFile,
                     "INFJ"
             );
+
+            String newProfileImgUrl = "newProfile.jpg";
 
             userDetails = new UserDetailsImpl(user);
 
             given(userReository.getById(userDetails.getUser().getId())).willReturn(user);
-            given(profileImgRepository.findByProfileImgUrl(any())).willReturn(Optional.of(user.getProfileImg()));
+            given(imageService.uploadFile(updateDto.getFile())).willReturn(newProfileImgUrl);
+            given(profileImgRepository.findByProfileImgUrl(any())).willReturn(Optional.empty());
             given(userReository.findByNickname(updateDto.getNickname())).willReturn(Optional.empty());
 
             //when
@@ -79,7 +90,7 @@ class MyPageServiceTest {
 
             //then
             assertEquals(1L, result.getUserId());
-            assertEquals("modifiedImgUrl", result.getProfileImgUrl());
+            assertEquals("newProfile.jpg", result.getProfileImgUrl());
             assertEquals("수정된닉네임", result.getNickname());
             assertEquals("INFJ", result.getMbti());
         }
@@ -89,11 +100,11 @@ class MyPageServiceTest {
         @Test
         void updateProfileSuccess2() {
             //given
-            MyPageService myPageService = new MyPageService(userReository, postRepository, profileImgRepository, userValidator);
+            MyPageService myPageService = new MyPageService(userReository, postRepository, profileImgRepository, userValidator, imageService);
 
             ProfileUpdateRequestDto updateDto = new ProfileUpdateRequestDto(
-                    null,
                     "수정된닉네임",
+                    null,
                     "INFJ"
             );
 
@@ -118,11 +129,11 @@ class MyPageServiceTest {
         @Test
         void updateProfileFail1() {
             //given
-            MyPageService myPageService = new MyPageService(userReository, postRepository, profileImgRepository, userValidator);
+            MyPageService myPageService = new MyPageService(userReository, postRepository, profileImgRepository, userValidator, imageService);
 
             ProfileUpdateRequestDto updateDto = new ProfileUpdateRequestDto(
-                    "www.naver.com",
                     "샌드백",
+                    null,
                     "INFJ"
             );
 
@@ -165,7 +176,7 @@ class MyPageServiceTest {
         @Test
         void updateProfileSuccess() {
             //given
-            MyPageService myPageService = new MyPageService(userReository, postRepository, profileImgRepository, userValidator);
+            MyPageService myPageService = new MyPageService(userReository, postRepository, profileImgRepository, userValidator, imageService);
 
             int pageNo = 0;
             int sizeNo = 2;

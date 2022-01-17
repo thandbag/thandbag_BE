@@ -1,6 +1,7 @@
 package com.example.thandbag.controller;
 
 import com.example.thandbag.dto.mypage.MyPageResponseDto;
+import com.example.thandbag.dto.mypage.profile.ProfileImgUpdageDto;
 import com.example.thandbag.dto.mypage.profile.ProfileUpdateRequestDto;
 import com.example.thandbag.dto.mypage.profile.ProfileUpdateResponseDto;
 import com.example.thandbag.security.UserDetailsImpl;
@@ -8,6 +9,7 @@ import com.example.thandbag.service.MyPageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RequiredArgsConstructor
 @RestController
@@ -18,8 +20,15 @@ public class MyPageController {
     // 마이페이지 -> 회원정보 수정
     @CrossOrigin(exposedHeaders = "Authorization", originPatterns = "*")
     @PostMapping("/mypage/profile")
-    public ProfileUpdateResponseDto updateProfile(@RequestBody ProfileUpdateRequestDto updateDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public ProfileUpdateResponseDto updateProfile(@ModelAttribute ProfileUpdateRequestDto updateDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return myPageService.updateProfile(updateDto, userDetails);
+    }
+
+    // 마이페이지 -> 프로필이미지 업로드
+    @CrossOrigin(exposedHeaders = "Authorization", originPatterns = "*")
+    @PostMapping("/api/mypage/uploadProfileImg")
+    public ProfileImgUpdageDto uploadImg(@RequestBody MultipartFile file, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return myPageService.updateProfileImg(file, userDetails);
     }
 
     // 마이페이지 -> 내가 쓴 게시글
