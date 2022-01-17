@@ -20,8 +20,8 @@ public class MyPageController {
     // 마이페이지 -> 회원정보 수정
     @CrossOrigin(exposedHeaders = "Authorization", originPatterns = "*")
     @PostMapping("/mypage/profile")
-    public ProfileUpdateResponseDto updateProfile(@ModelAttribute ProfileUpdateRequestDto updateDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return myPageService.updateProfile(updateDto, userDetails);
+    public ProfileUpdateResponseDto updateProfile(@RequestPart(required = false) MultipartFile file, @RequestPart ProfileUpdateRequestDto updateDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return myPageService.updateProfile(file, updateDto, userDetails);
     }
 
     // 마이페이지 -> 프로필이미지 업로드

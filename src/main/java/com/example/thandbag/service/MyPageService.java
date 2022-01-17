@@ -38,14 +38,14 @@ public class MyPageService {
 
     // 회원정보 수정
     @Transactional
-    public ProfileUpdateResponseDto updateProfile(ProfileUpdateRequestDto updateDto, UserDetailsImpl userDetails) {
+    public ProfileUpdateResponseDto updateProfile(MultipartFile file, ProfileUpdateRequestDto updateDto, UserDetailsImpl userDetails) {
         User user = userRepository.getById(userDetails.getUser().getId());
         Long userId = user.getId();
         String profileImgUrl = user.getProfileImg().getProfileImgUrl();
 
         // 프로필 이미지를 직접 업로드 했을 경우
-        if (updateDto.getFile() != null) {
-            profileImgUrl = imageService.uploadFile(updateDto.getFile());
+        if (file != null) {
+            profileImgUrl = imageService.uploadFile(file);
         }
 
         ProfileImg profileImg = new ProfileImg(profileImgUrl);
