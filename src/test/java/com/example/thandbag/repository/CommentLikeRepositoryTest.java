@@ -74,6 +74,7 @@ class CommentLikeRepositoryTest {
         // DB 저장
         postRepository.save(post);
 
+        // 코멘트 생성
         this.comment1 = Comment.builder()
                 .comment("코멘트1")
                 .user(user2)
