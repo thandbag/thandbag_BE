@@ -152,7 +152,7 @@ class AlarmControllerTest {
             headers.set("Authorization", token);
             HttpEntity request = new HttpEntity(headers);
             ResponseEntity<Object> response = restTemplate.exchange(
-                    "/api/alarm", HttpMethod.GET, request, Object.class);
+                    "/api/alarm?page=0&size=2", HttpMethod.GET, request, Object.class);
 
             //then
             assertEquals(HttpStatus.OK, response.getStatusCode());
