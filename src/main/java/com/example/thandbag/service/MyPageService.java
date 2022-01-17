@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -38,7 +39,7 @@ public class MyPageService {
 
     // 회원정보 수정
     @Transactional
-    public ProfileUpdateResponseDto updateProfile(MultipartFile file, ProfileUpdateRequestDto updateDto, UserDetailsImpl userDetails) {
+    public ProfileUpdateResponseDto updateProfile(MultipartFile file, ProfileUpdateRequestDto updateDto, UserDetailsImpl userDetails) throws IOException {
         User user = userRepository.getById(userDetails.getUser().getId());
         Long userId = user.getId();
 
@@ -63,7 +64,6 @@ public class MyPageService {
         if (file != null) {
             String profileImgUrl = imageService.uploadFile(file);
             ProfileImg profileImg1 = new ProfileImg(profileImgUrl);
-            System.out.println("프로필이미지 저장함 : " + profileImg1);
             profileImgRepository.save(profileImg1);
             user.setProfileImg(profileImg1);
         }
@@ -83,7 +83,7 @@ public class MyPageService {
 
     // 이미지 업로드
     @Transactional
-    public ProfileImgUpdageDto updateProfileImg(MultipartFile multipartFile, UserDetailsImpl userDetails) {
+    public ProfileImgUpdageDto updateProfileImg(MultipartFile multipartFile, UserDetailsImpl userDetails) throws IOException {
         User user = userRepository.getById(userDetails.getUser().getId());
 
         String profileImgUrl = imageService.uploadFile(multipartFile);

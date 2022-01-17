@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,7 +41,7 @@ public class MainService {
 
     // 생드백 생성
     @Transactional
-    public ThandbagResponseDto createThandbag(ThandbagRequestDto thandbagRequestDto, User user) {
+    public ThandbagResponseDto createThandbag(ThandbagRequestDto thandbagRequestDto, User user) throws IOException {
 
         // 헌재 사용자 가져오기
         List<PostImg> postImgList = new ArrayList<>();
