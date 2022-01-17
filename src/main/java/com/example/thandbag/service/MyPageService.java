@@ -41,18 +41,6 @@ public class MyPageService {
     public ProfileUpdateResponseDto updateProfile(MultipartFile file, ProfileUpdateRequestDto updateDto, UserDetailsImpl userDetails) {
         User user = userRepository.getById(userDetails.getUser().getId());
         Long userId = user.getId();
-        String profileImgUrl = user.getProfileImg().getProfileImgUrl();
-
-        // 프로필 이미지를 직접 업로드 했을 경우
-        if (file != null) {
-            profileImgUrl = imageService.uploadFile(file);
-        }
-
-        ProfileImg profileImg = new ProfileImg(profileImgUrl);
-
-        if (!profileImgRepository.findByProfileImgUrl(profileImgUrl).isPresent()) {
-            profileImgRepository.save(profileImg);
-        }
 
         // 닉네임 중복검사용
         Optional<User> foundNickname = userRepository.findByNickname(updateDto.getNickname());
@@ -71,7 +59,19 @@ public class MyPageService {
 
         String mbti = updateDto.getMbti();
 
-        user.setProfileImg(profileImg);
+        String profileImgUrl = user.getProfileImg().getProfileImgUrl();
+        Optional<ProfileImg> profileImg = profileImgRepository.findByProfileImgUrl(profileImgUrl);
+
+        // 프로필 이미지를 직접 업로드 했을 경우
+        if (file != null) {
+            profileImgUrl = imageService.uploadFile(file);
+        }
+
+        ProfileImg newProfileImg = !profileImgRepository.findByProfileImgUrl(profileImgUrl).isPresent() ? profileImgRepository.save(profileImg.get()): new ProfileImg(profileImgUrl);
+
+        profileImgRepository.save(newProfileImg);
+
+        user.setProfileImg(newProfileImg);
         user.setNickname(nickname);
         user.setMbti(mbti);
 
