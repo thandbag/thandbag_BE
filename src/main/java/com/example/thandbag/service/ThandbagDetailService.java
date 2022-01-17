@@ -41,9 +41,13 @@ public class ThandbagDetailService {
             imgUrlList.add(postImg.getPostImgUrl());
 
         List<ShowCommentDto> showCommentDtoList = new ArrayList<>();
+
         // 게시글에 달린 댓글 가져오기
         for (Comment comment : post.getCommentList()) {
             List<CommentLike> allLikes = commentLikeRepository.findAllByComment(comment);
+            //login 한 유저, 안한 유저 구분
+            Boolean likeExist =  user.getNickname() != "visitor" ?
+                    commentLikeRepository.existsByCommentAndUserId(comment, user.getId()) : false;
             ShowCommentDto showCommentDto = new ShowCommentDto(
                     comment.getUser().getNickname(),
                     comment.getUser().getLevel(),
@@ -52,7 +56,7 @@ public class ThandbagDetailService {
                     comment.getComment(),
                     TimeConversion.timeConversion(comment.getCreatedAt()),
                     allLikes.size(),
-                    commentLikeRepository.existsByCommentAndUserId(comment, user.getId()),
+                    likeExist,
                     comment.getUser().getProfileImg().getProfileImgUrl()
             );
             showCommentDtoList.add(showCommentDto);
