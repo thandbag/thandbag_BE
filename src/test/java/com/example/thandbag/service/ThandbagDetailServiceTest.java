@@ -143,7 +143,7 @@ class ThandbagDetailServiceTest {
 
     }
 
-    @DisplayName("샌드백 삭제")
+    @DisplayName("생드백 삭제")
     @Test
     @Order(2)
     void removeThandbag() {
