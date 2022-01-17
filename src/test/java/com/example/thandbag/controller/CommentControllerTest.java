@@ -1,5 +1,7 @@
-package com.example.thandbag.IntegrationTest;
+package com.example.thandbag.controller;
 
+
+import com.example.thandbag.dto.comment.PostCommentDto;
 import com.example.thandbag.dto.login.LoginRequestDto;
 import com.example.thandbag.dto.login.LoginResultDto;
 import com.example.thandbag.dto.post.ThandbagRequestDto;
@@ -7,6 +9,8 @@ import com.example.thandbag.dto.post.ThandbagResponseDto;
 import com.example.thandbag.dto.signup.SignupRequestDto;
 import com.example.thandbag.model.Post;
 import com.example.thandbag.model.User;
+import com.example.thandbag.repository.CommentLikeRepository;
+import com.example.thandbag.repository.CommentRepository;
 import com.example.thandbag.repository.PostRepository;
 import com.example.thandbag.repository.UserRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -25,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class MainControllerTest {
+public class CommentControllerTest {
 
     @Autowired
     private TestRestTemplate restTemplate;
@@ -33,13 +37,19 @@ public class MainControllerTest {
     private PostRepository postRepository;
     @Autowired
     private UserRepository userRepository;
-
-    private Long postId;
+    @Autowired
+    private CommentLikeRepository commentLikeRepository;
+    @Autowired
+    private CommentRepository commentRepository;
 
     private HttpHeaders headers;
     private final ObjectMapper mapper = new ObjectMapper();
 
     private String token = "";
+
+    private Long postId;
+
+    private Long commentId;
 
     private SignupRequestDto user1 = SignupRequestDto.builder()
             .username("xxx@naver.com")
@@ -110,7 +120,7 @@ public class MainControllerTest {
     }
 
     @Nested
-    @DisplayName("생드백 테스트 - main controller")
+    @DisplayName("댓글 기능 - comment controller")
     class PostThandbag {
         @Test
         @Order(1)
@@ -143,37 +153,77 @@ public class MainControllerTest {
             System.out.println(postId);
             assertNotNull(postId);
 
+
         }
 
         @Test
         @Order(2)
-        @DisplayName("생드백 불러오기")
+        @DisplayName("댓글 달기 1")
         void test2() throws JsonProcessingException {
-            // 상품 정보에 있는 댓글 조회
-            headers.set("Authorization", token);
-            HttpEntity request = new HttpEntity(headers);
-            //header받는 http get요청 방식
-            ResponseEntity<Object> response = restTemplate.exchange(
-                    "/api/thandbagList?page=0&size=2", HttpMethod.GET, request, Object.class);
 
+            String requestBody = "야임마";
+            headers.set("Authorization", token);
+            HttpEntity<String> request = new HttpEntity<>(requestBody, headers);
+
+            //when
+            ResponseEntity<PostCommentDto> response = restTemplate.postForEntity(
+                    "/api/" + postId + "/newComment",
+                    request,
+                    PostCommentDto.class);
+
+            //then
+            PostCommentDto postCommentDto = response.getBody();
             assertEquals(HttpStatus.OK, response.getStatusCode());
+            assertEquals(requestBody, postCommentDto.getComment());
+            commentId = postCommentDto.getCommentId();
+            System.out.println(commentId);
         }
 
         @Test
         @Order(3)
-        @DisplayName("생드백 검색")
+        @DisplayName("댓글 좋아요/좋아요 취소 1")
         void test3() throws JsonProcessingException {
 
             headers.set("Authorization", token);
-            HttpEntity request = new HttpEntity(headers);
-            //header받는 http get요청 방식
-            ResponseEntity<Object> response = restTemplate.exchange(
-                    "/api/thandbag?keyword=아아&page=0&size=2", HttpMethod.GET, request, Object.class);
-            List<ThandbagResponseDto> searchedThandbag = (List<ThandbagResponseDto>) response.getBody();
+            HttpEntity<String> request = new HttpEntity<>(headers);
+
+            //when
+            ResponseEntity<PostCommentDto> response = restTemplate.postForEntity(
+                    "/api/" + commentId + "/like",
+                    request,
+                    PostCommentDto.class);
+
+            //then
+            Optional<User> user = userRepository.findByUsername("xxx@naver.com");
             assertEquals(HttpStatus.OK, response.getStatusCode());
-            assertTrue(searchedThandbag.size() >= 1);
+            assertTrue(commentLikeRepository.existsByCommentAndUserId(commentRepository.getById(commentId), user.get().getId()));
+
+            //when
+            response = restTemplate.postForEntity(
+                    "/api/" + commentId + "/like",
+                    request,
+                    PostCommentDto.class);
+
+            //then
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+            assertFalse(commentLikeRepository.existsByCommentAndUserId(commentRepository.getById(commentId), user.get().getId()));
+        }
+
+        @Test
+        @Order(4)
+        @DisplayName("댓글 삭제 1")
+        void test4() throws JsonProcessingException {
+
+            //when
+            headers.set("Authorization", token);
+            HttpEntity request = new HttpEntity(headers);
+            ResponseEntity<String> response = restTemplate.exchange("/api/uncomment/" + commentId,
+                    HttpMethod.DELETE, request, String.class);
+
+            //then
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+            assertEquals(Optional.empty(), commentRepository.findById(commentId));
         }
 
     }
-
 }

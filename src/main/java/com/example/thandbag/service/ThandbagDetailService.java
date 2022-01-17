@@ -169,6 +169,7 @@ public class ThandbagDetailService {
                         comment.getUser().getProfileImg().getProfileImgUrl(),
                         comment.getUser().getLevel()
                 );
+                // 한사람 댓글이 여러번 선택됬을경우 한번만 선택
                 if (!commenterName.contains(bestUserDto.getNickname())) {
                     bestUserDtoList.add(bestUserDto);
                     commenterName.add(bestUserDto.getNickname());
