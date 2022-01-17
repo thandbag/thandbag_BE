@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -19,7 +20,7 @@ public class MainController {
     // 생드백 만들기
     @CrossOrigin(exposedHeaders = "Authorization", originPatterns = "*")
     @PostMapping("/api/newThandbag")
-    public ThandbagResponseDto createThandbag(@RequestBody ThandbagRequestDto thandbagRequestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public ThandbagResponseDto createThandbag(@RequestBody ThandbagRequestDto thandbagRequestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
         return mainService.createThandbag(thandbagRequestDto, userDetails.getUser());
     }
 
