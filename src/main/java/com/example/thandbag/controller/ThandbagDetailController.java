@@ -30,8 +30,7 @@ public class ThandbagDetailController {
     // 생드백 상세보기
     @CrossOrigin(exposedHeaders = "Authorization", originPatterns = "*")
     @GetMapping("/api/thandbag/{postId}")
-    public ThandbagResponseDto getThandbagDetail(@PathVariable int postId, @AuthenticationPrincipal
-            (expression = "#this=='anonymousUser' ? null : userDetails") UserDetailsImpl userDetails) {
+    public ThandbagResponseDto getThandbagDetail(@PathVariable int postId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return thandbagDetailService.getOneThandbag(postId, userDetails.getUser());
     }
 
