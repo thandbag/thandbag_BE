@@ -59,31 +59,25 @@ public class MyPageService {
 
         String mbti = updateDto.getMbti();
 
-        String profileImgUrl = user.getProfileImg().getProfileImgUrl();
-        Optional<ProfileImg> profileImg = profileImgRepository.findByProfileImgUrl(profileImgUrl);
-
         // 프로필 이미지를 직접 업로드 했을 경우
         if (file != null) {
-            profileImgUrl = imageService.uploadFile(file);
-        }
-//
-//        ProfileImg newProfileImg = !profileImgRepository.findByProfileImgUrl(profileImgUrl).isPresent() ? profileImgRepository.save(profileImg.get()): new ProfileImg(profileImgUrl);
-//
-        if (!profileImgRepository.findByProfileImgUrl(profileImgUrl).isPresent()) {
-            ProfileImg profileImg1 = profileImgRepository.save(new ProfileImg(profileImgUrl));
+            String profileImgUrl = imageService.uploadFile(file);
+            ProfileImg profileImg1 = new ProfileImg(profileImgUrl);
+            System.out.println("프로필이미지 저장함 : " + profileImg1);
+            profileImgRepository.save(profileImg1);
             user.setProfileImg(profileImg1);
         }
 
         user.setNickname(nickname);
         user.setMbti(mbti);
 
-        userRepository.save(user);
+        User savedUser = userRepository.save(user);
 
         return new ProfileUpdateResponseDto(
-                userId,
-                profileImgUrl,
-                nickname,
-                mbti
+                savedUser.getId(),
+                savedUser.getProfileImg().getProfileImgUrl(),
+                savedUser.getNickname(),
+                savedUser.getMbti()
         );
     }
 
