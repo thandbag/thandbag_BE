@@ -145,6 +145,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         skipPathList.add("GET,/ws-stomp/**");
         skipPathList.add("GET,/ws-stompAlarm/**");
         skipPathList.add("GET,/ws-stompAlarm/sub/alarm/**");
+        //게시글 조회/ 상세 조회
+        skipPathList.add("GET,/api/thandbagList");
+        skipPathList.add("GET,/api/thandbag");
+        skipPathList.add("GET,/api/visitor/thandbag/**");
 
         FilterSkipMatcher matcher = new FilterSkipMatcher(
                 skipPathList,

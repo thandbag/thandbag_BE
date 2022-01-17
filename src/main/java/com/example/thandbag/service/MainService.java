@@ -162,15 +162,8 @@ public class MainService {
 
     // 검색된 생드백 전체 리스트 페이지로 만들기
     public List<ThandbagResponseDto> searchThandbags(String keyword, int pageNumber, int size) {
-        List<Post> posts = postRepository.findAllByShareTrueOrderByCreatedAtDesc();
-        // 키워드가 유저 닉네임, 타이틀, 또는 게시글 내용에 포함되지 않았으면 삭제
-        posts.removeIf(post -> !(userRepository.getById(post.getUser().getId()).getNickname().contains(keyword)
-                || post.getContent().contains(keyword) || post.getTitle().contains(keyword)));
-        //페이징 처리
-        PagedListHolder<Post> page = new PagedListHolder<>(posts);
-        page.setPageSize(size);
-        page.setPage(pageNumber);
-        posts = page.getPageList();
+        Pageable sortedByModifiedAtDesc = PageRequest.of(pageNumber, size, Sort.by("modifiedAt").descending());
+        List<Post> posts = postRepository.findAllByShareTrueAndContainsKeywordForSearch(keyword, sortedByModifiedAtDesc).getContent();
         //dto 변환
         List<ThandbagResponseDto> searchedPosts = new ArrayList<>();
         for (Post post : posts) {

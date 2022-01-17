@@ -17,7 +17,12 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     Page<Post> findAllByUserOrderByCreatedAtDesc(User user, Pageable pageable);
     Page<Post> findAllByShareTrueOrderByCreatedAtDesc(Pageable pageable);
     List<Post> findAllByShareTrueOrderByCreatedAtDesc();
-   // @Lock(LockModeType.PESSIMISTIC_WRITE)
+
+    // @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query(value = "select p from Post p where p.id = :id")
     Optional<Post> findByIdForHitCount(@Param("id") Long postId);
+
+    //닉네임, 게시글 제목, 게시글 내용 안에 키워드가 포함되는 글들을 리턴
+    @Query(value = "select p from Post p where p.share = true and (p.title like %:keyword% or p.content like %:keyword% or p.user in (select u from User u where u.nickname like %:keyword%))")
+    Page<Post> findAllByShareTrueAndContainsKeywordForSearch(@Param("keyword") String keyword, Pageable pageable);
 }

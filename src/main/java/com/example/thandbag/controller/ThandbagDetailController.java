@@ -4,6 +4,7 @@ import com.example.thandbag.dto.post.BestUserDto;
 import com.example.thandbag.dto.post.HitCountDto;
 import com.example.thandbag.dto.post.PunchThangbagResponseDto;
 import com.example.thandbag.dto.post.ThandbagResponseDto;
+import com.example.thandbag.model.User;
 import com.example.thandbag.security.UserDetailsImpl;
 import com.example.thandbag.service.ThandbagDetailService;
 import lombok.RequiredArgsConstructor;
@@ -17,10 +18,20 @@ public class ThandbagDetailController {
 
     private final ThandbagDetailService thandbagDetailService;
 
+    //로그인 없이 생드백 상세보기
+    @CrossOrigin(exposedHeaders = "Authorization", originPatterns = "*")
+    @GetMapping("/api/visitor/thandbag/{postId}")
+    public ThandbagResponseDto getThandbagDetail(@PathVariable int postId) {
+        User user = new User();
+        user.setNickname("visitor");
+        return thandbagDetailService.getOneThandbag(postId, user);
+    }
+
     // 생드백 상세보기
     @CrossOrigin(exposedHeaders = "Authorization", originPatterns = "*")
     @GetMapping("/api/thandbag/{postId}")
-    public ThandbagResponseDto getThandbagDetail(@PathVariable int postId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public ThandbagResponseDto getThandbagDetail(@PathVariable int postId, @AuthenticationPrincipal
+            (expression = "#this=='anonymousUser' ? null : userDetails") UserDetailsImpl userDetails) {
         return thandbagDetailService.getOneThandbag(postId, userDetails.getUser());
     }
 
