@@ -66,12 +66,14 @@ public class MyPageService {
         if (file != null) {
             profileImgUrl = imageService.uploadFile(file);
         }
+//
+//        ProfileImg newProfileImg = !profileImgRepository.findByProfileImgUrl(profileImgUrl).isPresent() ? profileImgRepository.save(profileImg.get()): new ProfileImg(profileImgUrl);
+//
+        if (!profileImgRepository.findByProfileImgUrl(profileImgUrl).isPresent()) {
+            ProfileImg profileImg1 = profileImgRepository.save(new ProfileImg(profileImgUrl));
+            user.setProfileImg(profileImg1);
+        }
 
-        ProfileImg newProfileImg = !profileImgRepository.findByProfileImgUrl(profileImgUrl).isPresent() ? profileImgRepository.save(profileImg.get()): new ProfileImg(profileImgUrl);
-
-        profileImgRepository.save(newProfileImg);
-
-        user.setProfileImg(newProfileImg);
         user.setNickname(nickname);
         user.setMbti(mbti);
 
