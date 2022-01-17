@@ -40,7 +40,8 @@ public class ImageService {
             final String saveFileName = getUuid() + ext;
             // 파일 객체 생성
             // System.getProperty => 시스템 환경에 관한 정보를 얻을 수 있다. (user.dir = 현재 작업 디렉토리를 의미함)
-            File newFile = new File(System.getProperty("user.dir") + saveFileName);
+//            File newFile = new File(System.getProperty("user.dir") + saveFileName);
+            File newFile = new File(file + saveFileName);
             // 파일 변환
             file.transferTo(newFile);
             // S3 파일 업로드
