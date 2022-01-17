@@ -54,8 +54,6 @@ public class MyPageService {
             profileImgRepository.save(profileImg);
         }
 
-        user.setProfileImg(profileImg);
-
         // 닉네임 중복검사용
         Optional<User> foundNickname = userRepository.findByNickname(updateDto.getNickname());
 
@@ -71,9 +69,10 @@ public class MyPageService {
             nickname = updateDto.getNickname();
         }
 
-        user.setNickname(nickname);
-
         String mbti = updateDto.getMbti();
+
+        user.setProfileImg(profileImg);
+        user.setNickname(nickname);
         user.setMbti(mbti);
 
         userRepository.save(user);
