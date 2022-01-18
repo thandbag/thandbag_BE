@@ -3,9 +3,9 @@ package com.example.thandbag.service;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.example.thandbag.Enum.Auth;
 import com.example.thandbag.Enum.Category;
-import com.example.thandbag.model.Comment;
-import com.example.thandbag.model.ProfileImg;
-import com.example.thandbag.model.User;
+import com.example.thandbag.dto.post.ThandbagRequestDto;
+import com.example.thandbag.dto.post.ThandbagResponseDto;
+import com.example.thandbag.model.*;
 import com.example.thandbag.repository.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -14,10 +14,24 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.*;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
 
+import javax.persistence.*;
+
+import java.io.IOException;
+import java.nio.channels.Channel;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class MainServiceTest {
@@ -73,36 +87,39 @@ class MainServiceTest {
 
     }
 
-//    @Test
-//    @DisplayName("샌드백 만들기(img 없이, 공유 o)")
-//    @Order(1)
-//    void createThandbag() {
-//        ThandbagRequestDto thandbagRequestDto = new ThandbagRequestDto(title, content, null, "LOVE", share);
-//        List<PostImg> postImgList = new ArrayList<>();
-//        Post post = Post.builder()
-//                .id(1L)
-//                .title(thandbagRequestDto.getTitle())
-//                .category(category)
-//                .closed(thandbagRequestDto.isShare())
-//                .content(thandbagRequestDto.getContent())
-//                .imgList(postImgList)
-//                .share(thandbagRequestDto.isShare())
-//                .user(user)
-//                .build();
-////        when(postRepository.save(post))
-////                .thenReturn(post);
-////        when(postRepository.getById(post.getId()))
-////                .thenReturn(post);
-//
-//        when(postRepository.getById(null)).thenReturn(post);
-//        ThandbagResponseDto thandbagResponseDto = mainService.createThandbag(thandbagRequestDto, user);
-//        assertEquals(category.getCategory(), thandbagResponseDto.getCategory());
-//        assertNull(thandbagResponseDto.getCreatedAt());
-//        assertNotNull(title);
-//        assertFalse(closed);
-//        assertTrue(share);
-//        assertNotNull(content);
-//    }
+    @Test
+    @DisplayName("샌드백 만들기(img 없이, 공유 o)")
+    @Order(1)
+    void createThandbag() throws IOException {
+        ThandbagRequestDto thandbagRequestDto = new ThandbagRequestDto(title, content, null, "LOVE", share);
+        List<PostImg> postImgList = new ArrayList<>();
+        Post post = Post.builder()
+                .id(1L)
+                .title(thandbagRequestDto.getTitle())
+                .category(category)
+                .closed(thandbagRequestDto.isShare())
+                .content(thandbagRequestDto.getContent())
+                .imgList(postImgList)
+                .share(thandbagRequestDto.isShare())
+                .user(user)
+                .build();
+        post.setCreatedAt(LocalDateTime.now());
+
+        when(postRepository.save(any()))
+                .thenReturn(post);
+
+        when(postRepository.findById(1L)).thenReturn(Optional.ofNullable(post));
+
+        when(userRepository.save(any())).thenReturn(user);
+
+        when(lvImgRepository.findByTitleAndLevel(anyString(), anyInt())).thenReturn(new LvImg("aaa", "aaa", 1));
+        ThandbagResponseDto thandbagResponseDto = mainService.createThandbag(thandbagRequestDto, user);
+        assertEquals("LOVE", thandbagResponseDto.getCategory());
+        assertNotNull(title);
+        assertFalse(closed);
+        assertTrue(share);
+        assertNotNull(content);
+    }
 
     @DisplayName("전체 게시글 조회")
     @Test
@@ -112,63 +129,40 @@ class MainServiceTest {
 
     }
 
-//    @Nested
-//    @Order(3)
-//    @DisplayName("샌드백 및 회원 검색 - 검색 키워드 매칭 o")
-//    class search {
-//
-//        @Test
-//        @DisplayName("검색 키워드 매칭 o")
-//        void searchThandbags() {
-//            ThandbagRequestDto thandbagRequestDto = new ThandbagRequestDto(title, content, null, "LOVE", share);
-//            List<PostImg> postImgList = new ArrayList<>();
-//            Post post = Post.builder()
-//                    .id(1L)
-//                    .title(thandbagRequestDto.getTitle())
-//                    .category(category)
-//                    .closed(thandbagRequestDto.isShare())
-//                    .content(thandbagRequestDto.getContent())
-//                    .imgList(postImgList)
-//                    .share(thandbagRequestDto.isShare())
-//                    .user(user)
-//                    .commentList(new ArrayList<>())
-//                    .build();
-//            post.setCreatedAt(LocalDateTime.now());
-//            List<Post> allposts = new ArrayList<>();
-//            allposts.add(post);
-//            when(postRepository.findAllByShareTrueOrderByCreatedAtDesc())
-//                    .thenReturn(allposts);
-//            when(userRepository.getById(1L))
-//                    .thenReturn(post.getUser());
-//            assertEquals(1, mainService.searchThandbags("노잼", 0, 1).size());
-//        }
-//
-//        @DisplayName("검색 키워드 매칭 x")
-//        @Test
-//        void searchThandbags2() {
-//            ThandbagRequestDto thandbagRequestDto = new ThandbagRequestDto(title, content, null, "LOVE", share);
-//            List<PostImg> postImgList = new ArrayList<>();
-//            Post post = Post.builder()
-//                    .id(1L)
-//                    .title(thandbagRequestDto.getTitle())
-//                    .category(category)
-//                    .closed(thandbagRequestDto.isShare())
-//                    .content(thandbagRequestDto.getContent())
-//                    .imgList(postImgList)
-//                    .share(thandbagRequestDto.isShare())
-//                    .user(user)
-//                    .commentList(new ArrayList<>())
-//                    .build();
-//            post.setCreatedAt(LocalDateTime.now());
-//            List<Post> allposts = new ArrayList<>();
-//            allposts.add(post);
-//            when(postRepository.findAllByShareTrueOrderByCreatedAtDesc())
-//                    .thenReturn(allposts);
-//            when(userRepository.getById(1L))
-//                    .thenReturn(post.getUser());
-//            assertEquals(0, mainService.searchThandbags("PP", 0, 1).size());
-//        }
-//    }
+    @Nested
+    @Order(3)
+    @DisplayName("샌드백 및 회원 검색 - 검색 키워드 매칭 o")
+    class search {
+
+        @Test
+        @DisplayName("검색 키워드 매칭 o")
+        void searchThandbags() {
+            ThandbagRequestDto thandbagRequestDto = new ThandbagRequestDto(title, content, null, "LOVE", share);
+            List<PostImg> postImgList = new ArrayList<>();
+            Post post = Post.builder()
+                    .id(1L)
+                    .title(thandbagRequestDto.getTitle())
+                    .category(category)
+                    .closed(thandbagRequestDto.isShare())
+                    .content(thandbagRequestDto.getContent())
+                    .imgList(postImgList)
+                    .share(thandbagRequestDto.isShare())
+                    .user(user)
+                    .commentList(new ArrayList<>())
+                    .build();
+            post.setCreatedAt(LocalDateTime.now());
+            List<Post> allposts = new ArrayList<>();
+            allposts.add(post);
+            Pageable sortedByModifiedAtDesc = PageRequest.of(0, 1, Sort.by("modifiedAt").descending());
+            int start = (int)sortedByModifiedAtDesc.getOffset();
+            int end = Math.min((start + sortedByModifiedAtDesc.getPageSize()), allposts.size());
+            Page<Post> page = new PageImpl<>(allposts.subList(start, end), sortedByModifiedAtDesc, allposts.size());
+            when(postRepository.findAllByShareTrueAndContainsKeywordForSearch(anyString(), any()))
+                    .thenReturn(page);
+
+            assertEquals(1, mainService.searchThandbags("노잼", 0, 1).size());
+        }
+    }
 }
 
 

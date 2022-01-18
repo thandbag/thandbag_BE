@@ -81,22 +81,6 @@ public class MyPageService {
         );
     }
 
-    // 이미지 업로드
-    @Transactional
-    public ProfileImgUpdageDto updateProfileImg(MultipartFile multipartFile, UserDetailsImpl userDetails) throws IOException {
-        User user = userRepository.getById(userDetails.getUser().getId());
-
-        String profileImgUrl = imageService.uploadFile(multipartFile);
-        ProfileImg profileImg = new ProfileImg(profileImgUrl);
-        profileImgRepository.save(profileImg);
-
-        user.setProfileImg(profileImg);
-        userRepository.save(user);
-
-        return new ProfileImgUpdageDto(profileImgUrl);
-    }
-
-
     // 내가 작성한 생드백 리스트
     public MyPageResponseDto getMyPostList(int pageNo, int sizeNo, UserDetailsImpl userDetails) {
 
