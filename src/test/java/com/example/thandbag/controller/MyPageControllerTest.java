@@ -183,7 +183,7 @@ class MyPageControllerTest {
                     "image",
                     "image.image",
                     "image/png",
-                    new FileInputStream("C:\\Users\\ksb36\\Downloads\\Untitled (4).png")
+                    new FileInputStream("src/test/resources/templates/testImg/KakaoTalk_Photo_2021-05-10-00-14-49.jpeg")
             );
 
             ByteArrayResource resource = new ByteArrayResource(file.getBytes()) {
