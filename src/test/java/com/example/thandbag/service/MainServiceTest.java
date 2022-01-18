@@ -7,7 +7,10 @@ import com.example.thandbag.dto.post.ThandbagRequestDto;
 import com.example.thandbag.dto.post.ThandbagResponseDto;
 import com.example.thandbag.model.*;
 import com.example.thandbag.repository.*;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -58,15 +61,15 @@ class MainServiceTest {
 
     @BeforeEach
     void setup() {
-        title = "노잼";
-        content = "레알 테케 쓰는거 개노잼";
+        title = "제목1";
+        content = "내용1";
         closed = false;
         share = true;
         user = User.builder()
                 .id(1L)
                 .username("asb@abc.abc")
                 .password("1234")
-                .nickname("nojam")
+                .nickname("nickname")
                 .mbti("INTP")
                 .totalCount(0)
                 .level(1)

@@ -32,6 +32,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -48,8 +49,6 @@ class MyPageControllerTest {
     private PostRepository postRepository;
     @Autowired
     private UserRepository userRepository;
-//    @Autowired
-//    private MockMvc mockMvc;
 
     private Long postId;
 

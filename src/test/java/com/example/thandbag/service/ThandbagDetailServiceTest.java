@@ -68,15 +68,15 @@ class ThandbagDetailServiceTest {
 
     @BeforeEach
     void setup() {
-        title = "노잼";
-        content = "레알 테케 쓰는거 개노잼";
+        title = "테스트";
+        content = "테스트내용";
         closed = false;
         share = true;
         user = User.builder()
                 .id(1L)
                 .username("asb@abc.abc")
                 .password("1234")
-                .nickname("nojam")
+                .nickname("test")
                 .mbti("INTP")
                 .totalCount(1)
                 .level(1)
@@ -117,7 +117,7 @@ class ThandbagDetailServiceTest {
     }
 
 
-    @DisplayName("샌드백 상세보기")
+    @DisplayName("생드백 상세보기")
     @Test
     @Order(1)
     void getOneThandbag() {
@@ -139,7 +139,7 @@ class ThandbagDetailServiceTest {
         assertNotNull(thandbagResponseDto);
         assertEquals(thandbagResponseDto.getUserId(), 1);
         assertEquals(1, thandbagResponseDto.getComments().size());
-        assertEquals("노잼", thandbagResponseDto.getTitle());
+        assertEquals("테스트", thandbagResponseDto.getTitle());
 
     }
 
@@ -159,7 +159,7 @@ class ThandbagDetailServiceTest {
         then(alarmRepository).should(times(1)).deleteAllByPostId(postId);
     }
 
-    @DisplayName("샌드백 떠트리기")
+    @DisplayName("생드백 떠트리기")
     @Test
     @Order(3)
     void completeThandbag() {
@@ -175,7 +175,7 @@ class ThandbagDetailServiceTest {
                 .id(2L)
                 .username("hh@hoho.haha")
                 .password("1234")
-                .nickname("뀨류잼")
+                .nickname("test2")
                 .mbti("ESFJ")
                 .totalCount(1)
                 .level(1)
@@ -183,7 +183,7 @@ class ThandbagDetailServiceTest {
                 .auth(Auth.USER).build();
 
         Comment comment2 = Comment.builder()
-                .comment("테케 레알 꿀잼")
+                .comment("테스트코멘트2")
                 .likedByWriter(true)
                 .user(user1)
                 .post(post)
@@ -206,7 +206,7 @@ class ThandbagDetailServiceTest {
         //then
 
         assertEquals(1, bestUserDtoList.size());
-        assertEquals("뀨류잼", bestUserDtoList.get(0).getNickname());
+        assertEquals("test2", bestUserDtoList.get(0).getNickname());
         assertEquals("ESFJ", bestUserDtoList.get(0).getMbti());
     }
 }
