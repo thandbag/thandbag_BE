@@ -3,6 +3,8 @@ package com.example.thandbag.controller;
 import com.example.thandbag.dto.login.LoginRequestDto;
 import com.example.thandbag.dto.login.LoginResultDto;
 import com.example.thandbag.dto.mypage.MyPageResponseDto;
+import com.example.thandbag.dto.mypage.profile.ProfileUpdateRequestDto;
+import com.example.thandbag.dto.mypage.profile.ProfileUpdateResponseDto;
 import com.example.thandbag.dto.post.ThandbagRequestDto;
 import com.example.thandbag.dto.post.ThandbagResponseDto;
 import com.example.thandbag.dto.signup.SignupRequestDto;
@@ -16,8 +18,20 @@ import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.*;
+import org.springframework.http.converter.FormHttpMessageConverter;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -148,48 +162,51 @@ class MyPageControllerTest {
 
         }
 
-//        @Test
-//        @Order(2)
-//        @DisplayName("회원정보 수정 1")
-//        void test2() throws IOException {
-//
-//            //given
-//            ProfileUpdateRequestDto profileUpdateRequestDto = ProfileUpdateRequestDto
-//                    .builder()
-//                    .nickname("바껴라")
-//                    .mbti("INFJ")
-//                    .build();
-//
-////            String requestBody = mapper.writeValueAsString(profileUpdateRequestDto);
-//
-//            headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-//            headers.set("Authorization", token);
-//
-//            MockMultipartFile file = new MockMultipartFile(
-//                    "image",
-//                    "image.image",
-//                    "image/png",
-//                    new FileInputStream("src/test/resources/templates/testImg/KakaoTalk_Photo_2021-05-10-00-14-49.jpeg")
-//            );
-//
-//            MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-//            map.add("nickname", profileUpdateRequestDto.getNickname());
-//            map.add("mbti", profileUpdateRequestDto.getMbti());
-//
-//            HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
-//
-//            //when
-//            ResponseEntity<ProfileUpdateResponseDto> response = restTemplate.postForEntity(
-//                    "/mypage/profile",
-//                    request,
-//                    ProfileUpdateResponseDto.class);
-//
-//            //then
-//            assertEquals(HttpStatus.OK, response.getStatusCode());
-//            assertEquals("INFJ", response.getBody().getMbti());
-//            assertEquals("바껴라", response.getBody().getNickname());
-//
-//        }
+        @Test
+        @Order(2)
+        @DisplayName("회원정보 수정 1")
+        void test2() throws IOException {
+
+            //given
+            ProfileUpdateRequestDto profileUpdateRequestDto = ProfileUpdateRequestDto
+                    .builder()
+                    .nickname("바껴라")
+                    .mbti("INFJ")
+                    .build();
+
+            MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
+
+            headers.set("Content-Type", "multipart/form-data");
+            headers.set("Authorization", token);
+
+            MockMultipartFile file = new MockMultipartFile(
+                    "image",
+                    "image.image",
+                    "image/png",
+                    new FileInputStream("C:\\Users\\ksb36\\Downloads\\Untitled (4).png")
+            );
+
+            ByteArrayResource resource = new ByteArrayResource(file.getBytes()) {
+                @Override
+                public String getFilename() throws IllegalStateException {
+                    return file.getOriginalFilename();
+                }
+            };
+            map.set("file", resource);
+            map.set("updateDto", profileUpdateRequestDto);
+            HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity(map, headers);
+
+            //when
+            ResponseEntity<ProfileUpdateResponseDto> response = restTemplate.postForEntity(
+                    "/mypage/profile",
+                    requestEntity,
+                    ProfileUpdateResponseDto.class);
+
+            //then
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+            assertEquals("INFJ", response.getBody().getMbti());
+            assertEquals("바껴라", response.getBody().getNickname());
+        }
 
         @Test
         @Order(3)
