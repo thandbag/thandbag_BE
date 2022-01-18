@@ -18,18 +18,13 @@ import org.springframework.data.domain.*;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
 
-import javax.persistence.*;
-
 import java.io.IOException;
-import java.nio.channels.Channel;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
@@ -88,7 +83,7 @@ class MainServiceTest {
     }
 
     @Test
-    @DisplayName("샌드백 만들기(img 없이, 공유 o)")
+    @DisplayName("생드백 만들기(img 없이, 공유 o)")
     @Order(1)
     void createThandbag() throws IOException {
         ThandbagRequestDto thandbagRequestDto = new ThandbagRequestDto(title, content, null, "LOVE", share);
@@ -129,9 +124,8 @@ class MainServiceTest {
 
     }
 
-    @Nested
     @Order(3)
-    @DisplayName("샌드백 및 회원 검색 - 검색 키워드 매칭 o")
+    @DisplayName("생드백 및 회원 검색 - 검색 키워드 매칭 o")
     class search {
 
         @Test
@@ -160,7 +154,7 @@ class MainServiceTest {
             when(postRepository.findAllByShareTrueAndContainsKeywordForSearch(anyString(), any()))
                     .thenReturn(page);
 
-            assertEquals(1, mainService.searchThandbags("노잼", 0, 1).size());
+            assertEquals(1, mainService.searchThandbags("내용", 0, 1).size());
         }
     }
 }

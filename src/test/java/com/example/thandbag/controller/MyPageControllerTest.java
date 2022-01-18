@@ -21,18 +21,12 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.*;
-import org.springframework.http.converter.FormHttpMessageConverter;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -207,10 +201,45 @@ class MyPageControllerTest {
             assertEquals("바껴라", response.getBody().getNickname());
         }
 
+
         @Test
         @Order(3)
+        @DisplayName("회원정보 수정 2")
+        void test3() throws IOException {
+
+            //given
+            ProfileUpdateRequestDto profileUpdateRequestDto = ProfileUpdateRequestDto
+                    .builder()
+                    .nickname("바껴라")
+                    .mbti("INFJ")
+                    .build();
+
+            headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+            headers.set("Authorization", token);
+
+            MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
+            map.add("file", new ClassPathResource("templates/testImg/KakaoTalk_Photo_2021-05-10-00-14-49.jpeg"));
+            map.add("updateDto", profileUpdateRequestDto);
+
+            HttpEntity<MultiValueMap<String, Object>> request = new HttpEntity<>(map, headers);
+
+            //when
+            ResponseEntity<ProfileUpdateResponseDto> response = restTemplate.postForEntity(
+                    "/mypage/profile",
+                    request,
+                    ProfileUpdateResponseDto.class);
+
+            //then
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+            assertEquals("INFJ", response.getBody().getMbti());
+            assertEquals("바껴라", response.getBody().getNickname());
+        }
+
+
+        @Test
+        @Order(4)
         @DisplayName("내 생드백 불러오기")
-        void test3() throws JsonProcessingException {
+        void test4() throws JsonProcessingException {
             //when
             headers.set("Authorization", token);
             HttpEntity request = new HttpEntity(headers);
