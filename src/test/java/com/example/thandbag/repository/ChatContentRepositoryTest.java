@@ -144,7 +144,7 @@ class ChatContentRepositoryTest {
         assertNotEquals(Optional.empty(), result);
         assertTrue(result.isPresent());
         assertEquals("테스트", result.get().getUser().getNickname());
-//        assertEquals("채팅3", result.get().getContent());
+        assertEquals("채팅3", result.get().getContent());
     }
 
     @Order(3)

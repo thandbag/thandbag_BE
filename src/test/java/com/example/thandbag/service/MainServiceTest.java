@@ -3,28 +3,21 @@ package com.example.thandbag.service;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.example.thandbag.Enum.Auth;
 import com.example.thandbag.Enum.Category;
-import com.example.thandbag.dto.post.ThandbagRequestDto;
-import com.example.thandbag.model.*;
+import com.example.thandbag.model.Comment;
+import com.example.thandbag.model.ProfileImg;
+import com.example.thandbag.model.User;
 import com.example.thandbag.repository.*;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
 
-import javax.persistence.*;
-
-import java.nio.channels.Channel;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class MainServiceTest {
@@ -54,15 +47,15 @@ class MainServiceTest {
 
     @BeforeEach
     void setup() {
-        title = "노잼";
-        content = "레알 테케 쓰는거 개노잼";
+        title = "제목1";
+        content = "내용1";
         closed = false;
         share = true;
         user = User.builder()
                 .id(1L)
                 .username("asb@abc.abc")
                 .password("1234")
-                .nickname("nojam")
+                .nickname("nickname")
                 .mbti("INTP")
                 .totalCount(0)
                 .level(1)
