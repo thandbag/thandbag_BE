@@ -67,7 +67,7 @@ public class MainService {
                 .share(thandbagRequestDto.isShare())
                 .user(user)
                 .build();
-        postRepository.save(post);
+        post = postRepository.save(post);
 
         //전체 게시글 수 count
         user.plusTotalPostsAndComments();
@@ -122,6 +122,7 @@ public class MainService {
         }
 
         user = userRepository.save(user);
+        System.out.println("id: " + post.getId());
         Post posted = postRepository.findById(post.getId()).orElseThrow(
                 () -> new NullPointerException("post가 없습니다"));
 

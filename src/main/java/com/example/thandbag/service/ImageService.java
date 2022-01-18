@@ -27,8 +27,6 @@ public class ImageService {
     private String bucket;
 
     // S3 업로드
-
-    // S3 업로드
     public String uploadFile(MultipartFile file) throws IOException {
         String origName = file.getOriginalFilename();
         // 확장자를 찾기 위한 코드
