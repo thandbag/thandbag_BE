@@ -17,11 +17,6 @@ class ProfileImgRepositoryTest {
     @Autowired
     ProfileImgRepository profileImgRepository;
 
-    @BeforeAll
-    void clean() {
-        profileImgRepository.deleteAll();
-    }
-
     @BeforeEach
     void setup() {
 
