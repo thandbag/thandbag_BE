@@ -13,6 +13,8 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Table(indexes = {@Index(name = "n_index", columnList = "nickname", unique = true),
+        @Index(name = "u_index", columnList = "username", unique = true)})
 public class User extends Timestamped {
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
