@@ -58,6 +58,8 @@ public class MainControllerTest {
         Optional<User> user = userRepository.findByUsername("xxx@naver.com");
         List<Post> postList = postRepository.findAllByUser(user.get());
         postRepository.deleteById(postId);
+        userRepository.deleteById(user.get().getId());
+        assertEquals(Optional.empty(), userRepository.findById(user.get().getId()));
         assertEquals(Optional.empty(), postRepository.findById(postList.get(0).getId()));
     }
 
