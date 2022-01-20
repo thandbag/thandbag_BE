@@ -1,5 +1,6 @@
 package com.example.thandbag.config;
 
+import com.example.thandbag.Enum.MessageType;
 import com.example.thandbag.dto.chat.ChatMessageDto;
 import com.example.thandbag.repository.ChatRedisRepository;
 import com.example.thandbag.repository.UserRepository;
@@ -50,7 +51,7 @@ public class StompHandler implements ChannelInterceptor {
             String jwtToken = accessor.getFirstNativeHeader("Authorization").substring(7);
             String name = userRepository.findByUsername(jwtDecoder.decodeUsername(jwtToken)).get().getNickname();
             chatRedisRepository.setNickname(sessionId, name);
-            chatService.sendChatMessage(ChatMessageDto.builder().type(ChatMessageDto.MessageType.ENTER).roomId(roomId).sender(name).build());
+            chatService.sendChatMessage(ChatMessageDto.builder().type(MessageType.ENTER).roomId(roomId).sender(name).build());
             log.info("SUBSCRIBED {}, {}", name, roomId);
         } else if (StompCommand.DISCONNECT == accessor.getCommand()) { // Websocket 연결 종료
             // 연결이 종료된 클라이언트 sesssionId로 채팅방 id를 얻는다.
@@ -60,7 +61,7 @@ public class StompHandler implements ChannelInterceptor {
             chatRedisRepository.minusUserCount(roomId);
             // 클라이언트 퇴장 메시지를 채팅방에 발송한다.(redis publish)
             String name = chatRedisRepository.getNickname(sessionId);
-            chatService.sendChatMessage(ChatMessageDto.builder().type(ChatMessageDto.MessageType.QUIT).roomId(roomId).sender(name).build());
+            chatService.sendChatMessage(ChatMessageDto.builder().type(MessageType.QUIT).roomId(roomId).sender(name).build());
             // 퇴장한 클라이언트의 roomId 맵핑 정보를 삭제한다.
             chatRedisRepository.removeUserEnterInfo(sessionId);
             log.info("DISCONNECTED {}, {}", sessionId, roomId);
