@@ -1,5 +1,6 @@
 package com.example.thandbag.dto.chat;
 
+import com.example.thandbag.Enum.MessageType;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,11 +22,6 @@ public class ChatMessageDto {
         this.message = message;
         this.userCount = userCount;
         this.createdAt = createdAt;
-    }
-
-    // 메시지 타입 : 입장, 퇴장, 채팅
-    public enum MessageType {
-        ENTER, QUIT, TALK, ALARM
     }
 
     private MessageType type; // 메시지 타입

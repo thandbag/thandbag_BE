@@ -63,11 +63,14 @@ dependencies {
 	implementation group: 'it.ozimov', name: 'embedded-redis', version: '0.7.2'
 	testImplementation 'it.ozimov:embedded-redis:0.7.2'
 
-
 	//test
 	testCompileOnly 'org.projectlombok:lombok:1.18.12'
 	testAnnotationProcessor 'org.projectlombok:lombok:1.18.12'
 	implementation 'com.pusher:pusher-http-java:1.0.0'
+
+	// ArchUnit (Architecture Test)
+	testImplementation 'com.tngtech.archunit:archunit-junit5:0.22.0'
+
 
 }
 

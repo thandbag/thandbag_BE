@@ -2,6 +2,7 @@ package com.example.thandbag.service;
 
 
 import com.example.thandbag.Enum.AlarmType;
+import com.example.thandbag.Enum.MessageType;
 import com.example.thandbag.dto.alarm.AlarmResponseDto;
 import com.example.thandbag.dto.chat.ChatHistoryResponseDto;
 import com.example.thandbag.dto.chat.ChatMessageDto;
@@ -58,10 +59,10 @@ public class ChatService {
     public void sendChatMessage(ChatMessageDto chatMessageDto) {
         String nickname = chatMessageDto.getSender();
         chatMessageDto.setUserCount(chatRedisRepository.getUserCount(chatMessageDto.getRoomId()));
-        if (ChatMessageDto.MessageType.ENTER.equals(chatMessageDto.getType())) {
+        if (MessageType.ENTER.equals(chatMessageDto.getType())) {
             chatMessageDto.setMessage(chatMessageDto.getSender() + "님이 방에 입장했습니다.");
             chatMessageDto.setSender("[알림]");
-        } else if (ChatMessageDto.MessageType.QUIT.equals(chatMessageDto.getType())) {
+        } else if (MessageType.QUIT.equals(chatMessageDto.getType())) {
             chatMessageDto.setMessage(chatMessageDto.getSender() + "님이 방에서 나갔습니다.");
             chatMessageDto.setSender("[알림]");
         } else {

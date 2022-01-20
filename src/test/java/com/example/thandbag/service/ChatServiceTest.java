@@ -1,6 +1,7 @@
 package com.example.thandbag.service;
 
 import com.example.thandbag.Enum.Auth;
+import com.example.thandbag.Enum.MessageType;
 import com.example.thandbag.dto.chat.ChatHistoryResponseDto;
 import com.example.thandbag.dto.chat.ChatMessageDto;
 import com.example.thandbag.dto.chat.ChatMyRoomListResponseDto;
@@ -23,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 
@@ -70,7 +71,7 @@ class ChatServiceTest {
         ChatService chatService = new ChatService(channelTopic, redisTemplate, chatRedisRepository, userRepository, chatRoomRepository, chatContentRepository, alarmRepository);
 
         ChatMessageDto chatMessageDto = new ChatMessageDto(
-                ChatMessageDto.MessageType.ENTER,
+                MessageType.ENTER,
                 "asdf1234",
                 user.getNickname(),
                 "테스트메시지",

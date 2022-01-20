@@ -18,21 +18,18 @@ public class MainController {
     private final MainService mainService;
 
     // 생드백 만들기
-    @CrossOrigin(exposedHeaders = "Authorization", originPatterns = "*")
     @PostMapping("/api/newThandbag")
     public ThandbagResponseDto createThandbag(@RequestBody ThandbagRequestDto thandbagRequestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
         return mainService.createThandbag(thandbagRequestDto, userDetails.getUser());
     }
 
     // 공개된 생드백 전체 리스트 보기
-    @CrossOrigin(exposedHeaders = "Authorization", originPatterns = "*")
     @GetMapping("/api/thandbagList")
     public List<ThandbagResponseDto> allSharedThandbag(@RequestParam int page, @RequestParam int size) {
         return mainService.showAllThandbag(page, size);
     }
 
     // 검색된 생드백 보기
-    @CrossOrigin(exposedHeaders = "Authorization", originPatterns = "*")
     @GetMapping("/api/thandbag")
     public List<ThandbagResponseDto> searchThandbags(@RequestParam String keyword, @RequestParam int page, @RequestParam int size) {
         return mainService.searchThandbags(keyword, page, size);
