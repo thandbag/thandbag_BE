@@ -17,9 +17,12 @@ notifications:
     - 
 before_install:
 - openssl aes-256-cbc -K $encrypted_5aaf72138cfb_key -iv $encrypted_5aaf72138cfb_iv
-  -in src/test/resources/application-test.properties.enc -out src/test/resources/application-test.properties -d
+  -in application-test.properties.enc -out application-test.properties -d
 - openssl aes-256-cbc -K $encrypted_2f692484526a_key -iv $encrypted_2f692484526a_iv
   -in src/main/resources/application.properties.enc -out src/main/resources/application.properties
+  -d
+- openssl aes-256-cbc -K $encrypted_5aaf72138cfb_key -iv $encrypted_5aaf72138cfb_iv
+  -in src/test/resources/application-test.properties.enc -out src/test/resources/application-test.properties
   -d
 before_deploy:
 - mkdir -p before-deploy
