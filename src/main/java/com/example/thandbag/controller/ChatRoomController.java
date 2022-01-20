@@ -23,7 +23,6 @@ public class ChatRoomController {
     private final ChatRedisRepository chatRedisRepository;
     private final ChatService chatService;
 
-    @CrossOrigin(exposedHeaders = "Authorization", originPatterns = "*")
     @GetMapping("/chat/user")
     public LoginInfo getUserInfo() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -33,28 +32,24 @@ public class ChatRoomController {
     }
 
     // 내가 참가한 모든 채팅방 목록
-    @CrossOrigin(exposedHeaders = "Authorization", originPatterns = "*")
     @GetMapping("/chat/myRoomList")
     public List<ChatMyRoomListResponseDto> room(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return chatService.findMyChatList(userDetails.getUser());
     }
 
     // 채팅방 생성
-    @CrossOrigin(exposedHeaders = "Authorization", originPatterns = "*")
     @PostMapping("/chat/room")
     public ChatRoomDto createRoom(@RequestBody CreateRoomRequestDto roomRequestDto) {
         return chatService.createChatRoom(roomRequestDto);
     }
 
     // 채팅방 입장 화면
-    @CrossOrigin(exposedHeaders = "Authorization", originPatterns = "*")
     @PostMapping("/chat/room/enter/{roomId}")
     public List<ChatHistoryResponseDto> roomDetail(@PathVariable String roomId) {
         return chatService.getTotalChatContents(roomId);
     }
 
     // 특정 채팅방 조회
-    @CrossOrigin(exposedHeaders = "Authorization", originPatterns = "*")
     @PostMapping("/chat/room/{roomId}")
     public ChatRoomDto roomInfo(@PathVariable String roomId) {
         return chatRedisRepository.findRoomById(roomId);

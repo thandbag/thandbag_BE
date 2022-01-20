@@ -19,14 +19,12 @@ public class MyPageController {
     private final MyPageService myPageService;
 
     // 마이페이지 -> 회원정보 수정
-    @CrossOrigin(exposedHeaders = "Authorization", originPatterns = "*")
     @PostMapping("/mypage/profile")
     public ProfileUpdateResponseDto updateProfile(@RequestPart(required = false) MultipartFile file, @RequestPart ProfileUpdateRequestDto updateDto, @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
         return myPageService.updateProfile(file, updateDto, userDetails);
     }
 
     // 마이페이지 -> 내가 쓴 게시글
-    @CrossOrigin(exposedHeaders = "Authorization", originPatterns = "*")
     @GetMapping("/api/myThandbag")
     public MyPageResponseDto getMyPostList(@RequestParam int pageNo, @RequestParam int sizeNo, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return myPageService.getMyPostList(pageNo, sizeNo, userDetails);

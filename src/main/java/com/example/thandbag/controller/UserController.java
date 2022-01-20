@@ -20,21 +20,18 @@ public class UserController {
     private final KakaoUserService kakaoUserService;
 
     // 회원가입
-    @CrossOrigin(exposedHeaders = "Authorization", originPatterns = "*")
     @PostMapping("/api/user/signup")
     public String userRegister(@RequestBody SignupRequestDto signupRequestDto){
         return userService.userRegister(signupRequestDto);
     }
 
     // 로그인
-    @CrossOrigin(exposedHeaders = "Authorization", originPatterns = "*")
     @PostMapping("/api/user/login")
     public LoginResultDto userLogin(@RequestBody LoginRequestDto loginRequestDto, HttpServletResponse response){
         return userService.userLogin(loginRequestDto, response);
     }
 
     // 카카오 로그인
-    @CrossOrigin(exposedHeaders = "Authorization", originPatterns = "*")
     @GetMapping("/user/kakao/callback")
     public LoginResultDto kakaoLogin(@RequestParam String code, HttpServletResponse response) throws JsonProcessingException {
         return kakaoUserService.kakaoLogin(code, response);
