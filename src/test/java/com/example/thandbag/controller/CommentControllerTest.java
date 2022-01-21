@@ -71,8 +71,10 @@ public class CommentControllerTest {
         List<Post> postList = postRepository.findAllByUser(user.get());
         postRepository.deleteById(postId);
         userRepository.deleteById(user.get().getId());
-        assertEquals(Optional.empty(), userRepository.findById(user.get().getId()));
-        assertEquals(Optional.empty(), postRepository.findById(postList.get(0).getId()));
+        assertEquals(Optional.empty(),
+                    userRepository.findById(user.get().getId()));
+        assertEquals(Optional.empty(),
+                    postRepository.findById(postList.get(0).getId()));
     }
 
     @BeforeAll
@@ -90,17 +92,17 @@ public class CommentControllerTest {
     @Order(1)
     @DisplayName("회원 가입")
     void test1() throws JsonProcessingException {
-        // given
+        /* given */
         String requestBody = mapper.writeValueAsString(user1);
         HttpEntity<String> request = new HttpEntity<>(requestBody, headers);
 
-        // when
+        /* when */
         ResponseEntity<String> response = restTemplate.postForEntity(
                 "/api/user/signup",
                 request,
                 String.class);
 
-        // then
+        /* then */
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
         assertEquals("회원가입 성공", response.getBody());
@@ -110,17 +112,17 @@ public class CommentControllerTest {
     @Order(2)
     @DisplayName("로그인, JWT 토큰 받기")
     void test2() throws JsonProcessingException {
-        // given
+        /* given */
         String requestBody = mapper.writeValueAsString(user1Login);
         HttpEntity<String> request = new HttpEntity<>(requestBody, headers);
 
-        // when
+        /* when */
         ResponseEntity<LoginResultDto> response = restTemplate.postForEntity(
                 "/api/user/login",
                 request,
                 LoginResultDto.class);
 
-        // then
+        /* then */
         token = response.getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
         assertNotEquals("", token);
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -134,7 +136,7 @@ public class CommentControllerTest {
         @DisplayName("생드백 만들기 1")
         void test1() throws JsonProcessingException {
 
-            //given
+            /* given */
             ThandbagRequestDto thandbagRequestDto = ThandbagRequestDto.builder()
                     .title("아아아")
                     .content("호호호")
@@ -146,15 +148,18 @@ public class CommentControllerTest {
             headers.set("Authorization", token);
             HttpEntity<String> request = new HttpEntity<>(requestBody, headers);
 
-            //when
-            ResponseEntity<ThandbagResponseDto> response = restTemplate.postForEntity(
-                    "/api/newThandbag",
-                    request,
-                    ThandbagResponseDto.class);
+            /* when */
+            ResponseEntity<ThandbagResponseDto> response =
+                    restTemplate.postForEntity(
+                                "/api/newThandbag",
+                                    request,
+                                    ThandbagResponseDto.class);
 
-            //then
+            /* then */
             assertEquals(HttpStatus.OK, response.getStatusCode());
-            Optional<User> user = userRepository.findByUsername("xxx@naver.com");
+            Optional<User> user = userRepository
+                    .findByUsername("xxx@naver.com");
+
             List<Post> postList = postRepository.findAllByUser(user.get());
             postId = postList.get(0).getId();
             System.out.println(postId);
@@ -172,13 +177,14 @@ public class CommentControllerTest {
             headers.set("Authorization", token);
             HttpEntity<String> request = new HttpEntity<>(requestBody, headers);
 
-            //when
-            ResponseEntity<PostCommentDto> response = restTemplate.postForEntity(
-                    "/api/" + postId + "/newComment",
-                    request,
-                    PostCommentDto.class);
+            /* when */
+            ResponseEntity<PostCommentDto> response =
+                    restTemplate.postForEntity(
+                                "/api/" + postId + "/newComment",
+                                    request,
+                                    PostCommentDto.class);
 
-            //then
+            /* then */
             PostCommentDto postCommentDto = response.getBody();
             assertEquals(HttpStatus.OK, response.getStatusCode());
             assertEquals(requestBody, postCommentDto.getComment());
@@ -191,29 +197,37 @@ public class CommentControllerTest {
         @DisplayName("댓글 좋아요/좋아요 취소 1")
         void test3() throws JsonProcessingException {
 
+            /* given */
             headers.set("Authorization", token);
             HttpEntity<String> request = new HttpEntity<>(headers);
 
-            //when
-            ResponseEntity<PostCommentDto> response = restTemplate.postForEntity(
-                    "/api/" + commentId + "/like",
-                    request,
-                    PostCommentDto.class);
+            /* when */
+            ResponseEntity<PostCommentDto> response =
+                    restTemplate.postForEntity(
+                                "/api/" + commentId + "/like",
+                                    request,
+                                    PostCommentDto.class);
 
-            //then
-            Optional<User> user = userRepository.findByUsername("xxx@naver.com");
+            /* then */
+            Optional<User> user = userRepository
+                    .findByUsername("xxx@naver.com");
+
             assertEquals(HttpStatus.OK, response.getStatusCode());
-            assertTrue(commentLikeRepository.existsByCommentAndUserId(commentRepository.getById(commentId), user.get().getId()));
+            assertTrue(commentLikeRepository.existsByCommentAndUserId(
+                    commentRepository.getById(commentId),
+                    user.get().getId()));
 
-            //when
+            /* when */
             response = restTemplate.postForEntity(
                     "/api/" + commentId + "/like",
                     request,
                     PostCommentDto.class);
 
-            //then
+            /* then */
             assertEquals(HttpStatus.OK, response.getStatusCode());
-            assertFalse(commentLikeRepository.existsByCommentAndUserId(commentRepository.getById(commentId), user.get().getId()));
+            assertFalse(commentLikeRepository.existsByCommentAndUserId(
+                    commentRepository.getById(commentId),
+                    user.get().getId()));
         }
 
         @Test
@@ -221,15 +235,20 @@ public class CommentControllerTest {
         @DisplayName("댓글 삭제 1")
         void test4() throws JsonProcessingException {
 
-            //when
+            /* when */
             headers.set("Authorization", token);
             HttpEntity request = new HttpEntity(headers);
-            ResponseEntity<String> response = restTemplate.exchange("/api/uncomment/" + commentId,
-                    HttpMethod.DELETE, request, String.class);
+            ResponseEntity<String> response =
+                    restTemplate.exchange(
+                            "/api/uncomment/" + commentId,
+                                HttpMethod.DELETE,
+                                request,
+                                String.class);
 
-            //then
+            /* then */
             assertEquals(HttpStatus.OK, response.getStatusCode());
-            assertEquals(Optional.empty(), commentRepository.findById(commentId));
+            assertEquals(Optional.empty(),
+                    commentRepository.findById(commentId));
         }
 
     }

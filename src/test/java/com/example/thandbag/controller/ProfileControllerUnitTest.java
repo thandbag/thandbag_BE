@@ -11,7 +11,7 @@ public class ProfileControllerUnitTest {
     @DisplayName("RealProfile 조회")
     @Test
     public void getRealProfile() {
-        //given
+        /* given */
         MockEnvironment env = new MockEnvironment();
         env.addActiveProfile("real");
         env.addActiveProfile("oauth");
@@ -19,41 +19,41 @@ public class ProfileControllerUnitTest {
 
         ProfileController controller = new ProfileController(env);
 
-        //when
+        /* when */
         String profile = controller.profile();
 
-        //then
+        /* then */
         assertEquals("real", profile);
     }
 
     @DisplayName("RealProfile 조회안됨")
     @Test
     public void getRealProfileFail() {
-        //given
+        /* given */
         MockEnvironment env = new MockEnvironment();
 
         env.addActiveProfile("oauth");
 
         ProfileController controller = new ProfileController(env);
 
-        //when
+        /* when */
         String profile = controller.profile();
 
-        //then
+        /* then */
         assertEquals("oauth", profile);
     }
 
     @DisplayName("ActiveProfile 없음")
     @Test
     public void noActiveProfile() {
-        //given
+        /* given */
         MockEnvironment env = new MockEnvironment();
         ProfileController controller = new ProfileController(env);
 
-        //when
+        /* when */
         String profile = controller.profile();
 
-        //then
+        /* then */
         assertEquals("default", profile);
     }
 }

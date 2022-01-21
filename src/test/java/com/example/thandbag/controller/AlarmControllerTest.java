@@ -109,17 +109,17 @@ class AlarmControllerTest {
     @Order(1)
     @DisplayName("회원 가입")
     void test1() throws JsonProcessingException {
-        // given
+        /* given */
         String requestBody = mapper.writeValueAsString(user1);
         HttpEntity<String> request = new HttpEntity<>(requestBody, headers);
 
-        // when
+        /* when */
         ResponseEntity<String> response = restTemplate.postForEntity(
                 "/api/user/signup",
                 request,
                 String.class);
 
-        // then
+        /* then */
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
         assertEquals("회원가입 성공", response.getBody());
@@ -129,17 +129,17 @@ class AlarmControllerTest {
     @Order(2)
     @DisplayName("로그인, JWT 토큰 받기")
     void test2() throws JsonProcessingException {
-        // given
+        /* given */
         String requestBody = mapper.writeValueAsString(user1Login);
         HttpEntity<String> request = new HttpEntity<>(requestBody, headers);
 
-        // when
+        /* when */
         ResponseEntity<LoginResultDto> response = restTemplate.postForEntity(
                 "/api/user/login",
                 request,
                 LoginResultDto.class);
 
-        // then
+        /* then */
         token = response.getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
         assertNotEquals("", token);
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -153,8 +153,10 @@ class AlarmControllerTest {
         @DisplayName("알람 리스트 1 - reply")
         void test1() throws JsonProcessingException {
 
-            //given
-            Optional<User> user = userRepository.findByUsername("xxx@naver.com");
+            /* given */
+            Optional<User> user = userRepository
+                    .findByUsername("xxx@naver.com");
+
             alarm.setUserId(user.get().getId());
             alarm2.setUserId(user.get().getId());
             alarm = alarmRepository.save(alarm);
@@ -162,15 +164,20 @@ class AlarmControllerTest {
             alarmId = alarm.getId();
             alarm2Id = alarm2.getId();
 
-            //when
+            /* when */
             headers.set("Authorization", token);
             HttpEntity request = new HttpEntity(headers);
             ResponseEntity<Object> response = restTemplate.exchange(
-                    "/api/alarm?page=0&size=2", HttpMethod.GET, request, Object.class);
+                    "/api/alarm?page=0&size=2",
+                    HttpMethod.GET,
+                    request,
+                    Object.class
+            );
 
-            //then
+            /* then */
             assertEquals(HttpStatus.OK, response.getStatusCode());
-            List<AlarmResponseDto> temp = (List<AlarmResponseDto>) response.getBody();
+            List<AlarmResponseDto> temp =
+                    (List<AlarmResponseDto>) response.getBody();
             assertEquals(2, temp.size());
         }
 
@@ -179,25 +186,30 @@ class AlarmControllerTest {
         @DisplayName("알람 읽음 1")
         void test2() throws JsonProcessingException {
 
-            //given
-            Optional<User> user = userRepository.findByUsername("xxx@naver.com");
+            /* given */
+            Optional<User> user = userRepository
+                    .findByUsername("xxx@naver.com");
+
             alarm.setUserId(user.get().getId());
             alarm2.setUserId(user.get().getId());
+
             alarm = alarmRepository.save(alarm);
             alarm2 = alarmRepository.save(alarm2);
+
             alarmId = alarm.getId();
             alarm2Id = alarm2.getId();
 
-            //when
+            /* when */
             headers.set("Authorization", token);
             HttpEntity request = new HttpEntity(headers);
-            ResponseEntity<AlarmResponseDto> response = restTemplate.postForEntity(
-                    "/api/alarm/" + alarmId,
-                    request,
-                    AlarmResponseDto.class
+            ResponseEntity<AlarmResponseDto> response =
+                    restTemplate.postForEntity(
+                            "/api/alarm/" + alarmId,
+                            request,
+                            AlarmResponseDto.class
             );
 
-            //then
+            /* then */
             assertEquals(HttpStatus.OK, response.getStatusCode());
             assertTrue(response.getBody().getIsRead());
         }

@@ -1,6 +1,5 @@
 package com.example.thandbag.service;
 
-import com.example.thandbag.dto.mypage.profile.ProfileImgUpdageDto;
 import com.example.thandbag.dto.mypage.MyPageResponseDto;
 import com.example.thandbag.dto.mypage.MyPostListDto;
 import com.example.thandbag.dto.mypage.profile.ProfileUpdateRequestDto;
@@ -37,22 +36,27 @@ public class MyPageService {
     private final UserValidator userValidator;
     private final ImageService imageService;
 
-    // 회원정보 수정
+    /* 회원정보 수정 */
     @Transactional
-    public ProfileUpdateResponseDto updateProfile(MultipartFile file, ProfileUpdateRequestDto updateDto, UserDetailsImpl userDetails) throws IOException {
-        User user = userRepository.getById(userDetails.getUser().getId());
-        Long userId = user.getId();
+    public ProfileUpdateResponseDto updateProfile(
+            MultipartFile file,
+            ProfileUpdateRequestDto updateDto,
+            UserDetailsImpl userDetails
+    ) throws IOException {
 
-        // 닉네임 중복검사용
-        Optional<User> foundNickname = userRepository.findByNickname(updateDto.getNickname());
+        User user = userRepository.getById(userDetails.getUser().getId());
+
+        /* 닉네임 중복검사용 */
+        Optional<User> foundNickname = userRepository
+                .findByNickname(updateDto.getNickname());
 
         String nickname = user.getNickname();
         if (updateDto.getNickname() != null) {
-            // 변경하고자 하는 닉네임과 동일하면 유효성 검사하지 않음
+            /* 변경하고자 하는 닉네임과 동일하면 유효성 검사하지 않음 */
             if (!updateDto.getNickname().equals(user.getNickname())){
-            // 닉네임 중복 검사
+            /* 닉네임 중복 검사 */
             userValidator.checkNickname(foundNickname);
-            // 닉네임 유효성 검사
+            /* 닉네임 유효성 검사 */
             userValidator.checkNicknameIsValid(updateDto.getNickname());
             }
             nickname = updateDto.getNickname();
@@ -60,7 +64,7 @@ public class MyPageService {
 
         String mbti = updateDto.getMbti();
 
-        // 프로필 이미지를 직접 업로드 했을 경우
+        /* 프로필 이미지를 직접 업로드 했을 경우 */
         if (file != null) {
             String profileImgUrl = imageService.uploadFile(file);
             ProfileImg profileImg1 = new ProfileImg(profileImgUrl);
@@ -81,14 +85,24 @@ public class MyPageService {
         );
     }
 
-    // 내가 작성한 생드백 리스트
-    public MyPageResponseDto getMyPostList(int pageNo, int sizeNo, UserDetailsImpl userDetails) {
+    /* 내가 작성한 생드백 리스트 */
+    public MyPageResponseDto getMyPostList(int pageNo, int sizeNo,
+                                           UserDetailsImpl userDetails) {
 
         User user = userDetails.getUser();
 
-        Pageable sortedByModifiedAtDesc = PageRequest.of(pageNo, sizeNo, Sort.by("modifiedAt").descending());
+        Pageable sortedByModifiedAtDesc = PageRequest.of(
+                pageNo,
+                sizeNo,
+                Sort.by("modifiedAt").descending()
+        );
+
         List<MyPostListDto> postDtoList = new ArrayList<>();
-        List<Post> myPostPage = postRepository.findAllByUserOrderByCreatedAtDesc(user, sortedByModifiedAtDesc).getContent();
+        List<Post> myPostPage = postRepository
+                .findAllByUserOrderByCreatedAtDesc(user, sortedByModifiedAtDesc)
+                .getContent();
+
+        /* 내가 작성한 생드백 리스트 dto 만들기 */
         for (Post post: myPostPage) {
             MyPostListDto postDto = MyPostListDto.builder()
                     .postId(post.getId())
@@ -97,8 +111,11 @@ public class MyPageService {
                     .level(post.getUser().getLevel())
                     .title(post.getTitle())
                     .content(post.getContent())
-                    .createdAt(TimeConversion.timeConversion(post.getCreatedAt()))
-                    .imgUrl(post.getImgList().size()!=0 ? post.getImgList().get(0).getPostImgUrl() : "")
+                    .createdAt(TimeConversion
+                            .timeConversion(post.getCreatedAt()))
+                    .imgUrl(post.getImgList().size()!=0
+                            ? post.getImgList().get(0).getPostImgUrl()
+                            : "")
                     .closed(post.getClosed())
                     .category(post.getCategory())
                     .mbti(post.getUser().getMbti())
@@ -106,6 +123,7 @@ public class MyPageService {
             postDtoList.add(postDto);
         }
 
+        /* response dto 만들기 */
         MyPageResponseDto responseDto = MyPageResponseDto.builder()
                 .userId(user.getId())
                 .nickname(user.getNickname())

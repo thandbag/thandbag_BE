@@ -30,17 +30,17 @@ public class SwaggerConfig {
     @Bean
     public Docket api(){
         return new Docket(DocumentationType.SWAGGER_2)
-                .apiInfo(apiInfo()) // 스웨거 정보 등록
-//                .pathMapping("/")
+                .apiInfo(apiInfo())         /* 스웨거 정보 등록 */
                 .forCodeGeneration(true)
                 .genericModelSubstitutes(ResponseEntity.class)
                 .ignoredParameterTypes(java.sql.Date.class)
                 .securityContexts(Lists.newArrayList(securityContext()))
                 .securitySchemes(Lists.newArrayList(apiKey()))
-                .useDefaultResponseMessages(true) // 기본으로 세팅되는 200, 401, 403, 404 메시지 표시
+                .useDefaultResponseMessages(true)
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("com.example.thandbag.controller")) //package 설정
-                .paths(PathSelectors.any()) //package 안에서 정해진 path 만 swagger로 보여짐
+                .apis(RequestHandlerSelectors
+                        .basePackage("com.example.thandbag.controller"))
+                .paths(PathSelectors.any()) /* 정해진 path만 보여짐 */
                 .build();
     }
 
@@ -52,18 +52,25 @@ public class SwaggerConfig {
     }
 
     private ApiKey apiKey() {
-        return new ApiKey("JWT", "Authorization", "header");
+        return new ApiKey("JWT",
+                "Authorization",
+                "header");
     }
 
     private SecurityContext securityContext() {
-        return springfox.documentation.spi.service.contexts.SecurityContext.builder()
-                .securityReferences(defaultAuth()).forPaths(PathSelectors.any()).build();
+        return springfox.documentation.spi.service.contexts.SecurityContext
+                .builder()
+                .securityReferences(defaultAuth()).forPaths(PathSelectors.any())
+                .build();
     }
 
     private List<SecurityReference> defaultAuth() {
-        AuthorizationScope authorizationScope = new AuthorizationScope("global", "accessEverything");
+        AuthorizationScope authorizationScope = new AuthorizationScope(
+                "global", "accessEverything");
+
         AuthorizationScope[] authorizationScopes = new AuthorizationScope[1];
         authorizationScopes[0] = authorizationScope;
-        return Arrays.asList(new SecurityReference("JWT", authorizationScopes));
+        return Arrays.asList(new SecurityReference(
+                "JWT", authorizationScopes));
     }
 }
