@@ -19,7 +19,8 @@ public class JwtDecoder {
 
     public String decodeUsername(String token) {
         DecodedJWT decodedJWT = isValidToken(token)
-                .orElseThrow(() -> new IllegalArgumentException("토큰 정보가 존재하지 않습니다."));
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "토큰 정보가 존재하지 않습니다."));
 
         Date expiredDate = decodedJWT
                 .getClaim(CLAIM_EXPIRED_DATE)

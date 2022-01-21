@@ -37,13 +37,16 @@ class AlarmServiceTest {
     @DisplayName("알림목록")
     @Test
     void getAlarmList() {
-        //given
-        AlarmService alarmService = new AlarmService(alarmRepository, chatRoomRepository);
+        /* given */
+        AlarmService alarmService =
+                new AlarmService(alarmRepository, chatRoomRepository);
 
         int pageNo = 0;
         int sizeNo = 2;
         Long userId = user.getId();
-        Pageable pageable = PageRequest.of(pageNo, sizeNo, Sort.by("createdAt").descending());
+        Pageable pageable =
+                PageRequest.of(pageNo, sizeNo, Sort.by("createdAt")
+                        .descending());
 
         List<Alarm> alarmList = new ArrayList<>();
         alarmList.add(alarm1);
@@ -52,12 +55,14 @@ class AlarmServiceTest {
 
         Page<Alarm> alarmPage = new PageImpl<>(alarmList);
 
-        given(alarmRepository.findAllByUserIdOrderByIdDesc(userId, pageable)).willReturn(alarmPage);
+        given(alarmRepository.findAllByUserIdOrderByIdDesc(userId, pageable))
+                .willReturn(alarmPage);
 
-        //when
-        List<AlarmResponseDto> result = alarmService.getAlamList(user, pageNo, sizeNo);
+        /* when */
+        List<AlarmResponseDto> result =
+                alarmService.getAlamList(user, pageNo, sizeNo);
 
-        //then
+        /* then */
         assertEquals(3, result.size());
         assertEquals(alarm1.getAlarmMessage(), result.get(0).getMessage());
         assertEquals(alarm2.getType().toString(), result.get(1).getType());
@@ -68,16 +73,18 @@ class AlarmServiceTest {
     @DisplayName("알림 읽었을 경우 체크")
     @Test
     void alarmReadCheck() {
-        //given
-        AlarmService alarmService = new AlarmService(alarmRepository, chatRoomRepository);
+        /* given */
+        AlarmService alarmService =
+                new AlarmService(alarmRepository, chatRoomRepository);
         UserDetailsImpl userDetails = new UserDetailsImpl(user);
 
         given(alarmRepository.getById(anyLong())).willReturn(alarm1);
 
-        //when
-        AlarmResponseDto result = alarmService.alarmReadCheck(alarm1.getId(), userDetails);
+        /* when */
+        AlarmResponseDto result =
+                alarmService.alarmReadCheck(alarm1.getId(), userDetails);
 
-        //then
+        /* then */
         assertTrue(result.getIsRead());
         assertEquals(alarm1.getId(), result.getAlarmId());
         assertEquals(alarm1.getAlarmMessage(), result.getMessage());
@@ -85,7 +92,7 @@ class AlarmServiceTest {
     }
 
 
-    // 알람 생성을 위한 유저 생성
+    /* 알람 생성을 위한 유저 생성 */
     ProfileImg profileImg = new ProfileImg(
             1L,
             "naver.com"
@@ -104,7 +111,7 @@ class AlarmServiceTest {
             profileImg
     );
 
-    // 알람 생성
+    /* 알람 생성 */
     Alarm alarm1 = Alarm.builder()
             .id(1L)
             .userId(user.getId())

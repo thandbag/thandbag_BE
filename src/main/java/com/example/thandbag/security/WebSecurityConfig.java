@@ -1,5 +1,6 @@
 package com.example.thandbag.security;
 
+import com.auth0.jwt.JWT;
 import com.example.thandbag.security.filter.JwtAuthFilter;
 import com.example.thandbag.security.jwt.HeaderTokenExtractor;
 import com.example.thandbag.security.provider.JWTAuthProvider;
@@ -37,22 +38,19 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         return new BCryptPasswordEncoder();
     }
 
-
     @Override
     public void configure(AuthenticationManagerBuilder auth) throws Exception {
-        // CustomAuthenticationProvider()를 호출하기 위해서 Overriding
         auth
-                .authenticationProvider(jwtAuthProvider);
+                .authenticationProvider(jwtAuthProvider); // CustomAuthenticationProvider()를 호출하기 위해서 Overriding
     }
 
     @Override
     public void configure(WebSecurity web) {
         web
                 .ignoring()
-                //H2-Console 허용
                 .antMatchers("/favicon.ico")
                 .antMatchers("/profile")
-                .antMatchers("/h2-console/**");
+                .antMatchers("/h2-console/**"); //H2-Console 허용
     }
 
     @Override
@@ -99,22 +97,20 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .headers()
                 .frameOptions().sameOrigin(); // SockJS는 기본적으로 HTML iframe 요소를 통한 전송을 허용하지 않도록 설정되는데 해당 내용을 해제한다.
 
-        // 서버에서 인증은 JWT로 인증하기 때문에 Session의 생성을 막습니다.
-        http
+        http // 서버에서 인증은 JWT로 인증하기 때문에 Session의 생성을 막습니다.
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
         http
                 .addFilterBefore(jwtFilter(), UsernamePasswordAuthenticationFilter.class);
 
-        // NginX
-        http
+        http // NginX
                 .requiresChannel()
                 .antMatchers("/")
                 .requiresSecure();
     }
 
-    // JwtFilter : 서버에 접근시 JWT 확인 후 인증을 실시합니다.
+    /* JwtFilter : 서버에 접근시 JWT 확인 후 인증을 실시합니다. */
     private JwtAuthFilter jwtFilter() throws Exception {
         List<String> skipPathList = new ArrayList<>();
 

@@ -21,5 +21,4 @@ public class PostCommentDto {
     private boolean currentUserlike;
     private String profileImgUrl;
     private int level;
-
 }

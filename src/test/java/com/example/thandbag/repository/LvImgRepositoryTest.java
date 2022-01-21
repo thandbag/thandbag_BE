@@ -19,7 +19,7 @@ class LvImgRepositoryTest {
     @BeforeEach
     void setup() {
 
-        // 테스트를 위한 데이터 생성
+        /* 테스트를 위한 데이터 생성 */
         LvImg lvImg1 = LvImg.builder()
                 .title("기본")
                 .level(1)
@@ -32,7 +32,7 @@ class LvImgRepositoryTest {
                 .lvImgUrl("boom.jpg")
                 .build();
 
-        // DB에 저장
+        /* DB에 저장 */
         lvImgRepository.save(lvImg1);
         lvImgRepository.save(lvImg2);
     }
@@ -42,10 +42,10 @@ class LvImgRepositoryTest {
     @Test
     void saveAndFindAll() {
 
-        //when
+        /* when */
         List<LvImg> result = lvImgRepository.findAll();
 
-        //then
+        /* then */
         assertEquals(2, result.size());
         assertEquals("기본", result.get(0).getTitle());
         assertEquals("boom.jpg", result.get(1).getLvImgUrl());
@@ -57,10 +57,10 @@ class LvImgRepositoryTest {
     @Test
     void findByTitleAndLevel() {
 
-        //when
+        /* when */
         LvImg result = lvImgRepository.findByTitleAndLevel("기본", 1);
 
-        //then
+        /* then */
         assertNotNull(result);
         assertEquals("default.jpg", result.getLvImgUrl());
         assertEquals(1, result.getLevel());
@@ -72,10 +72,10 @@ class LvImgRepositoryTest {
     @Test
     void findByTitleAndLevel2() {
 
-        //when
+        /* when */
         LvImg result = lvImgRepository.findByTitleAndLevel("기본", 2);
 
-        //then
+        /* then */
         assertNull(result);
     }
 

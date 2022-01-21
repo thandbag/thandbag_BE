@@ -20,19 +20,19 @@ class ProfileImgRepositoryTest {
     @BeforeEach
     void setup() {
 
-        // 테스트를 위한 데이터 생성
+        /* 테스트를 위한 데이터 생성 */
         Long id = 1L;
         String profileImgUrl = "test1.jpg";
 
-        // ProfileImg1 생성
+        /* ProfileImg1 생성 */
         ProfileImg profileImg1 = new ProfileImg(id, profileImgUrl);
 
-        // ProfileImg2 생성
+        /* ProfileImg2 생성 */
         id = 2L;
         profileImgUrl = "test2.jpg";
         ProfileImg profileImg2 = new ProfileImg(id, profileImgUrl);
 
-        // DB에 저장
+        /* DB에 저장 */
         profileImgRepository.save(profileImg1);
         profileImgRepository.save(profileImg2);
     }
@@ -42,10 +42,10 @@ class ProfileImgRepositoryTest {
     @Test
     void saveAndFindAll() {
 
-        //when
+        /* when */
         List<ProfileImg> result = profileImgRepository.findAll();
 
-        //then
+        /* then */
         assertEquals(2, result.size());
 
     }
@@ -55,10 +55,10 @@ class ProfileImgRepositoryTest {
     @Test
     void findByProfileImgUrl() {
 
-        //when
+        /* when */
         Optional<ProfileImg> result = profileImgRepository.findByProfileImgUrl("test2.jpg");
 
-        //then
+        /* then */
         assertNotEquals(Optional.empty(), result);
     }
 
@@ -67,10 +67,10 @@ class ProfileImgRepositoryTest {
     @Test
     void findByProfileImgUrl2() {
 
-        //when
+        /* when */
         Optional<ProfileImg> result = profileImgRepository.findByProfileImgUrl("test3.jpg");
 
-        //then
+        /* then */
         assertEquals(Optional.empty(), result);
     }
 }

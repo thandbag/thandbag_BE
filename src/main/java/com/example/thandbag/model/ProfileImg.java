@@ -20,7 +20,6 @@ public class ProfileImg {
     @Column
     private String profileImgUrl;
 
-
     public ProfileImg(String profileImgUrl) {
         this.profileImgUrl = profileImgUrl;
     }

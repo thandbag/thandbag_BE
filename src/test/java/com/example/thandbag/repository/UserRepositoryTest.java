@@ -21,30 +21,33 @@ class UserRepositoryTest {
     @BeforeEach
     void setup() {
 
-        // 일반 회원가입 유저 생성을 위한, SignupRequestDto 생성
+        /* 일반 회원가입 유저 생성을 위한, SignupRequestDto 생성 */
         String username = "test1@test.kr";
         String nickname = "테스트1";
         String password = "test1234!@";
         String mbti = "INFJ";
         Long kakaoId = 11111L;
 
-        // 일반유저1 생성
-        SignupRequestDto signupRequestDto = new SignupRequestDto(username, nickname, password, mbti);
+        /* 일반유저1 생성 */
+        SignupRequestDto signupRequestDto =
+                new SignupRequestDto(username, nickname, password, mbti);
         User user1 = new User(signupRequestDto);
 
-        // 일반유저2 생성
+        /* 일반유저2 생성 */
         username = "test2@test.kr";
         nickname = "테스트2";
-        signupRequestDto = new SignupRequestDto(username, nickname, password, mbti);
+        signupRequestDto =
+                new SignupRequestDto(username, nickname, password, mbti);
         User user2 = new User(signupRequestDto);
 
-        // 일반유저3 생성
+        /* 일반유저3 생성 */
         username = "test3@test.kr";
         nickname = "테스트3";
-        signupRequestDto = new SignupRequestDto(username, nickname, password, mbti);
+        signupRequestDto =
+                new SignupRequestDto(username, nickname, password, mbti);
         User user3 = new User(signupRequestDto);
 
-        // 카카오유저1 생성
+        /* 카카오유저1 생성 */
         username = "kakao1@kakao.kr";
         nickname = "카카오1";
         mbti = "KKKK";
@@ -56,7 +59,7 @@ class UserRepositoryTest {
                 kakaoId
         );
 
-        // 카카오유저2 생성
+        /* 카카오유저2 생성 */
         username = "kakao2@kakao.kr";
         nickname = "카카오2";
         kakaoId = 22222L;
@@ -68,7 +71,7 @@ class UserRepositoryTest {
                 kakaoId
         );
 
-        // 카카오유저3 생성
+        /* 카카오유저3 생성 */
         username = "kakao3@kakao.kr";
         nickname = "카카오3";
         kakaoId = 33333L;
@@ -80,7 +83,7 @@ class UserRepositoryTest {
                 kakaoId
         );
 
-        // DB에 저장
+        /* DB에 저장 */
         userRepository.save(user1);
         userRepository.save(user2);
         userRepository.save(user3);
@@ -94,13 +97,14 @@ class UserRepositoryTest {
     @Test
     void saveAndFindAll() {
 
-        //when
+        /* when */
         List<User> result = userRepository.findAll();
         for (User u : result) {
-            System.out.println("닉네임: " + u.getNickname() + ", ID : " + u.getId());
+            System.out.println("닉네임: " + u.getNickname() +
+                                        ", ID : " + u.getId());
         }
 
-        //then
+        /* then */
         assertEquals(6, result.size());
         assertEquals(11111L, result.get(3).getKakaoId());
     }
@@ -110,10 +114,10 @@ class UserRepositoryTest {
     @Test
     void findByUsername() {
 
-        //when
+        /* when */
         Optional<User> result = userRepository.findByUsername("kakao1@kakao.kr");
 
-        //then
+        /* then */
         assertNotEquals(Optional.empty(), result);
         assertEquals("카카오1", result.get().getNickname());
     }
@@ -123,10 +127,10 @@ class UserRepositoryTest {
     @Test
     void findByNickname() {
 
-        //when
+        /* when */
         Optional<User> result = userRepository.findByNickname("테스트3");
 
-        //then
+        /* then */
         assertNotEquals(Optional.empty(), result);
         assertEquals("test3@test.kr", result.get().getUsername());
     }
@@ -136,10 +140,10 @@ class UserRepositoryTest {
     @Test
     void findByKakaoId() {
 
-        //when
+        /* when */
         Optional<User> result = userRepository.findByKakaoId(22222L);
 
-        //then
+        /* then */
         assertNotEquals(Optional.empty(), result);
         assertEquals("카카오2", result.get().getNickname());
     }
@@ -149,10 +153,10 @@ class UserRepositoryTest {
     @Test
     void emptyResult() {
 
-        //when
+        /* when */
         Optional<User> result = userRepository.findByUsername("nobody@nobody.kr");
 
-        //then
+        /* then */
         assertEquals(Optional.empty(), result);
     }
 
@@ -161,10 +165,10 @@ class UserRepositoryTest {
     @Test
     void emptyResult2() {
 
-        //when
+        /* when */
         Optional<User> result = userRepository.findByNickname("없는닉네임");
 
-        //then
+        /* then */
         assertEquals(Optional.empty(), result);
     }
 
@@ -173,10 +177,10 @@ class UserRepositoryTest {
     @Test
     void emptyResult3() {
 
-        //when
+        /* when */
         Optional<User> result = userRepository.findByKakaoId(00000L);
 
-        //then
+        /* then */
         assertEquals(Optional.empty(), result);
     }
 }

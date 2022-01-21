@@ -60,7 +60,9 @@ public class User extends Timestamped {
         this.auth = Auth.USER;
     }
 
-    public User(String username, String nickname, String password, String mbti, Long kakaoId) {
+    public User(String username, String nickname, String password, String mbti,
+                Long kakaoId) {
+
         this.username = username;
         this.password = password;
         this.nickname = nickname;
@@ -74,8 +76,8 @@ public class User extends Timestamped {
     public void plusTotalPostsAndComments() {
         this.totalCount += 1;
     }
+
     public void minusTotalPostsAndComments()   {
         this.totalCount -= 1;
     }
-
 }

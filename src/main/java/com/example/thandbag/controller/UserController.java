@@ -19,21 +19,25 @@ public class UserController {
     private final UserService userService;
     private final KakaoUserService kakaoUserService;
 
-    // 회원가입
+    /* 회원가입 */
     @PostMapping("/api/user/signup")
     public String userRegister(@RequestBody SignupRequestDto signupRequestDto){
         return userService.userRegister(signupRequestDto);
     }
 
-    // 로그인
+    /* 로그인 */
     @PostMapping("/api/user/login")
-    public LoginResultDto userLogin(@RequestBody LoginRequestDto loginRequestDto, HttpServletResponse response){
+    public LoginResultDto userLogin(@RequestBody LoginRequestDto loginRequestDto,
+                                    HttpServletResponse response){
         return userService.userLogin(loginRequestDto, response);
     }
 
-    // 카카오 로그인
+    /* 카카오 로그인 */
     @GetMapping("/user/kakao/callback")
-    public LoginResultDto kakaoLogin(@RequestParam String code, HttpServletResponse response) throws JsonProcessingException {
+    public LoginResultDto kakaoLogin(@RequestParam String code,
+                                     HttpServletResponse response)
+            throws JsonProcessingException {
+
         return kakaoUserService.kakaoLogin(code, response);
     }
 }

@@ -38,5 +38,4 @@ public class Comment extends Timestamped {
     public void selectedByPostOwner() {
         this.likedByWriter = true;
     }
-
 }

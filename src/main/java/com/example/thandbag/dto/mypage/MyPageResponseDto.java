@@ -17,5 +17,4 @@ public class MyPageResponseDto {
     private int level;
     private String mbti;
     private List<MyPostListDto> myPostList;
-
 }

@@ -43,7 +43,6 @@ public class Post extends Timestamped {
     @Column
     private int totalHitCount;
 
-    //api 작성시 추가된 부분
     @OneToMany(cascade = CascadeType.ALL)
     List<PostImg> imgList;
 
@@ -55,10 +54,7 @@ public class Post extends Timestamped {
     }
 
     public void updateTotalHit(HitCountDto hitCountDto) {
-     //   synchronized (this) {
-            System.out.println(hitCountDto.getNewHitCount() - hitCountDto.getPrevHitCount());
-            this.totalHitCount += (hitCountDto.getNewHitCount() - hitCountDto.getPrevHitCount());
-            System.out.println("totalHitCount:" + this.totalHitCount);
-    //    }
+            this.totalHitCount +=
+                    (hitCountDto.getNewHitCount() - hitCountDto.getPrevHitCount());
     }
 }

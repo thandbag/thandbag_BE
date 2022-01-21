@@ -18,10 +18,4 @@ public class AlarmResponseDto {
     private String chatRoomId;
     private Long postId;
     private Long alarmTargetId;
-
-    public AlarmResponseDto(Long alarmId, String type, String message) {
-            this.alarmId = alarmId;
-            this.type = type;
-            this.message = message;
-    }
 }

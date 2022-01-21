@@ -53,7 +53,6 @@ class CommentServiceTest {
     private User user2;
     private Post post;
     private Comment comment1;
-    private Comment comment2;
 
     @BeforeEach
     void setup() {
@@ -107,15 +106,21 @@ class CommentServiceTest {
                 .commentLikeList(new ArrayList<>())
                 .build();
 
-        commentService = new CommentService(commentRepository, postRepository,
-                userRepository, commentLikeRepository, alarmRepository, redisTemplate, channelTopic);
+        commentService = new CommentService(
+                commentRepository,
+                postRepository,
+                userRepository,
+                commentLikeRepository,
+                alarmRepository,
+                redisTemplate,
+                channelTopic);
     }
 
     @DisplayName("댓글 작성")
     @Test
     @Order(1)
     void postComment() {
-        //given
+        /* given */
         UserDetailsImpl userDetails = new UserDetailsImpl(user1);
 
         given(postRepository.getById(anyLong())).willReturn(post);
@@ -126,16 +131,20 @@ class CommentServiceTest {
 
         Long postId = post.getId();
 
-        given(userRepository.getById(postRepository.getById(postId).getUser().getId())).willReturn(user1);
+        given(userRepository
+                .getById(postRepository.getById(postId).getUser().getId()))
+                .willReturn(user1);
 
-        //when
-        PostCommentDto result = commentService.postComment(postId, content, userDetails);
+        /* when */
+        PostCommentDto result =
+                commentService.postComment(postId, content, userDetails);
 
-        //then
+        /* then */
         assertEquals(content, result.getComment());
         assertEquals(user1.getLevel(), result.getLevel());
         assertEquals(user1.getNickname(), result.getNickname());
-        assertEquals(user1.getProfileImg().getProfileImgUrl(), result.getProfileImgUrl());
+        assertEquals(user1.getProfileImg().getProfileImgUrl(),
+                result.getProfileImgUrl());
         assertFalse(result.isCurrentUserlike());
 
     }
@@ -144,22 +153,24 @@ class CommentServiceTest {
     @Test
     @Order(2)
     void deleteComment() {
-        //given
+        /* given */
         Long commentId = comment1.getId();
 
-        //when
+        /* when */
         commentService.deleteComment(commentId, user1);
 
-        //then
+        /* then */
         assertEquals(0, user1.getTotalCount());
-        then(commentRepository).should(times(1)).deleteById(commentId);
+        then(commentRepository)
+                .should(times(1))
+                .deleteById(commentId);
     }
 
     @DisplayName("좋아요 안했을 경우 +1")
     @Test
     @Order(3)
     void likeComment() {
-        //given
+        /* given */
         Long commentId = comment1.getId();
         UserDetailsImpl userDetails = new UserDetailsImpl(user2);
         comment1.setCreatedAt(LocalDateTime.now());
@@ -171,14 +182,19 @@ class CommentServiceTest {
                         .build();
         commentLikeList.add(commentLike1);
 
-        given(commentRepository.findById(commentId)).willReturn(Optional.of(comment1));
-        given(commentLikeRepository.findByUserIdAndComment(anyLong(), any(Comment.class))).willReturn(null);
-        given(commentLikeRepository.findAllByComment(any(Comment.class))).willReturn(commentLikeList);
+        given(commentRepository.findById(commentId))
+                .willReturn(Optional.of(comment1));
+        given(commentLikeRepository
+                .findByUserIdAndComment(anyLong(), any(Comment.class)))
+                .willReturn(null);
+        given(commentLikeRepository.findAllByComment(any(Comment.class)))
+                .willReturn(commentLikeList);
 
-        //when
-        ShowCommentDto result = commentService.likeComment(commentId, userDetails);
+        /* when */
+        ShowCommentDto result =
+                commentService.likeComment(commentId, userDetails);
 
-        //then
+        /* then */
         assertEquals(comment1.getComment(), result.getComment());
         assertEquals(1, result.getLike());
     }
@@ -187,7 +203,7 @@ class CommentServiceTest {
     @Test
     @Order(4)
     void likeComment2() {
-        //given
+        /* given */
         Long commentId = comment1.getId();
         UserDetailsImpl userDetails = new UserDetailsImpl(user2);
         comment1.setCreatedAt(LocalDateTime.now());
@@ -199,16 +215,21 @@ class CommentServiceTest {
                 .build();
         commentLikeList.add(commentLike1);
 
-        given(commentRepository.findById(commentId)).willReturn(Optional.of(comment1));
-        given(commentLikeRepository.findByUserIdAndComment(anyLong(), any(Comment.class))).willReturn(commentLike1);
-        given(commentLikeRepository.findAllByComment(any(Comment.class))).willReturn(commentLikeList);
+        given(commentRepository.findById(commentId))
+                .willReturn(Optional.of(comment1));
+        given(commentLikeRepository
+                .findByUserIdAndComment(anyLong(), any(Comment.class)))
+                .willReturn(commentLike1);
+        given(commentLikeRepository.findAllByComment(any(Comment.class)))
+                .willReturn(commentLikeList);
 
         commentLikeList.remove(commentLike1);
 
-        //when
-        ShowCommentDto result = commentService.likeComment(commentId, userDetails);
+        /* when */
+        ShowCommentDto result =
+                commentService.likeComment(commentId, userDetails);
 
-        //then
+        /* then */
         assertEquals(comment1.getComment(), result.getComment());
         assertEquals(0, result.getLike());
     }

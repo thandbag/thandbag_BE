@@ -22,23 +22,36 @@ public class MyPageController {
     private final MyPageService myPageService;
     private final UserRepository userRepository;
 
-    @CrossOrigin(exposedHeaders = "Authorization", originPatterns = "*")
-    @PostMapping("/mypage/profileTest")
-    public ProfileUpdateResponseDto updateProfileTest(@RequestBody ProfileUpdateRequestDto updateDto, @RequestParam String nickname) throws IOException {
-        Optional<User> user = userRepository.findByNickname(nickname);
-        UserDetailsImpl userDetails = new UserDetailsImpl(user.get());
-        return myPageService.updateProfile(null, updateDto, userDetails);
-    }
-
-    // 마이페이지 -> 회원정보 수정
+    /* 마이페이지 -> 회원정보 수정 */
     @PostMapping("/mypage/profile")
-    public ProfileUpdateResponseDto updateProfile(@RequestPart(required = false) MultipartFile file, @RequestPart ProfileUpdateRequestDto updateDto, @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
+    public ProfileUpdateResponseDto updateProfile(
+            @RequestPart(required = false) MultipartFile file,
+            @RequestPart ProfileUpdateRequestDto updateDto,
+            @AuthenticationPrincipal UserDetailsImpl userDetails)
+            throws IOException {
+
         return myPageService.updateProfile(file, updateDto, userDetails);
     }
 
-    // 마이페이지 -> 내가 쓴 게시글
+    /* 마이페이지 -> 내가 쓴 게시글 */
     @GetMapping("/api/myThandbag")
-    public MyPageResponseDto getMyPostList(@RequestParam int pageNo, @RequestParam int sizeNo, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public MyPageResponseDto getMyPostList(
+            @RequestParam int pageNo,
+            @RequestParam int sizeNo,
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+
         return myPageService.getMyPostList(pageNo, sizeNo, userDetails);
+    }
+
+    /* DB indexing 성능 테스트를 위한 Controller*/
+    @PostMapping("/mypage/profileTest")
+    public ProfileUpdateResponseDto updateProfileTest(
+            @RequestBody ProfileUpdateRequestDto updateDto,
+            @RequestParam String nickname)
+            throws IOException {
+
+        Optional<User> user = userRepository.findByNickname(nickname);
+        UserDetailsImpl userDetails = new UserDetailsImpl(user.get());
+        return myPageService.updateProfile(null, updateDto, userDetails);
     }
 }

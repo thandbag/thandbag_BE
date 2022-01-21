@@ -12,7 +12,6 @@ import com.example.thandbag.model.User;
 import com.example.thandbag.repository.*;
 import com.example.thandbag.timeconversion.TimeConversion;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.support.PagedListHolder;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -39,7 +38,7 @@ public class MainService {
     private final RedisTemplate redisTemplate;
     private final ChannelTopic channelTopic;
 
-    // 생드백 생성
+    /* 생드백 생성 */
     @Transactional
     public ThandbagResponseDto createThandbag(ThandbagRequestDto thandbagRequestDto, User user) throws IOException {
 

@@ -65,7 +65,8 @@ public class JwtAuthFilter extends AbstractAuthenticationProcessingFilter {
         context.setAuthentication(authResult);
         SecurityContextHolder.setContext(context);
 
-        // FilterChain chain 해당 필터가 실행 후 다른 필터도 실행할 수 있도록 연결실켜주는 메서드
+        /* FilterChain chain 해당 필터가 실행 후
+           다른 필터도 실행할 수 있도록 연결실켜주는 메서드 */
         chain.doFilter(
                 request,
                 response
