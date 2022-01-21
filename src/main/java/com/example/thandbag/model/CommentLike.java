@@ -23,5 +23,4 @@ public class CommentLike extends Timestamped {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
     private Comment comment;
-
 }

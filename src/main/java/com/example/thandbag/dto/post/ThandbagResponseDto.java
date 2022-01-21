@@ -30,10 +30,8 @@ public class ThandbagResponseDto {
     private boolean closed;
     private String category;
     private boolean share;
-    //user의 작성게시글 + 댓글 수
-    private int totalCount;
+    private int totalCount; // user의 작성게시글 + 댓글 수
     private int hitCount;
     private int commentCount;
     private List<ShowCommentDto> comments;
-
 }

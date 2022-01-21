@@ -13,17 +13,6 @@ import java.time.format.DateTimeFormatter;
 @NoArgsConstructor
 public class ChatMessageDto {
 
-    @Builder
-    public ChatMessageDto(MessageType type, String roomId, String sender, String message, long userCount, String createdAt) {
-        DateTimeFormatter newFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");
-        this.type = type;
-        this.roomId = roomId;
-        this.sender = sender;
-        this.message = message;
-        this.userCount = userCount;
-        this.createdAt = createdAt;
-    }
-
     private MessageType type; // 메시지 타입
     private String roomId; // 방번호
     private String sender; // 메시지 보낸사람
@@ -31,4 +20,15 @@ public class ChatMessageDto {
     private long userCount; // 채팅방 인원수, 채팅방 내에서 메시지가 전달될때 인원수 갱신시 사용
     private String createdAt;
     private String senderProfileImg;
+
+    @Builder
+    public ChatMessageDto(MessageType type, String roomId, String sender,
+                          String message, long userCount, String createdAt) {
+        this.type = type;
+        this.roomId = roomId;
+        this.sender = sender;
+        this.message = message;
+        this.userCount = userCount;
+        this.createdAt = createdAt;
+    }
 }

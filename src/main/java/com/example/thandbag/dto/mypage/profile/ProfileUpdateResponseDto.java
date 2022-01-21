@@ -13,5 +13,4 @@ public class ProfileUpdateResponseDto {
     private String profileImgUrl;
     private String nickname;
     private String mbti;
-
 }

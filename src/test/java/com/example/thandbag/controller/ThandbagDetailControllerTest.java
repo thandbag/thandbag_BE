@@ -1,5 +1,6 @@
 package com.example.thandbag.controller;
 
+import com.example.thandbag.TestConfig;
 import com.example.thandbag.dto.login.LoginRequestDto;
 import com.example.thandbag.dto.login.LoginResultDto;
 import com.example.thandbag.dto.post.HitCountDto;
@@ -8,7 +9,9 @@ import com.example.thandbag.dto.post.ThandbagResponseDto;
 import com.example.thandbag.dto.signup.SignupRequestDto;
 import com.example.thandbag.model.Post;
 import com.example.thandbag.model.User;
+import com.example.thandbag.repository.LvImgRepository;
 import com.example.thandbag.repository.PostRepository;
+import com.example.thandbag.repository.ProfileImgRepository;
 import com.example.thandbag.repository.UserRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -35,6 +38,10 @@ public class ThandbagDetailControllerTest {
     private PostRepository postRepository;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private LvImgRepository lvImgRepository;
+    @Autowired
+    private ProfileImgRepository profileImgRepository;
 
     private HttpHeaders headers;
     private HttpHeaders headers2;
@@ -87,6 +94,11 @@ public class ThandbagDetailControllerTest {
                 userRepository.findById(user2.get().getId()));
         assertEquals(Optional.empty(),
                 postRepository.findById(postList.get(0).getId()));
+    }
+
+    @BeforeAll
+    public void preSet() {
+        TestConfig.initialQuery(lvImgRepository, profileImgRepository);
     }
 
     @BeforeEach

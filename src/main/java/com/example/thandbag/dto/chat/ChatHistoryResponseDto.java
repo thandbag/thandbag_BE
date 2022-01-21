@@ -15,5 +15,4 @@ public class ChatHistoryResponseDto {
     private String senderProfileImg;
     private String message;
     private String createdAt;
-
 }

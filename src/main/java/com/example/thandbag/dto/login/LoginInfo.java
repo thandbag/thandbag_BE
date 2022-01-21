@@ -5,6 +5,7 @@ import lombok.Getter;
 
 @Getter
 public class LoginInfo {
+
     private String name;
     private String token;
 

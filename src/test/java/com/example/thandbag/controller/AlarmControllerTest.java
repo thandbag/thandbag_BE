@@ -1,6 +1,7 @@
 package com.example.thandbag.controller;
 
 import com.example.thandbag.Enum.AlarmType;
+import com.example.thandbag.TestConfig;
 import com.example.thandbag.dto.alarm.AlarmResponseDto;
 import com.example.thandbag.dto.login.LoginRequestDto;
 import com.example.thandbag.dto.login.LoginResultDto;
@@ -8,14 +9,19 @@ import com.example.thandbag.dto.signup.SignupRequestDto;
 import com.example.thandbag.model.Alarm;
 import com.example.thandbag.model.User;
 import com.example.thandbag.repository.AlarmRepository;
+import com.example.thandbag.repository.LvImgRepository;
+import com.example.thandbag.repository.ProfileImgRepository;
 import com.example.thandbag.repository.UserRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.BeforeClass;
 import org.junit.jupiter.api.*;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.List;
 import java.util.Optional;
@@ -33,6 +39,10 @@ class AlarmControllerTest {
     private UserRepository userRepository;
     @Autowired
     private AlarmRepository alarmRepository;
+    @Autowired
+    private LvImgRepository lvImgRepository;
+    @Autowired
+    private ProfileImgRepository profileImgRepository;
 
     private HttpHeaders headers;
     private final ObjectMapper mapper = new ObjectMapper();
@@ -66,7 +76,11 @@ class AlarmControllerTest {
         assertEquals(Optional.empty(), userRepository.findById(user.get().getId()));
         assertEquals(Optional.empty(), alarmRepository.findById(alarmId));
         assertEquals(Optional.empty(), alarmRepository.findById(alarm2Id));
+    }
 
+    @BeforeAll
+    public void preSet() {
+        TestConfig.initialQuery(lvImgRepository, profileImgRepository);
     }
 
     @BeforeEach

@@ -12,7 +12,5 @@ import lombok.*;
 public class ProfileUpdateRequestDto {
 
     private String nickname;
-//    private MultipartFile file;
     private String mbti;
-
 }

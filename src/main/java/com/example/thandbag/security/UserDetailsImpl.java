@@ -53,7 +53,8 @@ public class UserDetailsImpl implements UserDetails {
         Auth userRole = user.getAuth();
         String authority = userRole.getAuthority();
 
-        SimpleGrantedAuthority simpleAuthority = new SimpleGrantedAuthority(authority);
+        SimpleGrantedAuthority simpleAuthority =
+                new SimpleGrantedAuthority(authority);
         Collection<GrantedAuthority> authorities = new ArrayList<>();
         authorities.add(simpleAuthority);
 

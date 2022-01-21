@@ -46,7 +46,7 @@ class AlarmRepositoryTest {
 
     @BeforeEach
     void setup() {
-        // 유저 생성
+        /* 유저 생성 */
         SignupRequestDto signupRequestDto = new SignupRequestDto(
                 "test@test.kr",
                 "테스트",
@@ -73,12 +73,12 @@ class AlarmRepositoryTest {
         );
         this.user3 = new User(signupRequestDto);
 
-        // DB 저장
+        /* DB 저장 */
         userRepository.save(user1);
         userRepository.save(user2);
         userRepository.save(user3);
 
-        // Post 생성
+        /* Post 생성 */
         this.post1 = Post.builder()
                 .title("Post1")
                 .content("Post Content1")
@@ -99,11 +99,11 @@ class AlarmRepositoryTest {
                 .totalHitCount(0)
                 .build();
 
-        // DB 저장
+        /* DB 저장 */
         postRepository.save(post1);
         postRepository.save(post2);
 
-        // 코멘트 생성
+        /* 코멘트 생성 */
         this.comment1 = Comment.builder()
                 .comment("코멘트1")
                 .user(user2)
@@ -116,12 +116,12 @@ class AlarmRepositoryTest {
                 .post(post1)
                 .build();
 
-        // DB 저장
+        /* DB 저장 */
         commentRepository.save(comment1);
         commentRepository.save(comment2);
 
-        // 알림 생성
-        // 유저1 레벨업
+        /* 알림 생성
+           유저1 레벨업 */
         alarm1 = Alarm.builder()
                 .userId(user1.getId())
                 .type(AlarmType.LEVELCHANGE)
@@ -129,7 +129,7 @@ class AlarmRepositoryTest {
                 .isRead(false)
                 .build();
 
-        // 유저2 레벨업
+        /* 유저2 레벨업 */
         alarm2 = Alarm.builder()
                 .userId(user2.getId())
                 .type(AlarmType.LEVELCHANGE)
@@ -137,7 +137,7 @@ class AlarmRepositoryTest {
                 .isRead(false)
                 .build();
 
-        // 게시글1에 댓글 알림
+        /* 게시글1에 댓글 알림 */
         alarm3 = Alarm.builder()
                 .userId(post1.getUser().getId())
                 .postId(post1.getId())
@@ -146,7 +146,7 @@ class AlarmRepositoryTest {
                 .isRead(false)
                 .build();
 
-        // 게시글1에 댓글 알림
+        /* 게시글1에 댓글 알림 */
         alarm4 = Alarm.builder()
                 .userId(post1.getUser().getId())
                 .postId(post1.getId())
@@ -155,7 +155,7 @@ class AlarmRepositoryTest {
                 .isRead(false)
                 .build();
 
-        // DB저장
+        /* DB저장 */
         alarmRepository.save(alarm1);
         alarmRepository.save(alarm2);
         alarmRepository.save(alarm3);
@@ -168,14 +168,15 @@ class AlarmRepositoryTest {
     @Test
     void saveAndFindAll() {
 
-        //when
+        /* when */
         List<Alarm> result = alarmRepository.findAll();
 
-        //then
+        /* then */
         assertEquals(4, result.size());
         assertEquals(AlarmType.LEVELCHANGE, result.get(0).getType());
         assertEquals(user2.getId(), result.get(1).getUserId());
-        assertEquals("게시글에 댓글이 작성되었습니다.", result.get(2).getAlarmMessage());
+        assertEquals("게시글에 댓글이 작성되었습니다.",
+                result.get(2).getAlarmMessage());
         assertEquals(AlarmType.REPLY, result.get(3).getType());
     }
 
@@ -183,16 +184,20 @@ class AlarmRepositoryTest {
     @DisplayName("성공 - 유저ID검색")
     @Test
     void findAllByUserIdOrderByIdDesc() {
-        //given
+
+        /* given */
         Long userId = user1.getId();
         int pageNo = 0;
         int sizeNo = 10;
-        Pageable pageable = PageRequest.of(pageNo, sizeNo, Sort.by("createdAt").descending());
+        Pageable pageable = PageRequest.of(pageNo, sizeNo, Sort.by("createdAt")
+                                        .descending());
 
-        //when
-        List<Alarm> result = alarmRepository.findAllByUserIdOrderByIdDesc(userId, pageable).getContent();
+        /* when */
+        List<Alarm> result =
+                alarmRepository.findAllByUserIdOrderByIdDesc(userId, pageable)
+                                            .getContent();
 
-        //then
+        /* then */
         assertEquals(3, result.size());
         assertEquals(AlarmType.REPLY, result.get(0).getType());
         assertEquals(userId, result.get(1).getUserId());
@@ -203,17 +208,17 @@ class AlarmRepositoryTest {
     @DisplayName("성공 - 알림삭제(postId)")
     @Test
     void deleteAllByPostId() {
-        //given
+        /* given */
         Long postId = post1.getId();
 
-        //when
-        // 전체 게시글 수를 통한 삭제 확인
+        /* when
+           전체 게시글 수를 통한 삭제 확인 */
         List<Alarm> before = alarmRepository.findAll();
         alarmRepository.deleteAllByPostId(postId);
         List<Alarm> after = alarmRepository.findAll();
 
 
-        //then
+        /* then */
         assertNotEquals(before, after);
         assertEquals(4, before.size());
         assertEquals(2, after.size());
@@ -223,16 +228,19 @@ class AlarmRepositoryTest {
     @DisplayName("결과없음 - 유저ID검색")
     @Test
     void findAllByUserIdOrderByIdDesc2() {
-        //given
+        /* given */
         Long userId = user3.getId();
         int pageNo = 0;
         int sizeNo = 10;
-        Pageable pageable = PageRequest.of(pageNo, sizeNo, Sort.by("createdAt").descending());
+        Pageable pageable = PageRequest.of(pageNo, sizeNo, Sort.by("createdAt")
+                                        .descending());
 
-        //when
-        List<Alarm> result = alarmRepository.findAllByUserIdOrderByIdDesc(userId, pageable).getContent();
+        /* when */
+        List<Alarm> result =
+                alarmRepository.findAllByUserIdOrderByIdDesc(userId, pageable)
+                                            .getContent();
 
-        //then
+        /* then */
         assertEquals(0, result.size());
     }
 }
