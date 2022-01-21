@@ -15,7 +15,7 @@ public class ThandbagApplication {
         SpringApplication.run(ThandbagApplication.class, args);
     }
 
-    //배포시 시간을 맞추기 위함
+    /* 배포시 시간을 맞추기 위함 */
     @PostConstruct
     public void started() {
         TimeZone.setDefault(TimeZone.getTimeZone("Asia/Seoul"));

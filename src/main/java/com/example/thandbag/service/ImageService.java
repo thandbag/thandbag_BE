@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.UUID;
 
-// AWS S3에 게시글 작성시 이미지 업로드 기능
+/* AWS S3에 게시글 작성시 이미지 업로드 기능 */
 @Slf4j
 @RequiredArgsConstructor
 @Service
@@ -22,22 +22,24 @@ public class ImageService {
 
     private final AmazonS3Client amazonS3Client;
 
-    // 버킷 이름 동적 할당
+    /* 버킷 이름 동적 할당 */
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
-    // S3 업로드
+    /* 이미지 업로드 함수 */
     public String uploadFile(MultipartFile file) throws IOException {
         String origName = file.getOriginalFilename();
-        // 확장자를 찾기 위한 코드
+        /* 확장자를 찾기 위한 코드 */
         final String ext = origName.substring(origName.lastIndexOf('.'));
-        // 파일이름 암호화
-        final String saveFileName = UUID.randomUUID().toString().replaceAll("-", "") + ext;
+        /* 파일이름 암호화 */
+        final String saveFileName = UUID.randomUUID()
+                .toString()
+                .replaceAll("-", "") + ext;
 
         return uploadImageToS3(file, saveFileName);
     }
 
-
+    /* S3에 업로드 */
     private String uploadImageToS3(MultipartFile file, String fileName) {
         ObjectMetadata metadata = new ObjectMetadata();
         metadata.setContentType(String.valueOf(MediaType.ANY_IMAGE_TYPE));
@@ -45,7 +47,9 @@ public class ImageService {
         metadata.setCacheControl("max-age=31536000");
 
         try {
-            final InputStream uploadImageFileInputStream = file.getInputStream();
+            final InputStream uploadImageFileInputStream =
+                    file.getInputStream();
+
             amazonS3Client.putObject(new PutObjectRequest(bucket,
                     fileName,
                     uploadImageFileInputStream,
@@ -57,5 +61,4 @@ public class ImageService {
 
         return amazonS3Client.getUrl(bucket, fileName).toString();
     }
-
 }

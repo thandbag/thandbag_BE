@@ -59,8 +59,10 @@ public class MainControllerTest {
         List<Post> postList = postRepository.findAllByUser(user.get());
         postRepository.deleteById(postId);
         userRepository.deleteById(user.get().getId());
-        assertEquals(Optional.empty(), userRepository.findById(user.get().getId()));
-        assertEquals(Optional.empty(), postRepository.findById(postList.get(0).getId()));
+        assertEquals(Optional.empty(),
+                userRepository.findById(user.get().getId()));
+        assertEquals(Optional.empty(),
+                postRepository.findById(postList.get(0).getId()));
     }
 
     @BeforeEach
@@ -73,17 +75,17 @@ public class MainControllerTest {
     @Order(1)
     @DisplayName("회원 가입")
     void test1() throws JsonProcessingException {
-        // given
+        /* given */
         String requestBody = mapper.writeValueAsString(user1);
         HttpEntity<String> request = new HttpEntity<>(requestBody, headers);
 
-        // when
+        /* when */
         ResponseEntity<String> response = restTemplate.postForEntity(
                 "/api/user/signup",
                 request,
                 String.class);
 
-        // then
+        /* then */
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
         assertEquals("회원가입 성공", response.getBody());
@@ -93,17 +95,17 @@ public class MainControllerTest {
     @Order(2)
     @DisplayName("로그인, JWT 토큰 받기")
     void test2() throws JsonProcessingException {
-        // given
+        /* given */
         String requestBody = mapper.writeValueAsString(user1Login);
         HttpEntity<String> request = new HttpEntity<>(requestBody, headers);
 
-        // when
+        /* when */
         ResponseEntity<LoginResultDto> response = restTemplate.postForEntity(
                 "/api/user/login",
                 request,
                 LoginResultDto.class);
 
-        // then
+        /* then */
         token = response.getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
         assertNotEquals("", token);
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -116,8 +118,7 @@ public class MainControllerTest {
         @Order(1)
         @DisplayName("생드백 만들기 1")
         void test1() throws JsonProcessingException {
-
-            //given
+            /* given */
             ThandbagRequestDto thandbagRequestDto = ThandbagRequestDto.builder()
                     .title("아아아")
                     .content("호호호")
@@ -129,15 +130,17 @@ public class MainControllerTest {
             headers.set("Authorization", token);
             HttpEntity<String> request = new HttpEntity<>(requestBody, headers);
 
-            //when
-            ResponseEntity<ThandbagResponseDto> response = restTemplate.postForEntity(
-                    "/api/newThandbag",
-                    request,
-                    ThandbagResponseDto.class);
+            /* when */
+            ResponseEntity<ThandbagResponseDto> response =
+                    restTemplate.postForEntity(
+                                "/api/newThandbag",
+                                    request,
+                                    ThandbagResponseDto.class);
 
-            //then
+            /* then */
             assertEquals(HttpStatus.OK, response.getStatusCode());
-            Optional<User> user = userRepository.findByUsername("xxx@naver.com");
+            Optional<User> user = userRepository.
+                    findByUsername("xxx@naver.com");
             List<Post> postList = postRepository.findAllByUser(user.get());
             postId = postList.get(0).getId();
             System.out.println(postId);
@@ -149,13 +152,18 @@ public class MainControllerTest {
         @Order(2)
         @DisplayName("생드백 불러오기")
         void test2() throws JsonProcessingException {
-            // 상품 정보에 있는 댓글 조회
+            /* given */
             headers.set("Authorization", token);
             HttpEntity request = new HttpEntity(headers);
-            //header받는 http get요청 방식
-            ResponseEntity<Object> response = restTemplate.exchange(
-                    "/api/thandbagList?page=0&size=2", HttpMethod.GET, request, Object.class);
 
+            /* when */
+            ResponseEntity<Object> response = restTemplate.exchange(
+                    "/api/thandbagList?page=0&size=2",
+                        HttpMethod.GET,
+                        request,
+                        Object.class);
+
+            /* then */
             assertEquals(HttpStatus.OK, response.getStatusCode());
         }
 
@@ -163,13 +171,20 @@ public class MainControllerTest {
         @Order(3)
         @DisplayName("생드백 검색")
         void test3() throws JsonProcessingException {
-
+            /* given */
             headers.set("Authorization", token);
             HttpEntity request = new HttpEntity(headers);
-            //header받는 http get요청 방식
+
+            /* when */
             ResponseEntity<Object> response = restTemplate.exchange(
-                    "/api/thandbag?keyword=아아&page=0&size=2", HttpMethod.GET, request, Object.class);
-            List<ThandbagResponseDto> searchedThandbag = (List<ThandbagResponseDto>) response.getBody();
+                    "/api/thandbag?keyword=아아&page=0&size=2",
+                        HttpMethod.GET,
+                        request,
+                        Object.class);
+            List<ThandbagResponseDto> searchedThandbag =
+                    (List<ThandbagResponseDto>) response.getBody();
+
+            /* then */
             assertEquals(HttpStatus.OK, response.getStatusCode());
             assertTrue(searchedThandbag.size() >= 1);
         }

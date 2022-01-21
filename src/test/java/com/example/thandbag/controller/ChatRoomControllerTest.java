@@ -1,16 +1,12 @@
 package com.example.thandbag.controller;
 
-import com.example.thandbag.dto.chat.ChatMessageDto;
-import com.example.thandbag.dto.chat.ChatMyRoomListResponseDto;
 import com.example.thandbag.dto.chat.chatroom.ChatRoomDto;
 import com.example.thandbag.dto.chat.chatroom.CreateRoomRequestDto;
 import com.example.thandbag.dto.login.LoginRequestDto;
 import com.example.thandbag.dto.login.LoginResultDto;
 import com.example.thandbag.dto.signup.SignupRequestDto;
-import com.example.thandbag.model.Post;
 import com.example.thandbag.model.User;
 import com.example.thandbag.repository.ChatRoomRepository;
-import com.example.thandbag.repository.PostRepository;
 import com.example.thandbag.repository.UserRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -20,11 +16,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
 
-import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -77,9 +71,12 @@ class ChatRoomControllerTest {
         chatRoomRepository.deleteById(chatRoomId);
         userRepository.deleteById(user.get().getId());
         userRepository.deleteById(user2.get().getId());
-        assertEquals(Optional.empty(), chatRoomRepository.findById(chatRoomId));
-        assertEquals(Optional.empty(), userRepository.findById(user.get().getId()));
-        assertEquals(Optional.empty(), userRepository.findById(user2.get().getId()));
+        assertEquals(Optional.empty(),
+                    chatRoomRepository.findById(chatRoomId));
+        assertEquals(Optional.empty(),
+                    userRepository.findById(user.get().getId()));
+        assertEquals(Optional.empty(),
+                    userRepository.findById(user2.get().getId()));
     }
 
     @BeforeEach
@@ -92,17 +89,17 @@ class ChatRoomControllerTest {
     @Order(1)
     @DisplayName("회원 가입")
     void test1() throws JsonProcessingException {
-        // given
+        /* given */
         String requestBody = mapper.writeValueAsString(user1);
         HttpEntity<String> request = new HttpEntity<>(requestBody, headers);
 
-        // when
+        /* when */
         ResponseEntity<String> response = restTemplate.postForEntity(
                 "/api/user/signup",
                 request,
                 String.class);
 
-        // then
+        /* then */
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
         assertEquals("회원가입 성공", response.getBody());
@@ -112,17 +109,17 @@ class ChatRoomControllerTest {
     @Order(2)
     @DisplayName("회원 가입 2")
     void test2() throws JsonProcessingException {
-        // given
+        /* given */
         String requestBody = mapper.writeValueAsString(user2);
         HttpEntity<String> request = new HttpEntity<>(requestBody, headers);
 
-        // when
+        /* when */
         ResponseEntity<String> response = restTemplate.postForEntity(
                 "/api/user/signup",
                 request,
                 String.class);
 
-        // then
+        /* then */
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
         assertEquals("회원가입 성공", response.getBody());
@@ -133,17 +130,17 @@ class ChatRoomControllerTest {
     @Order(3)
     @DisplayName("로그인, JWT 토큰 받기")
     void test3() throws JsonProcessingException {
-        // given
+        /* given */
         String requestBody = mapper.writeValueAsString(user2Login);
         HttpEntity<String> request = new HttpEntity<>(requestBody, headers);
 
-        // when
+        /* when */
         ResponseEntity<LoginResultDto> response = restTemplate.postForEntity(
                 "/api/user/login",
                 request,
                 LoginResultDto.class);
 
-        // then
+        /* then */
         token = response.getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
         assertNotEquals("", token);
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -157,21 +154,29 @@ class ChatRoomControllerTest {
         @Order(1)
         @DisplayName("채팅룸 생성 1")
         void test1() throws JsonProcessingException {
-            Optional<User> user = userRepository.findByUsername("xxx@naver.com");
-            Optional<User> user2 = userRepository.findByUsername("aaa@naver.com");
-            CreateRoomRequestDto createRoomRequestDto = new CreateRoomRequestDto(user.get().getId(), user2.get().getId());
-            // given
-            String requestBody = mapper.writeValueAsString(createRoomRequestDto);
+            /* given */
+            Optional<User> user = userRepository
+                    .findByUsername("xxx@naver.com");
+            Optional<User> user2 = userRepository
+                    .findByUsername("aaa@naver.com");
+
+            CreateRoomRequestDto createRoomRequestDto =
+                    new CreateRoomRequestDto(user.get().getId(),
+                                            user2.get().getId());
+
+            String requestBody = mapper
+                    .writeValueAsString(createRoomRequestDto);
+
             headers.set("Authorization", token);
             HttpEntity<String> request = new HttpEntity<>(requestBody, headers);
 
-            // when
+            /* when */
             ResponseEntity<ChatRoomDto> response = restTemplate.postForEntity(
                     "/chat/room",
                     request,
                     ChatRoomDto.class);
 
-            // then
+            /* then */
             assertEquals(HttpStatus.OK, response.getStatusCode());
             assertNotNull(response.getBody());
             chatRoomId = response.getBody().getRoomId();
@@ -181,20 +186,22 @@ class ChatRoomControllerTest {
         @Order(2)
         @DisplayName("채팅방 조회 1")
         void test2() throws JsonProcessingException {
-            Optional<User> user = userRepository.findByUsername("xxx@naver.com");
-            Optional<User> user2 = userRepository.findByUsername("aaa@naver.com");
+            /* given */
+            Optional<User> user = userRepository
+                    .findByUsername("xxx@naver.com");
+            Optional<User> user2 = userRepository
+                    .findByUsername("aaa@naver.com");
 
-            // given
             headers.set("Authorization", token);
             HttpEntity<String> request = new HttpEntity<>(headers);
 
-            // when
+            /* when */
             ResponseEntity<Object> response = restTemplate.postForEntity(
                     "/chat/room/enter/" + chatRoomId,
                     request,
                     Object.class);
 
-            // then
+            /* then */
             assertEquals(HttpStatus.OK, response.getStatusCode());
             assertNotNull(response.getBody());
 
@@ -204,23 +211,24 @@ class ChatRoomControllerTest {
         @Order(3)
         @DisplayName("내가 참가한 모든 채팅방 목록 1")
         void test3() throws JsonProcessingException {
-            Optional<User> user = userRepository.findByUsername("xxx@naver.com");
-            Optional<User> user2 = userRepository.findByUsername("aaa@naver.com");
-            // given
+            /* given */
+            Optional<User> user = userRepository
+                    .findByUsername("xxx@naver.com");
+            Optional<User> user2 = userRepository
+                    .findByUsername("aaa@naver.com");
             headers.set("Authorization", token);
             HttpEntity<String> request = new HttpEntity<>(headers);
 
-            // when
-            ResponseEntity<String> response = restTemplate.exchange("/chat/myRoomList",
-                    HttpMethod.GET, request, String.class);
+            /* when */
+            ResponseEntity<String> response = restTemplate.exchange(
+                    "/chat/myRoomList",
+                        HttpMethod.GET,
+                        request,
+                        String.class);
 
-            //String roomInfoListToString = response.getBody().toString();
-            //List<ChatMyRoomListResponseDto> roomInfoList = objectMapper.readValue(roomInfoListToString, List.class);
-            // then
+            /* then */
             assertEquals(HttpStatus.OK, response.getStatusCode());
             assertNotNull(response.getBody());
-            //assertEquals(chatRoomId, roomInfoList.get(0).getRoomId());
-
         }
     }
 }

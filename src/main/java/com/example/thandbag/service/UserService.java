@@ -29,28 +29,32 @@ public class UserService {
     private final UserValidator userValidator;
     private final ProfileImgRepository profileImgRepository;
 
-    // 회원가입
+    /* 회원가입 */
     @Transactional
     public String userRegister(SignupRequestDto signupRequestDto) {
 
-        Optional<User> foundUsername = userRepository.findByUsername(signupRequestDto.getUsername());
-        Optional<User> foundNickname = userRepository.findByNickname(signupRequestDto.getNickname());
+        Optional<User> foundUsername = userRepository
+                .findByUsername(signupRequestDto.getUsername());
 
-        //유저 아이디 중복 검사
+        Optional<User> foundNickname = userRepository
+                .findByNickname(signupRequestDto.getNickname());
+
+        /* 유저 아이디 중복 검사 */
         userValidator.checkUsername(foundUsername);
-        //유저 닉네임 중복 검사
+        /* 유저 닉네임 중복 검사 */
         userValidator.checkNickname(foundNickname);
-        //유효성 검사
+        /* 유효성 검사 */
         userValidator.checkValid(signupRequestDto);
 
-        //비밀번호 인코딩
-        String password = passwordEncoder.encode(signupRequestDto.getPassword());
+        /* 비밀번호 인코딩 */
+        String password = passwordEncoder
+                .encode(signupRequestDto.getPassword());
 
-        //유저 저장 (회원가입 완료)
+        /* 유저 저장 (회원가입 완료) */
         User user = new User(signupRequestDto);
         user.setPassword(password);
 
-        //기본 프로필 이미지 세팅
+        /* 기본 프로필 이미지 세팅 */
         Random random = new Random();
         Long randomNum = (long) random.nextInt(3) + 1;
         ProfileImg profileImg = profileImgRepository.getById(randomNum);
@@ -61,19 +65,29 @@ public class UserService {
         return "회원가입 성공";
     }
 
-    // 로그인
-    public LoginResultDto userLogin(LoginRequestDto loginRequestDto, HttpServletResponse response) {
+    /* 로그인 */
+    public LoginResultDto userLogin(LoginRequestDto loginRequestDto,
+                                    HttpServletResponse response) {
         User user = userRepository.findByUsername(loginRequestDto.getUsername())
-                .orElseThrow(() -> new IllegalArgumentException("아이디가 존재하지 않습니다."));
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "아이디가 존재하지 않습니다."));
 
-        if(!passwordEncoder.matches(loginRequestDto.getPassword(), user.getPassword())) {
+        if(!passwordEncoder.matches(loginRequestDto.getPassword(),
+                user.getPassword())) {
             throw new IllegalArgumentException("비밀번호를 확인해주세요.");
         }
 
-        // 토큰 생성
+        /* 토큰 생성 */
         UserDetailsImpl userDetails = new UserDetailsImpl(user);
         String token = JwtTokenUtils.generateJwtToken(userDetails);
         response.addHeader("Authorization", "Bearer " + token);
-        return new LoginResultDto(user.getId(), user.getNickname(), user.getLevel(), user.getMbti(), user.getProfileImg().getProfileImgUrl());
+
+        return new LoginResultDto(
+                user.getId(),
+                user.getNickname(),
+                user.getLevel(),
+                user.getMbti(),
+                user.getProfileImg().getProfileImgUrl()
+        );
     }
 }

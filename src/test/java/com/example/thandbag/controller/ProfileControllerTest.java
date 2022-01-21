@@ -25,7 +25,11 @@ public class ProfileControllerTest {
     @DisplayName("ActiveProfile 없음")
     @Test
     public void allowSecurity() throws Exception {
-        ResponseEntity<String> response = restTemplate.getForEntity("/profile", String.class);
+        /* when */
+        ResponseEntity<String> response =
+                restTemplate.getForEntity("/profile", String.class);
+
+        /* then */
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("alpha", response.getBody());
     }
