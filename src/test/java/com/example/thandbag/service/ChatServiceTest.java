@@ -51,15 +51,25 @@ class ChatServiceTest {
     @DisplayName("닉네임 찾기")
     @Test
     void getNickname() {
-        //given
-        ChatService chatService = new ChatService(channelTopic, redisTemplate, chatRedisRepository, userRepository, chatRoomRepository, chatContentRepository, alarmRepository);
-        String username = user.getUsername();
-        given(userRepository.findByUsername(username)).willReturn(Optional.of(user));
 
-        //when
+        /* given */
+        ChatService chatService = new ChatService(
+                channelTopic,
+                redisTemplate,
+                chatRedisRepository,
+                userRepository,
+                chatRoomRepository,
+                chatContentRepository,
+                alarmRepository);
+
+        String username = user.getUsername();
+        given(userRepository.findByUsername(username))
+                .willReturn(Optional.of(user));
+
+        /* when */
         String result = chatService.getNickname(username);
 
-        //then
+        /* then */
         assertEquals(user.getNickname(), result);
     }
 
@@ -67,8 +77,15 @@ class ChatServiceTest {
     @DisplayName("메시지 발송")
     @Test
     void sendMessage() {
-        //given
-        ChatService chatService = new ChatService(channelTopic, redisTemplate, chatRedisRepository, userRepository, chatRoomRepository, chatContentRepository, alarmRepository);
+        /* given */
+        ChatService chatService = new ChatService(
+                channelTopic,
+                redisTemplate,
+                chatRedisRepository,
+                userRepository,
+                chatRoomRepository,
+                chatContentRepository,
+                alarmRepository);
 
         ChatMessageDto chatMessageDto = new ChatMessageDto(
                 MessageType.ENTER,
@@ -79,10 +96,10 @@ class ChatServiceTest {
                 "2022.01.13"
         );
 
-        //when
+        /* when */
         chatService.sendChatMessage(chatMessageDto);
 
-        // then
+        /* then */
         assertEquals("[알림]", chatMessageDto.getSender());
     }
 
@@ -90,25 +107,37 @@ class ChatServiceTest {
     @DisplayName("채팅방 생성")
     @Test
     void createChatRoom() {
-        //given
-        ChatService chatService = new ChatService(channelTopic, redisTemplate, chatRedisRepository, userRepository, chatRoomRepository, chatContentRepository, alarmRepository);
+        /* given */
+        ChatService chatService = new ChatService(
+                channelTopic,
+                redisTemplate,
+                chatRedisRepository,
+                userRepository,
+                chatRoomRepository,
+                chatContentRepository,
+                alarmRepository);
 
         CreateRoomRequestDto roomRequestDto = new CreateRoomRequestDto(
                 user.getId(), user2.getId()
         );
 
-        given(chatRoomRepository.existsAllByPubUserIdAndSubUserId(anyLong(), anyLong()) ||
-                chatRoomRepository.existsAllByPubUserIdAndSubUserId(anyLong(), anyLong())).willReturn(false);
+        given(chatRoomRepository
+                        .existsAllByPubUserIdAndSubUserId(anyLong(), anyLong())
+                || chatRoomRepository
+                        .existsAllByPubUserIdAndSubUserId(anyLong(), anyLong()))
+                .willReturn(false);
 
         chatRoomDto = new ChatRoomDto(roomRequestDto);
 
-        given(chatRedisRepository.createChatRoom(roomRequestDto)).willReturn(chatRoomDto);
-        given(userRepository.getById(roomRequestDto.getPubId())).willReturn(user);
+        given(chatRedisRepository.createChatRoom(roomRequestDto))
+                .willReturn(chatRoomDto);
+        given(userRepository.getById(roomRequestDto.getPubId()))
+                .willReturn(user);
 
-        //when
+        /* when */
         ChatRoomDto result = chatService.createChatRoom(roomRequestDto);
 
-        // then
+        /* then */
         assertEquals(user.getId() ,result.getPubId());
         assertEquals(user2.getId() ,result.getSubId());
     }
@@ -117,8 +146,15 @@ class ChatServiceTest {
     @DisplayName("내가 참여한 채팅방")
     @Test
     void getChatRoomList() {
-        //given
-        ChatService chatService = new ChatService(channelTopic, redisTemplate, chatRedisRepository, userRepository, chatRoomRepository, chatContentRepository, alarmRepository);
+        /* given */
+        ChatService chatService = new ChatService(
+                channelTopic,
+                redisTemplate,
+                chatRedisRepository,
+                userRepository,
+                chatRoomRepository,
+                chatContentRepository,
+                alarmRepository);
 
         ChatRoomDto chatRoomDto = new ChatRoomDto(
                 "ThisIsChatRoomId",
@@ -135,14 +171,16 @@ class ChatServiceTest {
         chatRoom.setCreatedAt(LocalDateTime.now());
         chatRoomList.add(chatRoom);
 
-        given(chatRoomRepository.findAllByPubUserIdOrSubUserId(user.getId(), user.getId())).willReturn(chatRoomList);
+        given(chatRoomRepository
+                .findAllByPubUserIdOrSubUserId(user.getId(), user.getId()))
+                .willReturn(chatRoomList);
         given(userRepository.getById(anyLong())).willReturn(user2);
 
 
-        //when
+        /* when */
         List<ChatMyRoomListResponseDto> result = chatService.findMyChatList(user);
 
-        // then
+        /* then */
         assertEquals(1, result.size());
         assertEquals(chatRoom.getId(), result.get(0).getRoomId());
         assertEquals(user2.getNickname(), result.get(0).getSubNickname());
@@ -152,14 +190,21 @@ class ChatServiceTest {
     @DisplayName("이전 대화목록 불러오기")
     @Test
     void getChatList() {
-        //given
-        ChatService chatService = new ChatService(channelTopic, redisTemplate, chatRedisRepository, userRepository, chatRoomRepository, chatContentRepository, alarmRepository);
+        /* given */
+        ChatService chatService = new ChatService(
+                channelTopic,
+                redisTemplate,
+                chatRedisRepository,
+                userRepository,
+                chatRoomRepository,
+                chatContentRepository,
+                alarmRepository);
 
         String roomId = "ThisIsChatRoomId";
         Long pubId = user.getId();
         Long subId = user2.getId();
 
-        // 메시지 생성
+        /* 메세지 생성 */
         ChatRoom room = new ChatRoom(
                 roomId,
                 pubId,
@@ -199,19 +244,25 @@ class ChatServiceTest {
         chatContentList.add(chatContent3);
 
         given(chatRoomRepository.getById(anyString())).willReturn(room);
-        given(chatContentRepository.findAllByChatRoomOrderByCreatedAtAsc(any(ChatRoom.class))).willReturn(chatContentList);
+        given(chatContentRepository
+                .findAllByChatRoomOrderByCreatedAtAsc(any(ChatRoom.class)))
+                .willReturn(chatContentList);
 
-        //when
-        List<ChatHistoryResponseDto> result = chatService.getTotalChatContents(room.getId());
+        /* when */
+        List<ChatHistoryResponseDto> result =
+                chatService.getTotalChatContents(room.getId());
 
-        // then
+        /* then */
         assertEquals(3, result.size());
-        assertEquals(chatContent1.getUser().getProfileImg().getProfileImgUrl(), result.get(0).getSenderProfileImg());
-        assertEquals(chatContent2.getUser().getNickname(), result.get(1).getSender());
-        assertEquals(chatContent3.getContent(), result.get(2).getMessage());
+        assertEquals(chatContent1.getUser().getProfileImg().getProfileImgUrl(),
+                result.get(0).getSenderProfileImg());
+        assertEquals(chatContent2.getUser().getNickname(),
+                result.get(1).getSender());
+        assertEquals(chatContent3.getContent(),
+                result.get(2).getMessage());
     }
 
-    // 정보 수정 확인을 위한 유저 생성
+    /* 정보 수정 확인을 위한 유저 생성 */
     ProfileImg profileImg = new ProfileImg(
             1L,
             "naver.com"

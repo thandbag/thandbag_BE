@@ -29,5 +29,4 @@ public class ChatContent extends Timestamped{
 
     @Column
     private Boolean isRead;
-
 }

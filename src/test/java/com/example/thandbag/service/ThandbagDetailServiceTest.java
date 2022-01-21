@@ -40,10 +40,6 @@ class ThandbagDetailServiceTest {
     @Mock
     CommentLikeRepository commentLikeRepository;
     @Mock
-    CommentRepository commentRepository;
-    @Mock
-    UserRepository userRepository;
-    @Mock
     AlarmRepository alarmRepository;
     @Mock
     RedisTemplate redisTemplate;
@@ -60,7 +56,6 @@ class ThandbagDetailServiceTest {
     private User user;
     private Category category;
     private List<Comment> commentList;
-    private MainService mainService;
     private ThandbagRequestDto thandbagRequestDto;
     private Post post;
     private List<PostImg> postImgList;
@@ -90,7 +85,12 @@ class ThandbagDetailServiceTest {
                 redisTemplate,
                 channelTopic);
         commentList = new ArrayList<>();
-        thandbagRequestDto = new ThandbagRequestDto(title, content, null, "LOVE", share);
+        thandbagRequestDto = new ThandbagRequestDto(
+                title,
+                content,
+                null,
+                "LOVE",
+                share);
         postImgList = new ArrayList<>();
 
         post = Post.builder()
@@ -125,17 +125,24 @@ class ThandbagDetailServiceTest {
         post.getCommentList().add(comment);
         comment.setCreatedAt(LocalDateTime.now());
 
-        //given
+        /* given */
         given(postRepository.findById(post.getId()))
                 .willReturn(Optional.of(post));
         given(lvImgRepository.findByTitleAndLevel(anyString(),anyInt()))
                 .willReturn(new LvImg("asdf", "asdf", 1));
 
-        //when
-        thandbagDetailService = new ThandbagDetailService(postRepository, lvImgRepository, commentLikeRepository, alarmRepository, redisTemplate, channelTopic);
-        ThandbagResponseDto thandbagResponseDto = thandbagDetailService.getOneThandbag(post.getId(), user);
+        /* when */
+        thandbagDetailService = new ThandbagDetailService(
+                postRepository,
+                lvImgRepository,
+                commentLikeRepository,
+                alarmRepository,
+                redisTemplate,
+                channelTopic);
+        ThandbagResponseDto thandbagResponseDto =
+                thandbagDetailService.getOneThandbag(post.getId(), user);
 
-        //then
+        /* then */
         assertNotNull(thandbagResponseDto);
         assertEquals(thandbagResponseDto.getUserId(), 1);
         assertEquals(1, thandbagResponseDto.getComments().size());
@@ -147,16 +154,18 @@ class ThandbagDetailServiceTest {
     @Test
     @Order(2)
     void removeThandbag() {
-        //given
+        /* given */
         Long postId = 1L;
 
-        //when
+        /* when */
         thandbagDetailService.removeThandbag(postId, user);
 
-        //then
+        /* then */
         assertEquals(0, user.getTotalCount());
-        //생드백삭제 후, 해당 포스트에 대한 알림이 삭제되는지 확인
-        then(alarmRepository).should(times(1)).deleteAllByPostId(postId);
+        /* 생드백삭제 후, 해당 포스트에 대한 알림이 삭제되는지 확인 */
+        then(alarmRepository)
+                .should(times(1))
+                .deleteAllByPostId(postId);
     }
 
     @DisplayName("생드백 떠트리기")
@@ -168,7 +177,7 @@ class ThandbagDetailServiceTest {
         comment.setCreatedAt(LocalDateTime.now());
 
 
-        //given
+        /* given */
         HitCountDto hitCountDto = new HitCountDto(0, 10);
 
         User user1 = User.builder()
@@ -199,12 +208,18 @@ class ThandbagDetailServiceTest {
         given(channelTopic.getTopic())
                 .willReturn("aside");
 
-        //when
-        thandbagDetailService = new ThandbagDetailService(postRepository, lvImgRepository, commentLikeRepository, alarmRepository, redisTemplate, channelTopic);
-        List<BestUserDto> bestUserDtoList = thandbagDetailService.completeThandbag(post.getId(),hitCountDto);
+        /* when */
+        thandbagDetailService = new ThandbagDetailService(
+                postRepository,
+                lvImgRepository,
+                commentLikeRepository,
+                alarmRepository,
+                redisTemplate,
+                channelTopic);
+        List<BestUserDto> bestUserDtoList =
+                thandbagDetailService.completeThandbag(post.getId(),hitCountDto);
 
-        //then
-
+        /* then */
         assertEquals(1, bestUserDtoList.size());
         assertEquals("test2", bestUserDtoList.get(0).getNickname());
         assertEquals("ESFJ", bestUserDtoList.get(0).getMbti());

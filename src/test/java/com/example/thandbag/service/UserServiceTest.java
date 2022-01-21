@@ -39,7 +39,7 @@ class UserServiceTest {
 
     UserValidator userValidator;
 
-    // 중복 확인을 위한 유저 생성
+    /* 중복 확인을 위한 유저 생성 */
     ProfileImg profileImg = new ProfileImg(
             1L,
             "naver.com"
@@ -57,7 +57,7 @@ class UserServiceTest {
             profileImg
     );
 
-    // 유저 생성을 위한 항목
+    /* 유저 생성을 위한 항목 */
     String username;
     String nickname;
     String password;
@@ -68,13 +68,13 @@ class UserServiceTest {
         this.userValidator = new UserValidator();
         this.passwordEncoder = new BCryptPasswordEncoder();
 
-        // 회원가입 시 유효성 체크를 하기 위한, 기본 성공케이스 생성
+        /* 회원가입 시 유효성 체크를 하기 위한, 기본 성공케이스 생성 */
         username = "thandbag@thandbag.kr";
         nickname = "생드백마스터";
         password = "test1234!@";
         mbti = "INFJ";
 
-        // 존재하는 유저의 비밀번호 암호화
+        /* 존재하는 유저의 비밀번호 암호화 */
         existUser.setPassword(passwordEncoder.encode(existUser.getPassword()));
     }
 
@@ -87,15 +87,20 @@ class UserServiceTest {
         @DisplayName("성공")
         @Test
         void userRegisterSuccess() {
-            //given
-            UserService userService = new UserService(userRepository, passwordEncoder, userValidator, profileImgRepository);
+            /* given */
+            UserService userService = new UserService(
+                    userRepository,
+                    passwordEncoder,
+                    userValidator,
+                    profileImgRepository);
 
-            SignupRequestDto signupRequestDto = new SignupRequestDto(username, nickname, password, mbti);
+            SignupRequestDto signupRequestDto =
+                    new SignupRequestDto(username, nickname, password, mbti);
 
-            //when
+            /* when */
             String result = userService.userRegister(signupRequestDto);
 
-            //then
+            /* then */
             assertEquals("회원가입 성공", result);
         }
 
@@ -103,149 +108,207 @@ class UserServiceTest {
         @DisplayName("실패 - 이메일중복")
         @Test
         void userRegisterFail1() {
-            //given
-            UserService userService = new UserService(userRepository, passwordEncoder, userValidator, profileImgRepository);
+            /* given */
+            UserService userService = new UserService(
+                    userRepository,
+                    passwordEncoder,
+                    userValidator,
+                    profileImgRepository);
 
             username = "hanghae99@hanghae99.kr";
 
-            SignupRequestDto signupRequestDto = new SignupRequestDto(username, nickname, password, mbti);
+            SignupRequestDto signupRequestDto =
+                    new SignupRequestDto(username, nickname, password, mbti);
 
-            given(userRepository.findByUsername(signupRequestDto.getUsername())).willReturn(Optional.of(existUser));
+            given(userRepository.findByUsername(signupRequestDto.getUsername()))
+                    .willReturn(Optional.of(existUser));
 
-            //when
-            Exception exception = assertThrows(IllegalArgumentException.class, () -> userService.userRegister(signupRequestDto));
+            /* when */
+            Exception exception = assertThrows(IllegalArgumentException.class,
+                    () -> userService.userRegister(signupRequestDto));
 
-            //then
-            assertEquals("중복된 이메일이 존재합니다.", exception.getMessage());
+            /* then */
+            assertEquals("중복된 이메일이 존재합니다.",
+                    exception.getMessage());
         }
 
         @Order(3)
         @DisplayName("실패 - 닉네임중복")
         @Test
         void userRegisterFail2() {
-            //given
-            UserService userService = new UserService(userRepository, passwordEncoder, userValidator, profileImgRepository);
+            /* given */
+            UserService userService = new UserService(
+                    userRepository,
+                    passwordEncoder,
+                    userValidator,
+                    profileImgRepository);
 
             nickname = "생드백";
 
-            SignupRequestDto signupRequestDto = new SignupRequestDto(username, nickname, password, mbti);
+            SignupRequestDto signupRequestDto =
+                    new SignupRequestDto(username, nickname, password, mbti);
 
-            given(userRepository.findByNickname(signupRequestDto.getNickname())).willReturn(Optional.of(existUser));
+            given(userRepository.findByNickname(signupRequestDto.getNickname()))
+                    .willReturn(Optional.of(existUser));
 
-            //when
-            Exception exception = assertThrows(IllegalArgumentException.class, () -> userService.userRegister(signupRequestDto));
+            /* when */
+            Exception exception = assertThrows(IllegalArgumentException.class,
+                    () -> userService.userRegister(signupRequestDto));
 
-            //then
-            assertEquals("중복된 닉네임이 존재합니다.", exception.getMessage());
+            /* then */
+            assertEquals("중복된 닉네임이 존재합니다.",
+                    exception.getMessage());
         }
 
         @Order(4)
         @DisplayName("실패 - 이메일 빈문자열")
         @Test
         void userRegisterFail3() {
-            //given
-            UserService userService = new UserService(userRepository, passwordEncoder, userValidator, profileImgRepository);
+            /* given */
+            UserService userService = new UserService(
+                    userRepository,
+                    passwordEncoder,
+                    userValidator,
+                    profileImgRepository);
 
             username = "";
 
-            SignupRequestDto signupRequestDto = new SignupRequestDto(username, nickname, password, mbti);
+            SignupRequestDto signupRequestDto =
+                    new SignupRequestDto(username, nickname, password, mbti);
 
-            //when
-            Exception exception = assertThrows(IllegalArgumentException.class, () -> userService.userRegister(signupRequestDto));
+            /* when */
+            Exception exception = assertThrows(IllegalArgumentException.class,
+                    () -> userService.userRegister(signupRequestDto));
 
-            //then
-            assertEquals("아이디는 필수 입력 값 입니다.", exception.getMessage());
+            /* then */
+            assertEquals("아이디는 필수 입력 값 입니다.",
+                    exception.getMessage());
         }
 
         @Order(5)
         @DisplayName("실패 - 닉네임 빈문자열")
         @Test
         void userRegisterFail4() {
-            //given
-            UserService userService = new UserService(userRepository, passwordEncoder, userValidator, profileImgRepository);
+            /* given */
+            UserService userService = new UserService(
+                    userRepository,
+                    passwordEncoder,
+                    userValidator,
+                    profileImgRepository);
 
             nickname = "";
 
-            SignupRequestDto signupRequestDto = new SignupRequestDto(username, nickname, password, mbti);
+            SignupRequestDto signupRequestDto =
+                    new SignupRequestDto(username, nickname, password, mbti);
 
-            //when
-            Exception exception = assertThrows(IllegalArgumentException.class, () -> userService.userRegister(signupRequestDto));
+            /* when */
+            Exception exception = assertThrows(IllegalArgumentException.class,
+                    () -> userService.userRegister(signupRequestDto));
 
-            //then
-            assertEquals("닉네임은 필수 입력 값 입니다.", exception.getMessage());
+            /* then */
+            assertEquals("닉네임은 필수 입력 값 입니다.",
+                    exception.getMessage());
         }
 
         @Order(6)
         @DisplayName("실패 - 비밀번호 빈문자열")
         @Test
         void userRegisterFail5() {
-            //given
-            UserService userService = new UserService(userRepository, passwordEncoder, userValidator, profileImgRepository);
+            /* given */
+            UserService userService = new UserService(
+                    userRepository,
+                    passwordEncoder,
+                    userValidator,
+                    profileImgRepository);
 
             password = "";
 
-            SignupRequestDto signupRequestDto = new SignupRequestDto(username, nickname, password, mbti);
+            SignupRequestDto signupRequestDto =
+                    new SignupRequestDto(username, nickname, password, mbti);
 
-            //when
-            Exception exception = assertThrows(IllegalArgumentException.class, () -> userService.userRegister(signupRequestDto));
+            /* when */
+            Exception exception = assertThrows(IllegalArgumentException.class,
+                    () -> userService.userRegister(signupRequestDto));
 
-            //then
-            assertEquals("비밀번호는 필수 입력 값 입니다.", exception.getMessage());
+            /* then */
+            assertEquals("비밀번호는 필수 입력 값 입니다.",
+                    exception.getMessage());
         }
 
         @Order(7)
         @DisplayName("실패 - 이메일 공백포함")
         @Test
         void userRegisterFail6() {
-            //given
-            UserService userService = new UserService(userRepository, passwordEncoder, userValidator, profileImgRepository);
+            /* given */
+            UserService userService = new UserService(
+                    userRepository,
+                    passwordEncoder,
+                    userValidator,
+                    profileImgRepository);
 
             username = "thand bag@thandbag.kr";
 
-            SignupRequestDto signupRequestDto = new SignupRequestDto(username, nickname, password, mbti);
+            SignupRequestDto signupRequestDto =
+                    new SignupRequestDto(username, nickname, password, mbti);
 
-            //when
-            Exception exception = assertThrows(IllegalArgumentException.class, () -> userService.userRegister(signupRequestDto));
+            /* when */
+            Exception exception = assertThrows(IllegalArgumentException.class,
+                    () -> userService.userRegister(signupRequestDto));
 
-            //then
-            assertEquals("아이디는 공백을 포함할 수 없습니다.", exception.getMessage());
+            /* then */
+            assertEquals("아이디는 공백을 포함할 수 없습니다.",
+                    exception.getMessage());
         }
 
         @Order(8)
         @DisplayName("실패 - 닉네임 공백포함")
         @Test
         void userRegisterFail7() {
-            //given
-            UserService userService = new UserService(userRepository, passwordEncoder, userValidator, profileImgRepository);
+            /* given */
+            UserService userService = new UserService(
+                    userRepository,
+                    passwordEncoder,
+                    userValidator,
+                    profileImgRepository);
 
             nickname = "생드백 주인";
 
-            SignupRequestDto signupRequestDto = new SignupRequestDto(username, nickname, password, mbti);
+            SignupRequestDto signupRequestDto =
+                    new SignupRequestDto(username, nickname, password, mbti);
 
-            //when
-            Exception exception = assertThrows(IllegalArgumentException.class, () -> userService.userRegister(signupRequestDto));
+            /* when */
+            Exception exception = assertThrows(IllegalArgumentException.class,
+                    () -> userService.userRegister(signupRequestDto));
 
-            //then
-            assertEquals("닉네임은 공백을 포함할 수 없습니다.", exception.getMessage());
+            /* then */
+            assertEquals("닉네임은 공백을 포함할 수 없습니다.",
+                    exception.getMessage());
         }
 
         @Order(9)
         @DisplayName("실패 - 비밀번호 공백포함")
         @Test
         void userRegisterFail8() {
-            //BDD
-            //given
-            UserService userService = new UserService(userRepository, passwordEncoder, userValidator, profileImgRepository);
+            /* BDD */
+            /* given */
+            UserService userService = new UserService(
+                    userRepository,
+                    passwordEncoder,
+                    userValidator,
+                    profileImgRepository);
 
             password = "test 12!@";
 
-            SignupRequestDto signupRequestDto = new SignupRequestDto(username, nickname, password, mbti);
+            SignupRequestDto signupRequestDto =
+                    new SignupRequestDto(username, nickname, password, mbti);
 
-            //when
-            Exception exception = assertThrows(IllegalArgumentException.class, () -> userService.userRegister(signupRequestDto));
+            /* when */
+            Exception exception = assertThrows(IllegalArgumentException.class,
+                    () -> userService.userRegister(signupRequestDto));
 
-            //then
-            assertEquals("비밀번호는 공백을 포함할 수 없습니다.", exception.getMessage());
+            /* then */
+            assertEquals("비밀번호는 공백을 포함할 수 없습니다.",
+                    exception.getMessage());
         }
 
         @Order(10)
@@ -253,18 +316,25 @@ class UserServiceTest {
         @ValueSource(strings = {"thandbag", "thandbag.kr", "thandbag@thandbag"})
         @ParameterizedTest
         void userRegisterFail9(String message) {
-            //given
-            UserService userService = new UserService(userRepository, passwordEncoder, userValidator, profileImgRepository);
+            /* given */
+            UserService userService = new UserService(
+                    userRepository,
+                    passwordEncoder,
+                    userValidator,
+                    profileImgRepository);
 
             username = message;
 
-            SignupRequestDto signupRequestDto = new SignupRequestDto(username, nickname, password, mbti);
+            SignupRequestDto signupRequestDto =
+                    new SignupRequestDto(username, nickname, password, mbti);
 
-            //when
-            Exception exception = assertThrows(IllegalArgumentException.class, () -> userService.userRegister(signupRequestDto));
+            /* when */
+            Exception exception = assertThrows(IllegalArgumentException.class,
+                    () -> userService.userRegister(signupRequestDto));
 
-            //then
-            assertEquals("이메일 형식을 확인해주세요.", exception.getMessage());
+            /* then */
+            assertEquals("이메일 형식을 확인해주세요.",
+                    exception.getMessage());
         }
 
         @Order(11)
@@ -272,37 +342,62 @@ class UserServiceTest {
         @ValueSource(strings = {"a", "가", "1", "일곱글자테스트", "seventt", "특수문자!"})
         @ParameterizedTest
         void userRegisterFail10(String message) {
-            //given
-            UserService userService = new UserService(userRepository, passwordEncoder, userValidator, profileImgRepository);
+            /* given */
+            UserService userService = new UserService(
+                    userRepository,
+                    passwordEncoder,
+                    userValidator,
+                    profileImgRepository);
 
             nickname = message;
 
-            SignupRequestDto signupRequestDto = new SignupRequestDto(username, nickname, password, mbti);
+            SignupRequestDto signupRequestDto =
+                    new SignupRequestDto(username, nickname, password, mbti);
 
-            //when
-            Exception exception = assertThrows(IllegalArgumentException.class, () -> userService.userRegister(signupRequestDto));
+            /* when */
+            Exception exception = assertThrows(IllegalArgumentException.class,
+                    () -> userService.userRegister(signupRequestDto));
 
-            //then
-            assertEquals("닉네임은 영문, 한글, 숫자로 이루어진 2~6자로 작성해주세요.", exception.getMessage());
+            /* then */
+            assertEquals(
+                    "닉네임은 영문, 한글, 숫자로 이루어진 2~6자로 작성해주세요.",
+                    exception.getMessage());
         }
 
         @Order(12)
         @DisplayName("실패 - 비밀번호형식")
-        @ValueSource(strings = {"abcd", "1234", "!@#$", "onlyENGLISH", "12345678", "123456!@", "english!@"})
+        @ValueSource(strings =
+                {
+                        "abcd",
+                        "1234",
+                        "!@#$",
+                        "onlyENGLISH",
+                        "12345678",
+                        "123456!@",
+                        "english!@"
+                })
         @ParameterizedTest
         void userRegisterFail11(String message) {
-            //given
-            UserService userService = new UserService(userRepository, passwordEncoder, userValidator, profileImgRepository);
+            /* given */
+            UserService userService = new UserService(
+                    userRepository,
+                    passwordEncoder,
+                    userValidator,
+                    profileImgRepository);
 
             password = message;
 
-            SignupRequestDto signupRequestDto = new SignupRequestDto(username, nickname, password, mbti);
+            SignupRequestDto signupRequestDto =
+                    new SignupRequestDto(username, nickname, password, mbti);
 
-            //when
-            Exception exception = assertThrows(IllegalArgumentException.class, () -> userService.userRegister(signupRequestDto));
+            /* when */
+            Exception exception = assertThrows(IllegalArgumentException.class,
+                    () -> userService.userRegister(signupRequestDto));
 
-            //then
-            assertEquals("비밀번호는 영문, 숫자, 특수문자를 모두 포함한 8자 이상으로 입력해야 합니다.", exception.getMessage());
+            /* then */
+            assertEquals(
+                    "비밀번호는 영문, 숫자, 특수문자를 모두 포함한 8자 이상으로 입력해야 합니다.",
+                    exception.getMessage());
         }
     }
 
@@ -315,8 +410,12 @@ class UserServiceTest {
         @DisplayName("성공")
         @Test
         void userLoginSuccess() {
-            //given
-            UserService userService = new UserService(userRepository, passwordEncoder, userValidator, profileImgRepository);
+            /* given */
+            UserService userService = new UserService(
+                    userRepository,
+                    passwordEncoder,
+                    userValidator,
+                    profileImgRepository);
 
             User user = existUser;
 
@@ -327,25 +426,32 @@ class UserServiceTest {
                     username, password
             );
 
-            given(userRepository.findByUsername(loginRequestDto.getUsername())).willReturn(Optional.of(user));
+            given(userRepository.findByUsername(loginRequestDto.getUsername()))
+                    .willReturn(Optional.of(user));
 
-            //when
-            LoginResultDto result = userService.userLogin(loginRequestDto, response);
+            /* when */
+            LoginResultDto result =
+                    userService.userLogin(loginRequestDto, response);
 
-            //then
+            /* then */
             assertEquals(user.getId(), result.getUserId());
             assertEquals(user.getNickname(), result.getNickname());
             assertEquals(user.getLevel(), result.getLevel());
             assertEquals(user.getMbti(), result.getMbti());
-            assertEquals(user.getProfileImg().getProfileImgUrl(), result.getProfileImgUrl());
+            assertEquals(user.getProfileImg().getProfileImgUrl(),
+                    result.getProfileImgUrl());
         }
 
         @Order(2)
         @DisplayName("실패-아이디없음")
         @Test
         void userLoginFail1() {
-            //given
-            UserService userService = new UserService(userRepository, passwordEncoder, userValidator, profileImgRepository);
+            /* given */
+            UserService userService = new UserService(
+                    userRepository,
+                    passwordEncoder,
+                    userValidator,
+                    profileImgRepository);
 
             User user = existUser;
             System.out.println(user.getPassword());
@@ -357,11 +463,13 @@ class UserServiceTest {
                     username, password
             );
 
-            //when
-            Exception exception = assertThrows(IllegalArgumentException.class, () -> userService.userLogin(loginRequestDto, response));
+            /* when */
+            Exception exception = assertThrows(IllegalArgumentException.class,
+                    () -> userService.userLogin(loginRequestDto, response));
 
-            //then
-            assertEquals("아이디가 존재하지 않습니다.", exception.getMessage());
+            /* then */
+            assertEquals("아이디가 존재하지 않습니다.",
+                    exception.getMessage());
 
         }
 
@@ -369,8 +477,12 @@ class UserServiceTest {
         @DisplayName("실패-비밀번호틀림")
         @Test
         void userLoginFail2() {
-            //given
-            UserService userService = new UserService(userRepository, passwordEncoder, userValidator, profileImgRepository);
+            /* given */
+            UserService userService = new UserService(
+                    userRepository,
+                    passwordEncoder,
+                    userValidator,
+                    profileImgRepository);
 
             User user = existUser;
             System.out.println(user.getPassword());
@@ -382,12 +494,14 @@ class UserServiceTest {
                     username, password
             );
 
-            given(userRepository.findByUsername(loginRequestDto.getUsername())).willReturn(Optional.of(user));
+            given(userRepository.findByUsername(loginRequestDto.getUsername()))
+                    .willReturn(Optional.of(user));
 
-            //when
-            Exception exception = assertThrows(IllegalArgumentException.class, () -> userService.userLogin(loginRequestDto, response));
+            /* when */
+            Exception exception = assertThrows(IllegalArgumentException.class,
+                    () -> userService.userLogin(loginRequestDto, response));
 
-            //then
+            /* then */
             assertEquals("비밀번호를 확인해주세요.", exception.getMessage());
         }
     }

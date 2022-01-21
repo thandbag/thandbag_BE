@@ -39,7 +39,7 @@ class CommentLikeRepositoryTest {
 
     @BeforeEach
     void setup() {
-        // 유저 생성
+        /* 유저 생성 */
         SignupRequestDto signupRequestDto = new SignupRequestDto(
                 "test@test.kr",
                 "테스트",
@@ -56,11 +56,11 @@ class CommentLikeRepositoryTest {
         );
         this.user2 = new User(signupRequestDto);
 
-        // DB 저장
+        /* DB 저장 */
         userRepository.save(user1);
         userRepository.save(user2);
 
-        // Post1 생성
+        /* Post1 생성 */
         this.post = Post.builder()
                 .title("Post1")
                 .content("Post Content1")
@@ -71,10 +71,10 @@ class CommentLikeRepositoryTest {
                 .totalHitCount(0)
                 .build();
 
-        // DB 저장
+        /* DB 저장 */
         postRepository.save(post);
 
-        // 코멘트 생성
+        /* 코멘트 생성 */
         this.comment1 = Comment.builder()
                 .comment("코멘트1")
                 .user(user2)
@@ -93,12 +93,12 @@ class CommentLikeRepositoryTest {
                 .post(post)
                 .build();
 
-        // DB 저장
+        /* DB 저장 */
         commentRepository.save(comment1);
         commentRepository.save(comment2);
         commentRepository.save(comment3);
 
-        //CommentLike 생성
+        /* CommentLike 생성 */
         commentLike1 = CommentLike.builder()
                 .userId(user1.getId())
                 .comment(comment1)
@@ -109,7 +109,7 @@ class CommentLikeRepositoryTest {
                 .comment(comment2)
                 .build();
 
-        //DB 저장
+        /* DB 저장 */
         commentLikeRepository.save(commentLike1);
         commentLikeRepository.save(commentLike2);
     }
@@ -119,14 +119,25 @@ class CommentLikeRepositoryTest {
     @Test
     void saveAndFindAll() {
 
-        //when
+        /* when */
         List<CommentLike> result = commentLikeRepository.findAll();
 
-        //then
+        /* then */
         assertEquals(2, result.size());
-        assertEquals("코멘트1", result.get(0).getComment().getComment());
-        assertEquals("테스트2", result.get(0).getComment().getUser().getNickname());
-        assertEquals("Post1", result.get(1).getComment().getPost().getTitle());
+        assertEquals("코멘트1",
+                result.get(0)
+                        .getComment()
+                        .getComment());
+        assertEquals("테스트2",
+                result.get(0)
+                        .getComment()
+                        .getUser()
+                        .getNickname());
+        assertEquals("Post1",
+                result.get(1)
+                        .getComment()
+                        .getPost()
+                        .getTitle());
     }
 
     @Order(2)
@@ -134,10 +145,11 @@ class CommentLikeRepositoryTest {
     @Test
     void findByUserIdAndComment() {
 
-        //when
-        CommentLike result = commentLikeRepository.findByUserIdAndComment(user1.getId(), comment1);
+        /* when */
+        CommentLike result = commentLikeRepository
+                .findByUserIdAndComment(user1.getId(), comment1);
 
-        //then
+        /* then */
         assertNotNull(result);
         assertEquals(comment1, result.getComment());
     }
@@ -147,12 +159,17 @@ class CommentLikeRepositoryTest {
     @Test
     void findAllByComment() {
 
-        //when
-        List<CommentLike> result = commentLikeRepository.findAllByComment(comment1);
+        /* when */
+        List<CommentLike> result = commentLikeRepository
+                .findAllByComment(comment1);
 
-        //then
+        /* then */
         assertEquals(1, result.size());
-        assertEquals("테스트2", result.get(0).getComment().getUser().getNickname());
+        assertEquals("테스트2",
+                result.get(0)
+                        .getComment()
+                        .getUser()
+                        .getNickname());
     }
 
     @Order(4)
@@ -160,10 +177,11 @@ class CommentLikeRepositoryTest {
     @Test
     void existsByCommentAndUserId() {
 
-        //when
-        boolean result = commentLikeRepository.existsByCommentAndUserId(comment1, user1.getId());
+        /* when */
+        boolean result = commentLikeRepository
+                .existsByCommentAndUserId(comment1, user1.getId());
 
-        //then
+        /* then */
         assertTrue(result);
     }
 
@@ -172,10 +190,11 @@ class CommentLikeRepositoryTest {
     @Test
     void findByUserIdAndComment2() {
 
-        //when
-        CommentLike result = commentLikeRepository.findByUserIdAndComment(user1.getId(), comment2);
+        /* when */
+        CommentLike result = commentLikeRepository
+                .findByUserIdAndComment(user1.getId(), comment2);
 
-        //then
+        /* then */
         assertNull(result);
     }
 
@@ -184,10 +203,11 @@ class CommentLikeRepositoryTest {
     @Test
     void findAllByComment2() {
 
-        //when
-        List<CommentLike> result = commentLikeRepository.findAllByComment(comment3);
+        /* when */
+        List<CommentLike> result = commentLikeRepository
+                .findAllByComment(comment3);
 
-        //then
+        /* then */
         assertEquals(0, result.size());
     }
 
@@ -196,10 +216,11 @@ class CommentLikeRepositoryTest {
     @Test
     void existsByCommentAndUserId2() {
 
-        //when
-        boolean result = commentLikeRepository.existsByCommentAndUserId(comment3, user1.getId());
+        /* when */
+        boolean result = commentLikeRepository
+                .existsByCommentAndUserId(comment3, user1.getId());
 
-        //then
+        /* then */
         assertFalse(result);
     }
 }

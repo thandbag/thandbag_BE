@@ -33,7 +33,7 @@ class ChatContentRepositoryTest {
 
     @BeforeEach
     void setup() {
-        // 유저 생성
+        /* 유저 생성 */
         SignupRequestDto signupRequestDto = new SignupRequestDto(
                 "test@test.kr",
                 "테스트",
@@ -66,13 +66,13 @@ class ChatContentRepositoryTest {
         );
         this.user4 = new User(signupRequestDto);
 
-        // DB 저장
+        /* DB 저장 */
         userRepository.save(user1);
         userRepository.save(user2);
         userRepository.save(user3);
         userRepository.save(user4);
 
-        // ChatRoom 생성
+        /* ChatRoom 생성 */
         chatRoom1 = new ChatRoom(
                 "chatRoom1",
                 user1.getId(),
@@ -85,11 +85,11 @@ class ChatContentRepositoryTest {
                 user3.getId()
         );
 
-        // DB 저장
+        /* DB 저장 */
         chatRoomRepository.save(chatRoom1);
         chatRoomRepository.save(chatRoom2);
 
-        // ChatContent 생성
+        /* ChatContent 생성 */
         ChatContent chatContent1 = ChatContent.builder()
                 .content("채팅1")
                 .user(user1)
@@ -111,7 +111,7 @@ class ChatContentRepositoryTest {
                 .isRead(false)
                 .build();
 
-        // DB 저장
+        /* DB 저장 */
         chatContentRepository.save(chatContent1);
         chatContentRepository.save(chatContent2);
         chatContentRepository.save(chatContent3);
@@ -123,10 +123,10 @@ class ChatContentRepositoryTest {
     @Test
     void saveAndFindAll() {
 
-        //when
+        /* when */
         List<ChatContent> result = chatContentRepository.findAll();
 
-        //then
+        /* then */
         assertEquals(3, result.size());
         assertEquals("채팅1", result.get(0).getContent());
         assertFalse(result.get(1).getIsRead());
@@ -137,10 +137,11 @@ class ChatContentRepositoryTest {
     @Test
     void findFirstByChatRoomOrderByCreatedAtDesc() {
 
-        //when
-        Optional<ChatContent> result = chatContentRepository.findFirstByChatRoomOrderByCreatedAtDesc(chatRoom1);
+        /* when */
+        Optional<ChatContent> result = chatContentRepository
+                .findFirstByChatRoomOrderByCreatedAtDesc(chatRoom1);
 
-        //then
+        /* then */
         assertNotEquals(Optional.empty(), result);
         assertTrue(result.isPresent());
         assertEquals("테스트", result.get().getUser().getNickname());
@@ -152,10 +153,11 @@ class ChatContentRepositoryTest {
     @Test
     void findAllByChatRoomOrderByCreatedAtAsc() {
 
-        //when
-        List<ChatContent> result = chatContentRepository.findAllByChatRoomOrderByCreatedAtAsc(chatRoom1);
+        /* when */
+        List<ChatContent> result = chatContentRepository
+                .findAllByChatRoomOrderByCreatedAtAsc(chatRoom1);
 
-        //then
+        /* then */
         assertEquals(3, result.size());
         assertEquals("채팅1", result.get(0).getContent());
         assertEquals("테스트2", result.get(1).getUser().getNickname());
@@ -167,10 +169,11 @@ class ChatContentRepositoryTest {
     @Test
     void findAllByUserNotAndIsRead() {
 
-        //when
-        List<ChatContent> result = chatContentRepository.findAllByUserNotAndChatRoomAndIsRead(user2, chatRoom1, false);
+        /* when */
+        List<ChatContent> result = chatContentRepository
+                .findAllByUserNotAndChatRoomAndIsRead(user2, chatRoom1, false);
 
-        //then
+        /* then */
         assertEquals(1, result.size());
         assertEquals("채팅3", result.get(0).getContent());
     }
@@ -180,10 +183,11 @@ class ChatContentRepositoryTest {
     @Test
     void findFirstByChatRoomOrderByCreatedAtDesc2() {
 
-        //when
-        Optional<ChatContent> result = chatContentRepository.findFirstByChatRoomOrderByCreatedAtDesc(chatRoom2);
+        /* when */
+        Optional<ChatContent> result = chatContentRepository
+                .findFirstByChatRoomOrderByCreatedAtDesc(chatRoom2);
 
-        //then
+        /* then */
         assertFalse(result.isPresent());
         assertEquals(Optional.empty(), result);
     }
@@ -193,10 +197,11 @@ class ChatContentRepositoryTest {
     @Test
     void findAllByChatRoomOrderByCreatedAtAsc2() {
 
-        //when
-        List<ChatContent> result = chatContentRepository.findAllByChatRoomOrderByCreatedAtAsc(chatRoom2);
+        /* when */
+        List<ChatContent> result = chatContentRepository
+                .findAllByChatRoomOrderByCreatedAtAsc(chatRoom2);
 
-        //then
+        /* then */
         assertEquals(0, result.size());
     }
 
@@ -205,10 +210,11 @@ class ChatContentRepositoryTest {
     @Test
     void findAllByUserNotAndIsRead2() {
 
-        //when
-        List<ChatContent> result = chatContentRepository.findAllByUserNotAndChatRoomAndIsRead(user2, chatRoom2, false);
+        /* when */
+        List<ChatContent> result = chatContentRepository
+                .findAllByUserNotAndChatRoomAndIsRead(user2, chatRoom2, false);
 
-        //then
+        /* then */
         assertEquals(0, result.size());
     }
 }

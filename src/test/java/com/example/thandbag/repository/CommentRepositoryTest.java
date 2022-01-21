@@ -31,7 +31,7 @@ class CommentRepositoryTest {
 
     @BeforeEach
     void setup() {
-        // 유저 생성
+        /* 유저 생성 */
         SignupRequestDto signupRequestDto = new SignupRequestDto(
                 "test@test.kr",
                 "테스트",
@@ -40,10 +40,10 @@ class CommentRepositoryTest {
         );
         this.user = new User(signupRequestDto);
 
-        // 유저 저장
+        /* 유저 저장 */
         userRepository.save(user);
 
-        // Post1 생성
+        /* Post1 생성 */
         this.post = Post.builder()
                 .title("Post1")
                 .content("Post Content1")
@@ -54,7 +54,7 @@ class CommentRepositoryTest {
                 .totalHitCount(0)
                 .build();
 
-        // DB 저장
+        /* DB 저장 */
         postRepository.save(post);
 
         this.comment1 = Comment.builder()
@@ -71,7 +71,7 @@ class CommentRepositoryTest {
                 .post(post)
                 .build();
 
-        // DB에 저장
+        /* DB에 저장 */
         commentRepository.save(comment1);
         commentRepository.save(comment2);
     }
@@ -81,10 +81,10 @@ class CommentRepositoryTest {
     @Test
     void saveAndFindAll() {
 
-        //when
+        /* when */
         List<Comment> result = commentRepository.findAll();
 
-        //then
+        /* then */
         assertEquals(2, result.size());
         assertEquals("코멘트1", result.get(0).getComment());
         assertFalse(result.get(1).getLikedByWriter());

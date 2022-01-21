@@ -8,8 +8,11 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 @Configuration
 public class LimitRedisConfig {
+
     @Bean
-    public RedisTemplate<Object, Object> limitRedisTemplate(RedisConnectionFactory redisConnectionFactory) {
+    public RedisTemplate<Object, Object> limitRedisTemplate(
+            RedisConnectionFactory redisConnectionFactory) {
+
         RedisTemplate<Object, Object> redisTemplate = new RedisTemplate<>();
         redisTemplate.setHashValueSerializer(new StringRedisSerializer());
         redisTemplate.setConnectionFactory(redisConnectionFactory);

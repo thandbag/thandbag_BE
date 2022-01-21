@@ -31,7 +31,7 @@ class PostImgRepositoryTest {
 
     @BeforeEach
     void setup() {
-        // 유저 생성
+        /* 유저 생성 */
         SignupRequestDto signupRequestDto = new SignupRequestDto(
                 "test@test.kr",
                 "테스트",
@@ -40,10 +40,10 @@ class PostImgRepositoryTest {
         );
         this.user = new User(signupRequestDto);
 
-        // 유저 저장
+        /* 유저 저장 */
         userRepository.save(user);
 
-        // Post1 생성
+        /* Post1 생성 */
         this.post1 = Post.builder()
                 .title("Post1")
                 .content("Post Content1")
@@ -54,10 +54,10 @@ class PostImgRepositoryTest {
                 .totalHitCount(0)
                 .build();
 
-        // DB 저장
+        /* DB 저장 */
         postRepository.save(post1);
 
-        // PostImg 생성
+        /* PostImg 생성 */
         this.postImg1 = PostImg.builder()
                 .postImgUrl("postImgUrl1.jpg")
                 .post(post1)
@@ -77,14 +77,18 @@ class PostImgRepositoryTest {
     @Test
     void saveAndFindAll() {
 
-        //when
+        /* when */
         List<PostImg> result = postImgRepository.findAll();
 
-        //then
+        /* then */
         assertEquals(2, result.size());
         assertEquals("postImgUrl1.jpg", result.get(0).getPostImgUrl());
         assertEquals("Post1", result.get(1).getPost().getTitle());
-        assertEquals("테스트", result.get(1).getPost().getUser().getNickname());
+        assertEquals("테스트",
+                result.get(1)
+                        .getPost()
+                        .getUser()
+                        .getNickname());
     }
 
     @Order(2)
@@ -92,13 +96,17 @@ class PostImgRepositoryTest {
     @Test
     void findAllByPostId() {
 
-        //when
+        /* when */
         List<PostImg> result = postImgRepository.findAllByPostId(post1.getId());
 
-        //then
+        /* then */
         assertEquals(2, result.size());
         assertEquals("postImgUrl1.jpg", result.get(0).getPostImgUrl());
         assertEquals("Post1", result.get(1).getPost().getTitle());
-        assertEquals("테스트", result.get(1).getPost().getUser().getNickname());
+        assertEquals("테스트",
+                result.get(1)
+                        .getPost()
+                        .getUser()
+                        .getNickname());
     }
 }

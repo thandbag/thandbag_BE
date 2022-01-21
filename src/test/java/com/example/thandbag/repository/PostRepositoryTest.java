@@ -33,7 +33,7 @@ class PostRepositoryTest {
 
     @BeforeEach
     void setup() {
-        // 유저 생성
+        /* 유저 생성 */
         SignupRequestDto signupRequestDto = new SignupRequestDto(
                 "test@test.kr",
                 "테스트",
@@ -42,10 +42,10 @@ class PostRepositoryTest {
         );
         this.user = new User(signupRequestDto);
 
-        // 유저 저장
+        /* 유저 저장 */
         userRepository.save(user);
 
-        // Post1 생성
+        /* Post1 생성 */
         this.post1 = Post.builder()
                 .title("Post1")
                 .content("Post Content1")
@@ -56,7 +56,7 @@ class PostRepositoryTest {
                 .totalHitCount(0)
                 .build();
 
-        // Post2 생성
+        /* Post2 생성 */
         this.post2 = Post.builder()
                 .title("Post2")
                 .content("Post Content2")
@@ -67,7 +67,7 @@ class PostRepositoryTest {
                 .totalHitCount(0)
                 .build();
 
-        // DB 저장
+        /* DB 저장 */
         postRepository.save(post1);
         postRepository.save(post2);
     }
@@ -77,10 +77,10 @@ class PostRepositoryTest {
     @Test
     void saveAndFindAll() {
 
-        //when
+        /* when */
         List<Post> result = postRepository.findAll();
 
-        //then
+        /* then */
         assertEquals(2, result.size());
         assertEquals("테스트", result.get(0).getUser().getNickname());
         assertEquals(Category.LOVE, result.get(1).getCategory());

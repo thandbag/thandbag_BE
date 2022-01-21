@@ -48,11 +48,7 @@ class MyPageServiceTest {
     ImageService imageService;
 
     @Mock
-    MockMultipartFile multipartFile;
-
-    @Mock
     MyPageService myPageService;
-
 
     UserValidator userValidator;
     UserDetailsImpl userDetails;
@@ -72,8 +68,13 @@ class MyPageServiceTest {
         @DisplayName("성공 - 모든항목 수정")
         @Test
         void updateProfileSuccess() throws IOException {
-            //given
-            myPageService = new MyPageService(userRepository, postRepository, profileImgRepository, userValidator, imageService);
+            /* given */
+            myPageService = new MyPageService(
+                    userRepository,
+                    postRepository,
+                    profileImgRepository,
+                    userValidator,
+                    imageService);
 
             ProfileUpdateRequestDto updateDto = new ProfileUpdateRequestDto(
                     "수정된닉네임",
@@ -85,22 +86,27 @@ class MyPageServiceTest {
                     "image",
                     "image.image",
                     "image/png",
-                    new FileInputStream("src/test/resources/templates/testImg/KakaoTalk_Photo_2021-05-10-00-14-49.jpeg")
+                    new FileInputStream(
+                            "src/test/resources/templates/testImg/" +
+                                    "KakaoTalk_Photo_2021-05-10-00-14-49.jpeg")
             );
 
             String newProfileImgUrl = "newProfile.jpg";
 
             userDetails = new UserDetailsImpl(user);
 
-            given(userRepository.getById(userDetails.getUser().getId())).willReturn(user);
+            given(userRepository.getById(userDetails.getUser().getId()))
+                    .willReturn(user);
             given(imageService.uploadFile(file)).willReturn(newProfileImgUrl);
-            given(userRepository.findByNickname(updateDto.getNickname())).willReturn(Optional.empty());
+            given(userRepository.findByNickname(updateDto.getNickname()))
+                    .willReturn(Optional.empty());
             given(userRepository.save(user)).willReturn(user);
 
-            //when
-            ProfileUpdateResponseDto result = myPageService.updateProfile(file, updateDto, userDetails);
+            /* when */
+            ProfileUpdateResponseDto result =
+                    myPageService.updateProfile(file, updateDto, userDetails);
 
-            //then
+            /* then */
             assertEquals(1L, result.getUserId());
             assertEquals("newProfile.jpg", result.getProfileImgUrl());
             assertEquals("수정된닉네임", result.getNickname());
@@ -111,8 +117,13 @@ class MyPageServiceTest {
         @DisplayName("성공 - 닉네임만 수정")
         @Test
         void updateProfileSuccess2() throws IOException {
-            //given
-            myPageService = new MyPageService(userRepository, postRepository, profileImgRepository, userValidator, imageService);
+            /* given */
+            myPageService = new MyPageService(
+                    userRepository,
+                    postRepository,
+                    profileImgRepository,
+                    userValidator,
+                    imageService);
 
             ProfileUpdateRequestDto updateDto = new ProfileUpdateRequestDto(
                     "수정된닉네임",
@@ -121,14 +132,17 @@ class MyPageServiceTest {
 
             userDetails = new UserDetailsImpl(user);
 
-            given(userRepository.getById(userDetails.getUser().getId())).willReturn(user);
-            given(userRepository.findByNickname(updateDto.getNickname())).willReturn(Optional.empty());
+            given(userRepository.getById(userDetails.getUser().getId()))
+                    .willReturn(user);
+            given(userRepository.findByNickname(updateDto.getNickname()))
+                    .willReturn(Optional.empty());
             given(userRepository.save(user)).willReturn(user);
 
-            //when
-            ProfileUpdateResponseDto result = myPageService.updateProfile(null, updateDto, userDetails);
+            /* when */
+            ProfileUpdateResponseDto result =
+                    myPageService.updateProfile(null, updateDto, userDetails);
 
-            //then
+            /*then */
             assertEquals(1L, result.getUserId());
             assertEquals("naver.com", result.getProfileImgUrl());
             assertEquals("수정된닉네임", result.getNickname());
@@ -139,8 +153,13 @@ class MyPageServiceTest {
         @DisplayName("실패 - 닉네임중복")
         @Test
         void updateProfileFail1() {
-            //given
-            myPageService = new MyPageService(userRepository, postRepository, profileImgRepository, userValidator, imageService);
+            /* given */
+            myPageService = new MyPageService(
+                    userRepository,
+                    postRepository,
+                    profileImgRepository,
+                    userValidator,
+                    imageService);
 
             ProfileUpdateRequestDto updateDto = new ProfileUpdateRequestDto(
                     "샌드백",
@@ -163,13 +182,21 @@ class MyPageServiceTest {
             );
 
 
-            given(userRepository.getById(userDetails.getUser().getId())).willReturn(user);
-            given(userRepository.findByNickname(updateDto.getNickname())).willReturn(Optional.of(user2));
+            given(userRepository.getById(userDetails.getUser().getId()))
+                    .willReturn(user);
+            given(userRepository.findByNickname(updateDto.getNickname()))
+                    .willReturn(Optional.of(user2));
 
-            //when
-            Exception exception = assertThrows(IllegalArgumentException.class, () -> myPageService.updateProfile(null, updateDto, userDetails));
+            /* when */
+            Exception exception =
+                    assertThrows(IllegalArgumentException.class,
+                    () -> myPageService
+                            .updateProfile(
+                                    null,
+                                    updateDto,
+                                    userDetails));
 
-            //then
+            /* then */
             assertEquals("중복된 닉네임이 존재합니다.", exception.getMessage());
 
         }
@@ -184,8 +211,13 @@ class MyPageServiceTest {
         @DisplayName("성공")
         @Test
         void updateProfileSuccess() {
-            //given
-            myPageService = new MyPageService(userRepository, postRepository, profileImgRepository, userValidator, imageService);
+            /* given */
+            myPageService = new MyPageService(
+                    userRepository,
+                    postRepository,
+                    profileImgRepository,
+                    userValidator,
+                    imageService);
 
             int pageNo = 0;
             int sizeNo = 2;
@@ -199,17 +231,22 @@ class MyPageServiceTest {
 
             Page<Post> posts = new PageImpl<>(myPostPage);
 
-            Pageable sortedByModifiedAtDesc = PageRequest.of(pageNo, sizeNo, Sort.by("modifiedAt").descending());
-            given(postRepository.findAllByUserOrderByCreatedAtDesc(any(User.class), any(Pageable.class))).willReturn(posts);
+            given(postRepository
+                    .findAllByUserOrderByCreatedAtDesc(
+                            any(User.class),
+                            any(Pageable.class)))
+                    .willReturn(posts);
 
 
-            //when
-            MyPageResponseDto result = myPageService.getMyPostList(pageNo, sizeNo, userDetails);
+            /* when */
+            MyPageResponseDto result =
+                    myPageService.getMyPostList(pageNo, sizeNo, userDetails);
 
-            //then
+            /* then */
             assertEquals(user.getId(), result.getUserId());
             assertEquals(user.getNickname(), result.getNickname());
-            assertEquals(user.getProfileImg().getProfileImgUrl(), result.getProfileImgUrl());
+            assertEquals(user.getProfileImg().getProfileImgUrl(),
+                    result.getProfileImgUrl());
             assertEquals(user.getLevel(), result.getLevel());
             assertEquals(user.getMbti(), result.getMbti());
             assertEquals(2, result.getMyPostList().size());
@@ -218,7 +255,7 @@ class MyPageServiceTest {
         }
     }
 
-    // 정보 수정 확인을 위한 유저 생성
+    /* 정보 수정 확인을 위한 유저 생성 */
     ProfileImg profileImg = new ProfileImg(
             1L,
             "naver.com"
@@ -236,7 +273,7 @@ class MyPageServiceTest {
             profileImg
     );
 
-    // 리스트 테스트를 위한 게시글 생성
+    /* 리스트 테스트를 위한 게시글 생성 */
     Post post1 = new Post(
             1L,
             "제목1",

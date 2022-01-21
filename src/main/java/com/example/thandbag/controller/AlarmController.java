@@ -16,16 +16,23 @@ public class AlarmController {
 
     private final AlarmService alarmService;
 
-    // 알람 리스트 발송
+    /* 회원별 전체 알람 리스트 발송 */
     @GetMapping("/api/alarm")
-    public List<AlarmResponseDto> getAlarmList(@RequestParam int page, @RequestParam int size, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public List<AlarmResponseDto> getAlarmList(
+            @RequestParam int page,
+            @RequestParam int size,
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+
         User user = userDetails.getUser();
         return alarmService.getAlamList(user, page, size);
     }
 
-    // 알림 읽음 확인
+    /* 알림 읽음 확인 */
     @PostMapping("/api/alarm/{alarmId}")
-    public AlarmResponseDto alarmReadCheck(@PathVariable Long alarmId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public AlarmResponseDto alarmReadCheck(
+            @PathVariable Long alarmId,
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+
         return alarmService.alarmReadCheck(alarmId, userDetails);
     }
 }

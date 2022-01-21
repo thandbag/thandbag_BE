@@ -23,17 +23,19 @@ public class ChatController {
      * websocket "/pub/chat/message"로 들어오는 메시징을 처리한다.
      */
     @MessageMapping("/chat/message")
-    public void message(ChatMessageDto message, @Header("Authorization") String token) {
-        // 토큰 정보 추출
+    public void message(ChatMessageDto message,
+                        @Header("Authorization") String token) {
+        /* 토큰 정보 추출 */
         String tokenInfo = token.substring(7);
         String username = jwtDecoder.decodeUsername(tokenInfo);
         String nickname = chatService.getNickname(username);
-        // 로그인 회원 정보로 대화명 설정
-        message.setSender(nickname);
-        System.out.println("ChatController Sender정보 : " + message.getSender());
-        message.setUserCount(chatRedisRepository.getUserCount(message.getRoomId()));
 
-        // Websocket에 발행된 메시지를 redis로 발행(publish)
+        /* 로그인 회원 정보로 대화명 설정 */
+        message.setSender(nickname);
+        message.setUserCount(chatRedisRepository
+                .getUserCount(message.getRoomId()));
+
+        /* Websocket에 발행된 메시지를 redis로 발행(publish) */
         chatService.sendChatMessage(message);
     }
 

@@ -10,7 +10,8 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ChatMyRoomListResponseDto implements Comparable<ChatMyRoomListResponseDto> {
+public class ChatMyRoomListResponseDto
+        implements Comparable<ChatMyRoomListResponseDto> {
 
     private String roomId;
     private String subNickname;
@@ -19,8 +20,10 @@ public class ChatMyRoomListResponseDto implements Comparable<ChatMyRoomListRespo
     private String lastContentCreatedTime;
     private int unreadCount;
 
+    /* 알림 창 새 메세지 표시를 위한 마지막으로 메시지 읽은 시간 비교 */
     @Override
     public int compareTo(ChatMyRoomListResponseDto chatMyRoomListResponseDto) {
-        return this.lastContentCreatedTime.compareTo(chatMyRoomListResponseDto.lastContentCreatedTime);
+        return this.lastContentCreatedTime
+                .compareTo(chatMyRoomListResponseDto.lastContentCreatedTime);
     }
 }

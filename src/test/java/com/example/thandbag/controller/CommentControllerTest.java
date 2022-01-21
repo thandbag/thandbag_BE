@@ -1,6 +1,7 @@
 package com.example.thandbag.controller;
 
 
+import com.example.thandbag.TestConfig;
 import com.example.thandbag.dto.comment.PostCommentDto;
 import com.example.thandbag.dto.login.LoginRequestDto;
 import com.example.thandbag.dto.login.LoginResultDto;
@@ -9,10 +10,7 @@ import com.example.thandbag.dto.post.ThandbagResponseDto;
 import com.example.thandbag.dto.signup.SignupRequestDto;
 import com.example.thandbag.model.Post;
 import com.example.thandbag.model.User;
-import com.example.thandbag.repository.CommentLikeRepository;
-import com.example.thandbag.repository.CommentRepository;
-import com.example.thandbag.repository.PostRepository;
-import com.example.thandbag.repository.UserRepository;
+import com.example.thandbag.repository.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.*;
@@ -41,6 +39,10 @@ public class CommentControllerTest {
     private CommentLikeRepository commentLikeRepository;
     @Autowired
     private CommentRepository commentRepository;
+    @Autowired
+    private LvImgRepository lvImgRepository;
+    @Autowired
+    private ProfileImgRepository profileImgRepository;
 
     private HttpHeaders headers;
     private final ObjectMapper mapper = new ObjectMapper();
@@ -71,6 +73,11 @@ public class CommentControllerTest {
         userRepository.deleteById(user.get().getId());
         assertEquals(Optional.empty(), userRepository.findById(user.get().getId()));
         assertEquals(Optional.empty(), postRepository.findById(postList.get(0).getId()));
+    }
+
+    @BeforeAll
+    public void preSet() {
+        TestConfig.initialQuery(lvImgRepository, profileImgRepository);
     }
 
     @BeforeEach

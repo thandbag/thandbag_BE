@@ -1,5 +1,6 @@
 package com.example.thandbag.controller;
 
+import com.example.thandbag.TestConfig;
 import com.example.thandbag.dto.chat.ChatMessageDto;
 import com.example.thandbag.dto.chat.ChatMyRoomListResponseDto;
 import com.example.thandbag.dto.chat.chatroom.ChatRoomDto;
@@ -9,9 +10,7 @@ import com.example.thandbag.dto.login.LoginResultDto;
 import com.example.thandbag.dto.signup.SignupRequestDto;
 import com.example.thandbag.model.Post;
 import com.example.thandbag.model.User;
-import com.example.thandbag.repository.ChatRoomRepository;
-import com.example.thandbag.repository.PostRepository;
-import com.example.thandbag.repository.UserRepository;
+import com.example.thandbag.repository.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.*;
@@ -38,7 +37,9 @@ class ChatRoomControllerTest {
     @Autowired
     private UserRepository userRepository;
     @Autowired
-    private ObjectMapper objectMapper;
+    private LvImgRepository lvImgRepository;
+    @Autowired
+    private ProfileImgRepository profileImgRepository;
 
     private HttpHeaders headers;
     private final ObjectMapper mapper = new ObjectMapper();
@@ -80,6 +81,11 @@ class ChatRoomControllerTest {
         assertEquals(Optional.empty(), chatRoomRepository.findById(chatRoomId));
         assertEquals(Optional.empty(), userRepository.findById(user.get().getId()));
         assertEquals(Optional.empty(), userRepository.findById(user2.get().getId()));
+    }
+
+    @BeforeAll
+    public void preSet() {
+        TestConfig.initialQuery(lvImgRepository, profileImgRepository);
     }
 
     @BeforeEach

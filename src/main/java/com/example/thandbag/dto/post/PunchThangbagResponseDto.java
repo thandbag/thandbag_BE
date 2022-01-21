@@ -6,6 +6,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class PunchThangbagResponseDto {
+
     private int totalHitCount;
     private boolean ownThandBag;
 }
