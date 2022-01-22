@@ -1,7 +1,6 @@
 package com.example.thandbag.model;
 
 import com.example.thandbag.Enum.Category;
-import lombok.*;
 import com.example.thandbag.dto.post.HitCountDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

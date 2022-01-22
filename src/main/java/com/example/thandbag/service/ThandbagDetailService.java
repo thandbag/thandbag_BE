@@ -44,8 +44,7 @@ public class ThandbagDetailService {
 
         /* 게시글에 달린 댓글 가져오기 */
         for (Comment comment : post.getCommentList()) {
-            List<CommentLike> allLikes = commentLikeRepository
-                    .findAllByComment(comment);
+            List<CommentLike> allLikes = comment.getCommentLikeList();
 
             /* login 한 유저, 안한 유저 구분 */
             Boolean likeExist = user.getNickname() != "visitor"
