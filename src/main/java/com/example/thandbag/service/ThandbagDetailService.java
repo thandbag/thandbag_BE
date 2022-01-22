@@ -1,7 +1,5 @@
 package com.example.thandbag.service;
 
-import com.example.thandbag.Enum.AlarmType;
-import com.example.thandbag.dto.alarm.AlarmResponseDto;
 import com.example.thandbag.dto.comment.ShowCommentDto;
 import com.example.thandbag.dto.post.BestUserDto;
 import com.example.thandbag.dto.post.HitCountDto;
@@ -155,36 +153,8 @@ public class ThandbagDetailService {
                     commenterName.add(bestUserDto.getNickname());
                 }
 
-                /* 알림 생성 */
                 /* 선택된 댓글 작성자들에게 알림 발송 */
-                Alarm alarm = Alarm.builder()
-                        .userId(comment.getUser().getId())
-                        .type(AlarmType.PICKED)
-                        .postId(comment.getPost().getId())
-                        .alarmMessage("["
-                                + post.getTitle()
-                                + "] 생드백에서 내 잽이 베스트 잽으로"
-                                + " 선정되었습니다.")
-                        .isRead(false)
-                        .build();
-
-                alarmRepository.save(alarm);
-
-                /* 알림 메시지를 보낼 DTO 생성 */
-                AlarmResponseDto alarmResponseDto = AlarmResponseDto.builder()
-                        .alarmId(alarm.getId())
-                        .type(alarm.getType().toString())
-                        .postId(alarm.getPostId())
-                        .message("[알림] ["
-                                + post.getTitle()
-                                + "] 생드백에서 내 잽이 베스트 잽으로"
-                                + " 선정되었습니다.")
-                        .alarmTargetId(alarm.getUserId())
-                        .isRead(alarm.getIsRead())
-                        .build();
-
-                redisTemplate.convertAndSend(channelTopic.getTopic(),
-                        alarmResponseDto);
+                alarmService.generatePickedAlarm(post, comment);
             }
         }
         return bestUserDtoList;

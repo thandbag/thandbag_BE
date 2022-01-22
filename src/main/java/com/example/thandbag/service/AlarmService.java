@@ -3,6 +3,8 @@ package com.example.thandbag.service;
 import com.example.thandbag.Enum.AlarmType;
 import com.example.thandbag.dto.alarm.AlarmResponseDto;
 import com.example.thandbag.model.Alarm;
+import com.example.thandbag.model.Comment;
+import com.example.thandbag.model.Post;
 import com.example.thandbag.model.User;
 import com.example.thandbag.repository.AlarmRepository;
 import com.example.thandbag.repository.ChatRoomRepository;
@@ -44,10 +46,10 @@ public class AlarmService {
     static final int LV2 = 2;
     static final int LV3 = 3;
 
-    /* 게시물업로드인지, 삭제인지 확인 */
+    /* 레벨업 액션 */
     public enum Action {
         POST,
-        DELETE
+        DELETE,
     }
 
     /* 레벨 관련 알림 보내기 */
@@ -95,6 +97,37 @@ public class AlarmService {
         }
     }
 
+    /* 베스트잽 선정 알림 보내기 */
+    public void generatePickedAlarm(Post post, Comment comment) {
+        Alarm alarm = Alarm.builder()
+                .userId(comment.getUser().getId())
+                .type(AlarmType.PICKED)
+                .postId(comment.getPost().getId())
+                .alarmMessage("["
+                        + post.getTitle()
+                        + "] 생드백에서 내 잽이 베스트 잽으로"
+                        + " 선정되었습니다.")
+                .isRead(false)
+                .build();
+
+        alarmRepository.save(alarm);
+
+        /* 알림 메시지를 보낼 DTO 생성 */
+        AlarmResponseDto alarmResponseDto = AlarmResponseDto.builder()
+                .alarmId(alarm.getId())
+                .type(alarm.getType().toString())
+                .postId(alarm.getPostId())
+                .message("[알림] ["
+                        + post.getTitle()
+                        + "] 생드백에서 내 잽이 베스트 잽으로"
+                        + " 선정되었습니다.")
+                .alarmTargetId(alarm.getUserId())
+                .isRead(alarm.getIsRead())
+                .build();
+
+        redisTemplate.convertAndSend(channelTopic.getTopic(),
+                alarmResponseDto);
+    }
 
     /* 알림 목록 */
     public List<AlarmResponseDto> getAlamList(User user, int page, int size) {
@@ -154,6 +187,41 @@ public class AlarmService {
             }
         }
         return alarmResponseDtoList;
+    }
+
+    /* 게시물에 댓글이 등록되었을 경우 알림 보내기 */
+    public void generateNewReplyAlarm(User postOwner, User user, Post post) {
+        Alarm alarm = Alarm.builder()
+                .userId(postOwner.getId())
+                .type(AlarmType.REPLY)
+                .postId(post.getId())
+                .isRead(false)
+                .alarmMessage("[알림] ["
+                        + post.getTitle()
+                        + "] 게시글에 잽이 등록되었습니다. 확인해보세요.")
+                .build();
+
+        /* 알림 메시지를 보낼 DTO 생성 */
+        AlarmResponseDto alarmResponseDto = AlarmResponseDto.builder()
+                .alarmId(alarm.getId())
+                .type(alarm.getType().toString())
+                .message("[알림] ["
+                        + post.getTitle()
+                        + "] 게시글에 잽이 등록되었습니다. 확인해보세요.")
+                .alarmTargetId(postOwner.getId())
+                .isRead(alarm.getIsRead())
+                .postId(alarm.getPostId())
+                .build();
+
+        /*-
+         * redis로 알림메시지 pub, alarmRepository에 저장
+         * 단, 게시글 작성자와 댓글 작성자가 일치할 경우는 제외
+         */
+        if (!alarmResponseDto.getAlarmTargetId().equals(user.getId())) {
+            alarmRepository.save(alarm);
+            redisTemplate.convertAndSend(channelTopic.getTopic(),
+                    alarmResponseDto);
+        }
     }
 
     /* 알림 읽었을 경우 체크 */
