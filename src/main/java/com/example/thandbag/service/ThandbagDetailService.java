@@ -9,6 +9,7 @@ import com.example.thandbag.dto.post.PunchThangbagResponseDto;
 import com.example.thandbag.dto.post.ThandbagResponseDto;
 import com.example.thandbag.model.*;
 import com.example.thandbag.repository.*;
+import com.example.thandbag.service.AlarmService.Action;
 import com.example.thandbag.timeconversion.TimeConversion;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -25,7 +26,9 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ThandbagDetailService {
 
+    private final AlarmService alarmService;
     private final PostRepository postRepository;
+    private final UserRepository userRepository;
     private final LvImgRepository lvImgRepository;
     private final CommentLikeRepository commentLikeRepository;
     private final AlarmRepository alarmRepository;
@@ -118,60 +121,8 @@ public class ThandbagDetailService {
         alarmRepository.deleteAllByPostId(postId);
 
         /* leveldown 및 알림 메시지 */
-        int totalPosts = user.getTotalCount();
-        if (totalPosts <= 2 && user.getLevel() == 2) {
-            user.setLevel(1);
-            Alarm levelDown1 = Alarm.builder()
-                    .userId(user.getId())
-                    .type(AlarmType.LEVELCHANGE)
-                    .alarmMessage("레벨이 "
-                                + user.getLevel()
-                                + "로 하락하였습니다.")
-                    .isRead(false)
-                    .build();
-
-            alarmRepository.save(levelDown1);
-
-            /* 알림 메시지를 보낼 DTO 생성 */
-            AlarmResponseDto alarmResponseDto = AlarmResponseDto.builder()
-                    .alarmId(levelDown1.getId())
-                    .type(levelDown1.getType().toString())
-                    .message("[알림] 레벨이 "
-                            + user.getLevel()
-                            + "로 하락하였습니다.")
-                    .alarmTargetId(user.getId())
-                    .isRead(levelDown1.getIsRead())
-                    .build();
-
-            redisTemplate.convertAndSend(channelTopic.getTopic(),
-                    alarmResponseDto);
-        } else if (totalPosts < 5 && user.getLevel() == 3) {
-            user.setLevel(2);
-            Alarm levelDown2 = Alarm.builder()
-                    .userId(user.getId())
-                    .type(AlarmType.LEVELCHANGE)
-                    .alarmMessage("레벨이 "
-                                + user.getLevel()
-                                + "로 하락하였습니다.")
-                    .isRead(false)
-                    .build();
-
-            alarmRepository.save(levelDown2);
-
-            /* 알림 메시지를 보낼 DTO 생성 */
-            AlarmResponseDto alarmResponseDto = AlarmResponseDto.builder()
-                    .alarmId(levelDown2.getId())
-                    .type(levelDown2.getType().toString())
-                    .message("[알림] 레벨이 "
-                            + user.getLevel()
-                            + "로 하락하였습니다.")
-                    .alarmTargetId(user.getId())
-                    .isRead(levelDown2.getIsRead())
-                    .build();
-
-            redisTemplate.convertAndSend(channelTopic.getTopic(),
-                    alarmResponseDto);
-        }
+        alarmService.generateLevelAlarm(user, Action.DELETE);
+        userRepository.save(user);
     }
 
     /* 게시자가 작성한 생드백을 완료로 전환 */
