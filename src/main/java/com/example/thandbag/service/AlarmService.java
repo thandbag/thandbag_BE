@@ -2,12 +2,11 @@ package com.example.thandbag.service;
 
 import com.example.thandbag.Enum.AlarmType;
 import com.example.thandbag.dto.alarm.AlarmResponseDto;
-import com.example.thandbag.model.Alarm;
-import com.example.thandbag.model.Comment;
-import com.example.thandbag.model.Post;
-import com.example.thandbag.model.User;
+import com.example.thandbag.dto.chat.chatroom.CreateRoomRequestDto;
+import com.example.thandbag.model.*;
 import com.example.thandbag.repository.AlarmRepository;
 import com.example.thandbag.repository.ChatRoomRepository;
+import com.example.thandbag.repository.UserRepository;
 import com.example.thandbag.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -27,6 +26,7 @@ public class AlarmService {
 
     private final AlarmRepository alarmRepository;
     private final ChatRoomRepository chatRoomRepository;
+    private final UserRepository userRepository;
     private final RedisTemplate redisTemplate;
     private final ChannelTopic channelTopic;
 
@@ -45,6 +45,34 @@ public class AlarmService {
     static final int LV1 = 1;
     static final int LV2 = 2;
     static final int LV3 = 3;
+
+    public void generateNewChatroomAlarm(CreateRoomRequestDto roomRequestDto,
+                                         ChatRoom chatRoom) {
+        Alarm alarm = Alarm.builder()
+                .userId(roomRequestDto.getSubId())
+                .type(AlarmType.INVITEDCHAT)
+                .pubId(chatRoom.getPubUserId())
+                .isRead(false)
+                .alarmMessage("[알림] " + userRepository.getById(
+                        roomRequestDto.getPubId()).getNickname()
+                        + "님과의 새로운 채팅이 시작되었습니다.")
+                .build();
+
+        alarmRepository.save(alarm);
+
+        /* 알림 메시지를 보낼 DTO 생성 */
+        AlarmResponseDto alarmResponseDto = AlarmResponseDto.builder()
+                .alarmId(alarm.getId())
+                .type(AlarmType.INVITEDCHAT.toString())
+                .message(alarm.getAlarmMessage())
+                .isRead(alarm.getIsRead())
+                .chatRoomId(chatRoom.getId())
+                .alarmTargetId(chatRoom.getSubUserId())
+                .build();
+
+        /* 채팅방 생성 알림을 redis로 pub */
+        redisTemplate.convertAndSend(channelTopic.getTopic(), alarmResponseDto);
+    }
 
     /* 레벨업 액션 */
     public enum Action {
