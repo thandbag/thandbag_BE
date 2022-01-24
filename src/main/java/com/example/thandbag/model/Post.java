@@ -2,10 +2,7 @@ package com.example.thandbag.model;
 
 import com.example.thandbag.Enum.Category;
 import com.example.thandbag.dto.post.HitCountDto;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.jetbrains.annotations.NotNull;
 
 import javax.persistence.*;

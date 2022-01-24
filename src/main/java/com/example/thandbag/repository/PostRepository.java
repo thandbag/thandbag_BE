@@ -19,7 +19,9 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     Page<Post> findAllByShareTrueOrderByCreatedAtDesc(Pageable pageable);
 
     @Query(value = "select p from Post p JOIN FETCH " +
-                    "p.user u JOIN FETCH u.profileImg where p.share = true")
+                    "p.user u JOIN FETCH u.profileImg " +
+                    "where p.share = true " +
+                    "order by p.createdAt desc")
     List<Post> findAllByShareTrueOrderByCreatedAtDesc();
 
     @Query(value = "select p from Post p where p.id = :id")

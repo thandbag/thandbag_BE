@@ -110,16 +110,11 @@ public class MainService {
 
     /* 생드백 전체 리스트 페이지로 만들기 */
     public List<ThandbagResponseDto> showAllThandbag(int page, int size) {
-        Pageable sortedByModifiedAtDesc = PageRequest.of(
-                page, size, Sort.by("modifiedAt").descending()
-        );
 
         List<ThandbagResponseDto> allThandbags = new ArrayList<>();
 
         List<Post> allPosts = postRepository
                 .findAllByShareTrueOrderByCreatedAtDesc();
-//                .findAllByShareTrueOrderByCreatedAtDesc(sortedByModifiedAtDesc)
-//                .getContent();
 
         for (Post post : allPosts) {
             ThandbagResponseDto thandbagResponseDto =
@@ -155,13 +150,6 @@ public class MainService {
 
     /* 검색된 생드백 또는 생드백 전체 리스트의 dto 작성을 위함 */
     public ThandbagResponseDto createThandbagResponseDto(Post post) {
-//        List<PostImg> postImgList = postImgRepository
-//                .findAllByPostId(post.getId());
-//
-//        List<String> imgList = new ArrayList<>();
-//
-//        for (PostImg postImg : postImgList)
-//            imgList.add(postImg.getPostImgUrl());
 
         return ThandbagResponseDto.builder()
                 .postId(post.getId())
@@ -178,7 +166,6 @@ public class MainService {
                 .totalCount(post.getUser().getTotalCount())
                 .hitCount(post.getTotalHitCount())
                 .content(post.getContent())
-                //.imgUrl(imgList)
                 .profileImgUrl(post.getUser()
                         .getProfileImg()
                         .getProfileImgUrl()
