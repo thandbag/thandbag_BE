@@ -1,5 +1,6 @@
 package com.example.thandbag.service;
 
+import com.example.thandbag.Enum.Action;
 import com.example.thandbag.Enum.AlarmType;
 import com.example.thandbag.dto.alarm.AlarmResponseDto;
 import com.example.thandbag.dto.chat.chatroom.CreateRoomRequestDto;
@@ -72,12 +73,6 @@ public class AlarmService {
 
         /* 채팅방 생성 알림을 redis로 pub */
         redisTemplate.convertAndSend(channelTopic.getTopic(), alarmResponseDto);
-    }
-
-    /* 레벨업 액션 */
-    public enum Action {
-        POST,
-        DELETE,
     }
 
     /* 레벨 관련 알림 보내기 */

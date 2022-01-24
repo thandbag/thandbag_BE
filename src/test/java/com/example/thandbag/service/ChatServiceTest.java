@@ -56,6 +56,8 @@ class ChatServiceTest {
         ChatService chatService = new ChatService(
                 channelTopic,
                 redisTemplate,
+                new AlarmService(alarmRepository, chatRoomRepository,
+                        userRepository, redisTemplate, channelTopic),
                 chatRedisRepository,
                 userRepository,
                 chatRoomRepository,
@@ -81,6 +83,8 @@ class ChatServiceTest {
         ChatService chatService = new ChatService(
                 channelTopic,
                 redisTemplate,
+                new AlarmService(alarmRepository, chatRoomRepository,
+                        userRepository, redisTemplate, channelTopic),
                 chatRedisRepository,
                 userRepository,
                 chatRoomRepository,
@@ -111,6 +115,8 @@ class ChatServiceTest {
         ChatService chatService = new ChatService(
                 channelTopic,
                 redisTemplate,
+                new AlarmService(alarmRepository, chatRoomRepository,
+                        userRepository, redisTemplate, channelTopic),
                 chatRedisRepository,
                 userRepository,
                 chatRoomRepository,
@@ -150,6 +156,8 @@ class ChatServiceTest {
         ChatService chatService = new ChatService(
                 channelTopic,
                 redisTemplate,
+                new AlarmService(alarmRepository, chatRoomRepository,
+                        userRepository, redisTemplate, channelTopic),
                 chatRedisRepository,
                 userRepository,
                 chatRoomRepository,
@@ -194,6 +202,8 @@ class ChatServiceTest {
         ChatService chatService = new ChatService(
                 channelTopic,
                 redisTemplate,
+                new AlarmService(alarmRepository, chatRoomRepository,
+                        userRepository, redisTemplate, channelTopic),
                 chatRedisRepository,
                 userRepository,
                 chatRoomRepository,

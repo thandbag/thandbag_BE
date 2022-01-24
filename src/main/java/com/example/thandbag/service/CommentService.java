@@ -1,5 +1,6 @@
 package com.example.thandbag.service;
 
+import com.example.thandbag.Enum.Action;
 import com.example.thandbag.dto.comment.PostCommentDto;
 import com.example.thandbag.dto.comment.ShowCommentDto;
 import com.example.thandbag.model.Comment;
@@ -11,7 +12,6 @@ import com.example.thandbag.repository.CommentRepository;
 import com.example.thandbag.repository.PostRepository;
 import com.example.thandbag.repository.UserRepository;
 import com.example.thandbag.security.UserDetailsImpl;
-import com.example.thandbag.service.AlarmService.Action;
 import com.example.thandbag.timeconversion.TimeConversion;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

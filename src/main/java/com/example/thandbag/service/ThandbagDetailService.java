@@ -1,5 +1,6 @@
 package com.example.thandbag.service;
 
+import com.example.thandbag.Enum.Action;
 import com.example.thandbag.dto.comment.ShowCommentDto;
 import com.example.thandbag.dto.post.BestUserDto;
 import com.example.thandbag.dto.post.HitCountDto;
@@ -7,7 +8,6 @@ import com.example.thandbag.dto.post.PunchThangbagResponseDto;
 import com.example.thandbag.dto.post.ThandbagResponseDto;
 import com.example.thandbag.model.*;
 import com.example.thandbag.repository.*;
-import com.example.thandbag.service.AlarmService.Action;
 import com.example.thandbag.timeconversion.TimeConversion;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;

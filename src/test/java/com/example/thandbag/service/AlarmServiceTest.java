@@ -8,6 +8,7 @@ import com.example.thandbag.model.ProfileImg;
 import com.example.thandbag.model.User;
 import com.example.thandbag.repository.AlarmRepository;
 import com.example.thandbag.repository.ChatRoomRepository;
+import com.example.thandbag.repository.UserRepository;
 import com.example.thandbag.security.UserDetailsImpl;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,6 +35,8 @@ class AlarmServiceTest {
     @Mock
     ChatRoomRepository chatRoomRepository;
     @Mock
+    UserRepository userRepository;
+    @Mock
     RedisTemplate redisTemplate;
     @Mock
     ChannelTopic channelTopic;
@@ -46,7 +49,7 @@ class AlarmServiceTest {
         /* given */
         AlarmService alarmService =
                 new AlarmService(alarmRepository, chatRoomRepository,
-                        redisTemplate, channelTopic);
+                        userRepository, redisTemplate, channelTopic);
 
         int pageNo = 0;
         int sizeNo = 2;
@@ -83,7 +86,7 @@ class AlarmServiceTest {
         /* given */
         AlarmService alarmService =
                 new AlarmService(alarmRepository, chatRoomRepository,
-                        redisTemplate, channelTopic);
+                        userRepository, redisTemplate, channelTopic);
         UserDetailsImpl userDetails = new UserDetailsImpl(user);
 
         given(alarmRepository.getById(anyLong())).willReturn(alarm1);
