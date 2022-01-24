@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 
 import javax.persistence.*;
 import java.util.List;
@@ -33,7 +34,7 @@ public class Post extends Timestamped {
     @Column
     private Boolean share;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
     @Column
@@ -42,7 +43,10 @@ public class Post extends Timestamped {
     @Column
     private int totalHitCount;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @Column
+    private Integer commentCount;
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     List<PostImg> imgList;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
@@ -53,7 +57,16 @@ public class Post extends Timestamped {
     }
 
     public void updateTotalHit(HitCountDto hitCountDto) {
-            this.totalHitCount +=
-                    (hitCountDto.getNewHitCount() - hitCountDto.getPrevHitCount());
+            this.totalHitCount += (hitCountDto.getNewHitCount()
+                                            - hitCountDto.getPrevHitCount());
     }
+
+    public void plusThandbagCommentCount() {
+        commentCount += 1;
+    }
+
+    public void minusThandbagCommentCount() {
+        commentCount -= 1;
+    }
+
 }

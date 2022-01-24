@@ -21,7 +21,8 @@ public class PostImg {
     @Column
     private String postImgUrl;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn
     private Post post;
 
     public PostImg(String postImgUrl) {

@@ -33,11 +33,16 @@ public class CommentService {
     @Transactional
     public PostCommentDto postComment(long postId, String content,
                                       UserDetailsImpl userDetails) {
+
+        /* 생드백에서 댓글 수 업데이트 */
+        Post post = postRepository.getById(postId);
+        post.plusThandbagCommentCount();
+
         Comment comment = Comment.builder()
                 .comment(content)
                 .likedByWriter(false)
                 .user(userDetails.getUser())
-                .post(postRepository.getById(postId))
+                .post(post)
                 .build();
         comment = commentRepository.save(comment);
 
@@ -77,6 +82,14 @@ public class CommentService {
     /* 잽 삭제 */
     @Transactional
     public void deleteComment(long commentId, User user) {
+        Comment comment = commentRepository.getById(commentId);
+
+        /* 생드백에서 댓글 수 업데이트 */
+        Post post = comment.getPost();
+        post.minusThandbagCommentCount();
+        postRepository.save(post);
+
+        /* 댓글 삭제 */
         commentRepository.deleteById(commentId);
         user.minusTotalPostsAndComments();
 

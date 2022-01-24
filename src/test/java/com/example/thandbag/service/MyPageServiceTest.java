@@ -283,6 +283,7 @@ class MyPageServiceTest {
             user,
             Category.JOB,
             0,
+            0,
             new ArrayList<>(),
             new ArrayList<>()
     );
@@ -296,6 +297,7 @@ class MyPageServiceTest {
             user,
             Category.SOCIAL,
             5,
+            0,
             new ArrayList<>(),
             new ArrayList<>()
     );
