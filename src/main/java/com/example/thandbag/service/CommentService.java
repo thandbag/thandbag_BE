@@ -1,16 +1,19 @@
 package com.example.thandbag.service;
 
-import com.example.thandbag.Enum.AlarmType;
-import com.example.thandbag.dto.alarm.AlarmResponseDto;
 import com.example.thandbag.dto.comment.PostCommentDto;
 import com.example.thandbag.dto.comment.ShowCommentDto;
-import com.example.thandbag.model.*;
-import com.example.thandbag.repository.*;
+import com.example.thandbag.model.Comment;
+import com.example.thandbag.model.CommentLike;
+import com.example.thandbag.model.Post;
+import com.example.thandbag.model.User;
+import com.example.thandbag.repository.CommentLikeRepository;
+import com.example.thandbag.repository.CommentRepository;
+import com.example.thandbag.repository.PostRepository;
+import com.example.thandbag.repository.UserRepository;
 import com.example.thandbag.security.UserDetailsImpl;
+import com.example.thandbag.service.AlarmService.Action;
 import com.example.thandbag.timeconversion.TimeConversion;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,13 +23,11 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class CommentService {
 
+    private final AlarmService alarmService;
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
     private final UserRepository userRepository;
     private final CommentLikeRepository commentLikeRepository;
-    private final AlarmRepository alarmRepository;
-    private final RedisTemplate redisTemplate;
-    private final ChannelTopic channelTopic;
 
     /* 잽 작성 */
     @Transactional
@@ -44,100 +45,18 @@ public class CommentService {
         User user = userDetails.getUser();
         user.plusTotalPostsAndComments();
 
-        /* 레벨업 */
-        int totalPosts = user.getTotalCount();
-        if (totalPosts < 5 && totalPosts > 2 && user.getLevel() == 1) {
-            user.setLevel(2);
-
-            /* 레벨업 알림 생성 */
-            Alarm levelAlarm2 = Alarm.builder()
-                    .userId(user.getId())
-                    .type(AlarmType.LEVELCHANGE)
-                    .alarmMessage("레벨이 "
-                                + user.getLevel()
-                                + "로 상승하였습니다.")
-                    .isRead(false)
-                    .build();
-
-            alarmRepository.save(levelAlarm2);
-
-            /* 알림 메시지를 보낼 DTO 생성 */
-            AlarmResponseDto alarmResponseDto = AlarmResponseDto.builder()
-                    .alarmId(levelAlarm2.getId())
-                    .type(levelAlarm2.getType().toString())
-                    .message("[알림] 레벨이 "
-                            + user.getLevel()
-                            + "로 상승하였습니다.")
-                    .alarmTargetId(user.getId())
-                    .isRead(levelAlarm2.getIsRead())
-                    .build();
-
-            redisTemplate.convertAndSend(channelTopic.getTopic(),
-                    alarmResponseDto);
-        } else if (totalPosts >= 5 && (user.getLevel() == 2)) {
-            user.setLevel(3);
-            /* 레벨업 알림 생성 */
-            Alarm levelAlarm3 = Alarm.builder()
-                    .userId(user.getId())
-                    .type(AlarmType.LEVELCHANGE)
-                    .alarmMessage("레벨이 "
-                                + user.getLevel()
-                                + "로 상승하였습니다.")
-                    .isRead(false)
-                    .build();
-            alarmRepository.save(levelAlarm3);
-
-            /* 알림 메시지를 보낼 DTO 생성 */
-            AlarmResponseDto alarmResponseDto = AlarmResponseDto.builder()
-                    .alarmId(levelAlarm3.getId())
-                    .type(levelAlarm3.getType().toString())
-                    .message("[알림] 레벨이 "
-                            + user.getLevel()
-                            + "로 상승하였습니다.")
-                    .alarmTargetId(user.getId())
-                    .isRead(levelAlarm3.getIsRead())
-                    .build();
-
-            redisTemplate.convertAndSend(channelTopic.getTopic(),
-                    alarmResponseDto);
-        }
+        /* 레벨업 알림 보내기 */
+        alarmService.generateLevelAlarm(user, Action.POST);
 
         User postOwner = userRepository.getById(
                 postRepository.getById(postId).getUser().getId()
         );
 
+        Post post = postRepository.getById(postId);
+
         /* 알림 생성 */
-        Alarm alarm = Alarm.builder()
-                .userId(postOwner.getId())
-                .type(AlarmType.REPLY)
-                .postId(postId)
-                .isRead(false)
-                .alarmMessage("["
-                            + postRepository.getById(postId).getTitle()
-                            + "] 게시글에 잽이 등록되었습니다. 확인해보세요.")
-                .build();
+        alarmService.generateNewReplyAlarm(postOwner, user, post);
 
-        /* 알림 메시지를 보낼 DTO 생성 */
-        AlarmResponseDto alarmResponseDto = AlarmResponseDto.builder()
-                .alarmId(alarm.getId())
-                .type(alarm.getType().toString())
-                .message("[알림] ["
-                        + postRepository.getById(postId).getTitle()
-                        + "] 게시글에 잽이 등록되었습니다. 확인해보세요.")
-                .alarmTargetId(postOwner.getId())
-                .isRead(alarm.getIsRead())
-                .postId(alarm.getPostId())
-                .build();
-
-        /*-
-         * redis로 알림메시지 pub, alarmRepository에 저장
-         * 단, 게시글 작성자와 댓글 작성자가 일치할 경우는 제외
-         */
-        if (!alarmResponseDto.getAlarmTargetId().equals(user.getId())) {
-            alarmRepository.save(alarm);
-            redisTemplate.convertAndSend(channelTopic.getTopic(),
-                    alarmResponseDto);
-        }
         userRepository.save(user);
 
         return new PostCommentDto(
@@ -162,64 +81,8 @@ public class CommentService {
         user.minusTotalPostsAndComments();
 
         /* Level down */
-        int totalPosts = user.getTotalCount();
-        if (totalPosts <= 2 && user.getLevel() == 2) {
-            user.setLevel(1);
-            /* 레벨다운 알림 생성 */
-            Alarm levelDown1 = Alarm.builder()
-                    .userId(user.getId())
-                    .type(AlarmType.LEVELCHANGE)
-                    .alarmMessage("레벨이 "
-                                + user.getLevel()
-                                + "로 하락하였습니다.")
-                    .isRead(false)
-                    .build();
-            alarmRepository.save(levelDown1);
-
-            /* 알림 메시지를 보낼 DTO 생성 */
-            AlarmResponseDto alarmResponseDto = AlarmResponseDto.builder()
-                    .alarmId(levelDown1.getId())
-                    .type(levelDown1.getType().toString())
-                    .message("[알림] 레벨이 "
-                            + user.getLevel()
-                            + "로 하락하였습니다.")
-                    .alarmTargetId(user.getId())
-                    .isRead(levelDown1.getIsRead())
-                    .build();
-
-            redisTemplate.convertAndSend(channelTopic.getTopic(),
-                    alarmResponseDto);
-        } else if (totalPosts < 5 && user.getLevel() == 3) {
-            user.setLevel(2);
-            /* 레벨다운 알림 생성 */
-            Alarm levelDown2 = Alarm.builder()
-                    .userId(user.getId())
-                    .type(AlarmType.LEVELCHANGE)
-                    .alarmMessage("레벨이 "
-                                + user.getLevel()
-                                + "로 하락하였습니다.")
-                    .isRead(false)
-                    .build();
-
-            alarmRepository.save(levelDown2);
-
-            /* 알림 메시지를 보낼 DTO 생성 */
-            AlarmResponseDto alarmResponseDto = AlarmResponseDto.builder()
-                    .alarmId(levelDown2.getId())
-                    .type(levelDown2.getType().toString())
-                    .message("[알림] 레벨이 "
-                            + user.getLevel()
-                            + "로 하락하였습니다.")
-                    .alarmTargetId(user.getId())
-                    .isRead(levelDown2.getIsRead())
-                    .build();
-
-            /* 레벨 다운 알림 redis로 pub */
-            redisTemplate.convertAndSend(channelTopic.getTopic(),
-                    alarmResponseDto);
-
-            userRepository.save(user);
-        }
+        alarmService.generateLevelAlarm(user, Action.DELETE);
+        userRepository.save(user);
     }
 
     /* 잽 좋아요 */

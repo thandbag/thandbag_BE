@@ -1,15 +1,12 @@
 package com.example.thandbag.service;
 
 
-import com.example.thandbag.Enum.AlarmType;
 import com.example.thandbag.Enum.MessageType;
-import com.example.thandbag.dto.alarm.AlarmResponseDto;
 import com.example.thandbag.dto.chat.ChatHistoryResponseDto;
 import com.example.thandbag.dto.chat.ChatMessageDto;
 import com.example.thandbag.dto.chat.ChatMyRoomListResponseDto;
 import com.example.thandbag.dto.chat.chatroom.ChatRoomDto;
 import com.example.thandbag.dto.chat.chatroom.CreateRoomRequestDto;
-import com.example.thandbag.model.Alarm;
 import com.example.thandbag.model.ChatContent;
 import com.example.thandbag.model.ChatRoom;
 import com.example.thandbag.model.User;
@@ -33,6 +30,7 @@ import java.util.Optional;
 public class ChatService {
     private final ChannelTopic channelTopic;
     private final RedisTemplate redisTemplate;
+    private final AlarmService alarmService;
     private final ChatRedisRepository chatRedisRepository;
     private final UserRepository userRepository;
     private final ChatRoomRepository chatRoomRepository;
@@ -116,30 +114,7 @@ public class ChatService {
         chatRoomRepository.save(chatRoom);
 
         /* 알림 생성 */
-        Alarm alarm = Alarm.builder()
-                .userId(roomRequestDto.getSubId())
-                .type(AlarmType.INVITEDCHAT)
-                .pubId(chatRoom.getPubUserId())
-                .isRead(false)
-                .alarmMessage(userRepository.getById(
-                        roomRequestDto.getPubId()).getNickname()
-                        + "님과의 새로운 채팅이 시작되었습니다.")
-                .build();
-
-        alarmRepository.save(alarm);
-
-        /* 알림 메시지를 보낼 DTO 생성 */
-        AlarmResponseDto alarmResponseDto = AlarmResponseDto.builder()
-                        .alarmId(alarm.getId())
-                        .type(AlarmType.INVITEDCHAT.toString())
-                        .message("[알림] 새로운 채팅방 생성 알림")
-                        .isRead(alarm.getIsRead())
-                        .chatRoomId(chatRoom.getId())
-                        .alarmTargetId(chatRoom.getSubUserId())
-                        .build();
-
-        /* 채팅방 생성 알림을 redis로 pub */
-        redisTemplate.convertAndSend(channelTopic.getTopic(), alarmResponseDto);
+        alarmService.generateNewChatroomAlarm(roomRequestDto, chatRoom);
 
         return chatRoomDto;
     }

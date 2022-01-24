@@ -1,15 +1,13 @@
 package com.example.thandbag.service;
 
-import com.example.thandbag.Enum.AlarmType;
 import com.example.thandbag.Enum.Category;
-import com.example.thandbag.dto.alarm.AlarmResponseDto;
 import com.example.thandbag.dto.post.ThandbagRequestDto;
 import com.example.thandbag.dto.post.ThandbagResponseDto;
-import com.example.thandbag.model.Alarm;
 import com.example.thandbag.model.Post;
 import com.example.thandbag.model.PostImg;
 import com.example.thandbag.model.User;
 import com.example.thandbag.repository.*;
+import com.example.thandbag.service.AlarmService.Action;
 import com.example.thandbag.timeconversion.TimeConversion;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -29,6 +27,7 @@ import java.util.List;
 @Service
 public class MainService {
 
+    private final AlarmService alarmService;
     private final PostRepository postRepository;
     private final PostImgRepository postImgRepository;
     private final UserRepository userRepository;
@@ -73,64 +72,8 @@ public class MainService {
         /* 전체 게시글 수 count */
         user.plusTotalPostsAndComments();
 
-        /* levelup */
-        int totalPosts = user.getTotalCount();
-        if (totalPosts < 5 && totalPosts > 2 && user.getLevel() == 1) {
-            user.setLevel(2);
-            /* 레벨업 알림 생성 */
-            Alarm levelAlarm2 = Alarm.builder()
-                    .userId(user.getId())
-                    .type(AlarmType.LEVELCHANGE)
-                    .alarmMessage("레벨이 "
-                                + user.getLevel()
-                                + "로 상승하였습니다.")
-                    .isRead(false)
-                    .build();
-
-            alarmRepository.save(levelAlarm2);
-
-            /* 알림 메시지를 보낼 DTO 생성 */
-            AlarmResponseDto alarmResponseDto = AlarmResponseDto.builder()
-                    .alarmId(levelAlarm2.getId())
-                    .type(levelAlarm2.getType().toString())
-                    .message("[알림] 레벨이 "
-                            + user.getLevel()
-                            + "로 상승하였습니다.")
-                    .alarmTargetId(user.getId())
-                    .isRead(levelAlarm2.getIsRead())
-                    .build();
-
-            redisTemplate.convertAndSend(channelTopic.getTopic(),
-                    alarmResponseDto);
-        } else if (totalPosts >= 5 && (user.getLevel() == 2)) {
-            user.setLevel(3);
-
-            /* 레벨업 알림 생성 */
-            Alarm levelAlarm3 = Alarm.builder()
-                    .userId(user.getId())
-                    .type(AlarmType.LEVELCHANGE)
-                    .alarmMessage("레벨이 "
-                                + user.getLevel()
-                                + "로 상승하였습니다.")
-                    .isRead(false)
-                    .build();
-
-            alarmRepository.save(levelAlarm3);
-
-            /* 알림 메시지를 보낼 DTO 생성 */
-            AlarmResponseDto alarmResponseDto = AlarmResponseDto.builder()
-                    .alarmId(levelAlarm3.getId())
-                    .type(levelAlarm3.getType().toString())
-                    .message("[알림] 레벨이 "
-                            + user.getLevel()
-                            + "로 상승하였습니다.")
-                    .alarmTargetId(user.getId())
-                    .isRead(levelAlarm3.getIsRead())
-                    .build();
-
-            redisTemplate.convertAndSend(channelTopic.getTopic(),
-                                                alarmResponseDto);
-        }
+        /* 레벨업 알림 생성 */
+        alarmService.generateLevelAlarm(user, Action.POST);
 
         user = userRepository.save(user);
         System.out.println("id: " + post.getId());

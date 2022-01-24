@@ -14,6 +14,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.*;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.listener.ChannelTopic;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +33,10 @@ class AlarmServiceTest {
     AlarmRepository alarmRepository;
     @Mock
     ChatRoomRepository chatRoomRepository;
+    @Mock
+    RedisTemplate redisTemplate;
+    @Mock
+    ChannelTopic channelTopic;
 
 
     @Order(1)
@@ -39,7 +45,8 @@ class AlarmServiceTest {
     void getAlarmList() {
         /* given */
         AlarmService alarmService =
-                new AlarmService(alarmRepository, chatRoomRepository);
+                new AlarmService(alarmRepository, chatRoomRepository,
+                        redisTemplate, channelTopic);
 
         int pageNo = 0;
         int sizeNo = 2;
@@ -75,7 +82,8 @@ class AlarmServiceTest {
     void alarmReadCheck() {
         /* given */
         AlarmService alarmService =
-                new AlarmService(alarmRepository, chatRoomRepository);
+                new AlarmService(alarmRepository, chatRoomRepository,
+                        redisTemplate, channelTopic);
         UserDetailsImpl userDetails = new UserDetailsImpl(user);
 
         given(alarmRepository.getById(anyLong())).willReturn(alarm1);
