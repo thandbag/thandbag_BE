@@ -7,7 +7,6 @@ import com.example.thandbag.dto.comment.ShowCommentDto;
 import com.example.thandbag.model.*;
 import com.example.thandbag.repository.*;
 import com.example.thandbag.security.UserDetailsImpl;
-import javafx.beans.binding.When;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Order;
