@@ -57,8 +57,6 @@ public class CommentService {
                 postRepository.getById(postId).getUser().getId()
         );
 
-        Post post = postRepository.getById(postId);
-
         /* 알림 생성 */
         alarmService.generateNewReplyAlarm(postOwner, user, post);
 
