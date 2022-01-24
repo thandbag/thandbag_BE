@@ -67,6 +67,7 @@ public class MainService {
                 .imgList(postImgList)
                 .share(thandbagRequestDto.isShare())
                 .user(user)
+                .commentCount(0)
                 .build();
         post = postRepository.save(post);
 
@@ -173,8 +174,9 @@ public class MainService {
         List<ThandbagResponseDto> allThandbags = new ArrayList<>();
 
         List<Post> allPosts = postRepository
-                .findAllByShareTrueOrderByCreatedAtDesc(sortedByModifiedAtDesc)
-                .getContent();
+                .findAllByShareTrueOrderByCreatedAtDesc();
+//                .findAllByShareTrueOrderByCreatedAtDesc(sortedByModifiedAtDesc)
+//                .getContent();
 
         for (Post post : allPosts) {
             ThandbagResponseDto thandbagResponseDto =
@@ -210,13 +212,13 @@ public class MainService {
 
     /* 검색된 생드백 또는 생드백 전체 리스트의 dto 작성을 위함 */
     public ThandbagResponseDto createThandbagResponseDto(Post post) {
-        List<PostImg> postImgList = postImgRepository
-                .findAllByPostId(post.getId());
-
-        List<String> imgList = new ArrayList<>();
-
-        for (PostImg postImg : postImgList)
-            imgList.add(postImg.getPostImgUrl());
+//        List<PostImg> postImgList = postImgRepository
+//                .findAllByPostId(post.getId());
+//
+//        List<String> imgList = new ArrayList<>();
+//
+//        for (PostImg postImg : postImgList)
+//            imgList.add(postImg.getPostImgUrl());
 
         return ThandbagResponseDto.builder()
                 .postId(post.getId())
@@ -229,11 +231,11 @@ public class MainService {
                 .createdAt(TimeConversion.timeConversion(post.getCreatedAt()))
                 .closed(post.getClosed())
                 .mbti(post.getUser().getMbti())
-                .commentCount(post.getCommentList().size())
+                .commentCount(post.getCommentCount())
                 .totalCount(post.getUser().getTotalCount())
                 .hitCount(post.getTotalHitCount())
                 .content(post.getContent())
-                .imgUrl(imgList)
+                //.imgUrl(imgList)
                 .profileImgUrl(post.getUser()
                         .getProfileImg()
                         .getProfileImgUrl()

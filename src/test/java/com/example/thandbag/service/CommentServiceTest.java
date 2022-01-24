@@ -7,6 +7,7 @@ import com.example.thandbag.dto.comment.ShowCommentDto;
 import com.example.thandbag.model.*;
 import com.example.thandbag.repository.*;
 import com.example.thandbag.security.UserDetailsImpl;
+import javafx.beans.binding.When;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Order;
@@ -29,6 +30,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class CommentServiceTest {
@@ -95,6 +97,7 @@ class CommentServiceTest {
                 .share(true)
                 .user(user1)
                 .commentList(new ArrayList<>())
+                .commentCount(0)
                 .build();
 
         comment1 = Comment.builder()
@@ -135,6 +138,8 @@ class CommentServiceTest {
                 .getById(postRepository.getById(postId).getUser().getId()))
                 .willReturn(user1);
 
+        given(postRepository.getById(1L)).willReturn(post);
+
         /* when */
         PostCommentDto result =
                 commentService.postComment(postId, content, userDetails);
@@ -155,6 +160,7 @@ class CommentServiceTest {
     void deleteComment() {
         /* given */
         Long commentId = comment1.getId();
+        when(commentRepository.getById(1L)).thenReturn(comment1);
 
         /* when */
         commentService.deleteComment(commentId, user1);

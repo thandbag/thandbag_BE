@@ -4,6 +4,7 @@ import com.example.thandbag.model.Post;
 import com.example.thandbag.model.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -16,6 +17,9 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     List<Post> findAllByUser(User user);
     Page<Post> findAllByUserOrderByCreatedAtDesc(User user, Pageable pageable);
     Page<Post> findAllByShareTrueOrderByCreatedAtDesc(Pageable pageable);
+
+    @Query(value = "select p from Post p JOIN FETCH " +
+                    "p.user u JOIN FETCH u.profileImg where p.share = true")
     List<Post> findAllByShareTrueOrderByCreatedAtDesc();
 
     @Query(value = "select p from Post p where p.id = :id")
@@ -27,4 +31,5 @@ public interface PostRepository extends JpaRepository<Post, Long> {
             "p.user in (select u from User u where u.nickname like %:keyword%))")
     Page<Post> findAllByShareTrueAndContainsKeywordForSearch(
             @Param("keyword") String keyword, Pageable pageable);
+
 }

@@ -25,7 +25,7 @@ public class Comment extends Timestamped {
     @Column
     private Boolean likedByWriter;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
