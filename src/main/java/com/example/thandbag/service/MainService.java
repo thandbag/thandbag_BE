@@ -1,5 +1,6 @@
 package com.example.thandbag.service;
 
+import com.example.thandbag.Enum.Action;
 import com.example.thandbag.Enum.Category;
 import com.example.thandbag.dto.post.ThandbagRequestDto;
 import com.example.thandbag.dto.post.ThandbagResponseDto;
@@ -7,7 +8,6 @@ import com.example.thandbag.model.Post;
 import com.example.thandbag.model.PostImg;
 import com.example.thandbag.model.User;
 import com.example.thandbag.repository.*;
-import com.example.thandbag.service.AlarmService.Action;
 import com.example.thandbag.timeconversion.TimeConversion;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;

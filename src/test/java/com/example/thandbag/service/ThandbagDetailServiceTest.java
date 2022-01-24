@@ -40,6 +40,10 @@ class ThandbagDetailServiceTest {
     @Mock
     CommentLikeRepository commentLikeRepository;
     @Mock
+    ChatRoomRepository chatRoomRepository;
+    @Mock
+    UserRepository userRepository;
+    @Mock
     AlarmRepository alarmRepository;
     @Mock
     RedisTemplate redisTemplate;
@@ -78,12 +82,17 @@ class ThandbagDetailServiceTest {
                 .profileImg(new ProfileImg(1L, "asdf"))
                 .auth(Auth.USER).build();
         category = Category.LOVE;
-        thandbagDetailService = new ThandbagDetailService(postRepository,
+        thandbagDetailService = new ThandbagDetailService(
+                new AlarmService(alarmRepository, chatRoomRepository,
+                        userRepository, redisTemplate, channelTopic),
+                postRepository,
+                userRepository,
                 lvImgRepository,
                 commentLikeRepository,
                 alarmRepository,
                 redisTemplate,
-                channelTopic);
+                channelTopic
+                );
         commentList = new ArrayList<>();
         thandbagRequestDto = new ThandbagRequestDto(
                 title,
@@ -113,6 +122,7 @@ class ThandbagDetailServiceTest {
                 .user(user)
                 .post(post)
                 .id(1L)
+                .commentLikeList(new ArrayList<>())
                 .build();
     }
 
@@ -133,12 +143,16 @@ class ThandbagDetailServiceTest {
 
         /* when */
         thandbagDetailService = new ThandbagDetailService(
+                new AlarmService(alarmRepository, chatRoomRepository,
+                        userRepository, redisTemplate, channelTopic),
                 postRepository,
+                userRepository,
                 lvImgRepository,
                 commentLikeRepository,
                 alarmRepository,
                 redisTemplate,
-                channelTopic);
+                channelTopic
+        );
         ThandbagResponseDto thandbagResponseDto =
                 thandbagDetailService.getOneThandbag(post.getId(), user);
 
@@ -210,12 +224,16 @@ class ThandbagDetailServiceTest {
 
         /* when */
         thandbagDetailService = new ThandbagDetailService(
+                new AlarmService(alarmRepository, chatRoomRepository,
+                        userRepository, redisTemplate, channelTopic),
                 postRepository,
+                userRepository,
                 lvImgRepository,
                 commentLikeRepository,
                 alarmRepository,
                 redisTemplate,
-                channelTopic);
+                channelTopic
+        );
         List<BestUserDto> bestUserDtoList =
                 thandbagDetailService.completeThandbag(post.getId(),hitCountDto);
 

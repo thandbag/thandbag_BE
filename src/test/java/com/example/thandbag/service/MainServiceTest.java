@@ -32,6 +32,8 @@ import static org.mockito.Mockito.when;
 class MainServiceTest {
 
     @Mock
+    ChatRoomRepository chatRoomRepository;
+    @Mock
     PostRepository postRepository;
     @Mock
     PostImgRepository postImgRepository;
@@ -69,7 +71,10 @@ class MainServiceTest {
                 .profileImg(new ProfileImg(1L, "asdf"))
                 .auth(Auth.USER).build();
         category = Category.LOVE;
-        mainService = new MainService(postRepository,
+        mainService = new MainService(
+                new AlarmService(alarmRepository, chatRoomRepository,
+                        userRepository, redisTemplate, channelTopic),
+                postRepository,
                 postImgRepository,
                 userRepository,
                 lvImgRepository,

@@ -45,6 +45,8 @@ class CommentServiceTest {
     CommentLikeRepository commentLikeRepository;
     @Mock
     AlarmRepository alarmRepository;
+    @Mock
+    ChatRoomRepository chatRoomRepository;
 
     RedisTemplate redisTemplate;
     ChannelTopic channelTopic;
@@ -110,13 +112,13 @@ class CommentServiceTest {
                 .build();
 
         commentService = new CommentService(
+                new AlarmService(alarmRepository, chatRoomRepository,
+                        userRepository, redisTemplate, channelTopic),
                 commentRepository,
                 postRepository,
                 userRepository,
-                commentLikeRepository,
-                alarmRepository,
-                redisTemplate,
-                channelTopic);
+                commentLikeRepository
+                );
     }
 
     @DisplayName("댓글 작성")
