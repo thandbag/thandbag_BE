@@ -1,8 +1,10 @@
 package com.example.thandbag.repository;
 
+import com.example.thandbag.Enum.Auth;
 import com.example.thandbag.Enum.Category;
-import com.example.thandbag.dto.signup.SignupRequestDto;
+import com.example.thandbag.model.Comment;
 import com.example.thandbag.model.Post;
+import com.example.thandbag.model.ProfileImg;
 import com.example.thandbag.model.User;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,6 +29,9 @@ class PostRepositoryTest {
     PostRepository postRepository;
     @Autowired
     UserRepository userRepository;
+    @Autowired
+    ProfileImgRepository profileImgRepository;
+
 
     User user;
     Post post1;
@@ -34,16 +40,30 @@ class PostRepositoryTest {
     @BeforeEach
     void setup() {
         /* 유저 생성 */
-        SignupRequestDto signupRequestDto = new SignupRequestDto(
-                "test@test.kr",
-                "테스트",
-                "test1234!@",
-                "INFJ"
-        );
-        this.user = new User(signupRequestDto);
+        ProfileImg profileImg = ProfileImg.builder()
+                        .profileImgUrl("www.naver.com")
+                        .build();
+        profileImgRepository.save(profileImg);
+        user = User.builder()
+                    .username("test@test.kr")
+                    .nickname("테스트")
+                    .password("test1234!@")
+                    .mbti("INFJ")
+                    .level(1)
+                    .auth(Auth.USER)
+                    .totalCount(0)
+                    .kakaoId(null)
+                    .profileImg(profileImg)
+                    .build();
 
         /* 유저 저장 */
         userRepository.save(user);
+
+        /* CommentList 생성 */
+
+
+        List<Comment> commentList = new ArrayList<>();
+
 
         /* Post1 생성 */
         this.post1 = Post.builder()
