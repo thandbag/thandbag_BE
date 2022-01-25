@@ -131,11 +131,13 @@ class PostRepositoryTest {
         post2.setCreatedAt(LocalDateTime.of(2022,01,14,21,14));
 
         //when
-        Page<Post> result = postRepository.findAllByUserOrderByCreatedAtDesc(user, pageable);
+        Page<Post> result = postRepository.
+                findAllByUserOrderByCreatedAtDesc(user, pageable);
 
         //then
         assertEquals(2, result.getTotalElements());
-        assertEquals(14, result.get().findFirst().get().getCreatedAt().getDayOfMonth());
+        assertEquals(14,
+                result.get().findFirst().get().getCreatedAt().getDayOfMonth());
     }
 
     @Order(4)
@@ -145,12 +147,14 @@ class PostRepositoryTest {
         //given
         int pageNo = 0;
         int sizeNo = 2;
-        Pageable pageable = PageRequest.of(pageNo, sizeNo, Sort.by("createdAt").descending());
+        Pageable pageable = PageRequest.of(pageNo, sizeNo, Sort.by("createdAt")
+                .descending());
         post1.setCreatedAt(LocalDateTime.of(2022,01,13,21,14));
         post2.setCreatedAt(LocalDateTime.of(2022,01,14,21,14));
 
         //when
-        Page<Post> result = postRepository.findAllByShareTrueOrderByCreatedAtDesc(pageable);
+        Page<Post> result = postRepository
+                .findAllByShareTrueOrderByCreatedAtDesc(pageable);
 
         //then
         assertEquals(1, result.getTotalElements());
@@ -166,7 +170,8 @@ class PostRepositoryTest {
         post2.setCreatedAt(LocalDateTime.of(2022,01,14,21,14));
 
         //when
-        List<Post> result = postRepository.findAllByShareTrueOrderByCreatedAtDesc();
+        List<Post> result = postRepository
+                .findAllByShareTrueOrderByCreatedAtDesc();
 
         //then
         assertEquals(1, result.size());
@@ -178,7 +183,8 @@ class PostRepositoryTest {
     @Test
     void findAllPostId() {
         //when
-        Optional<Post> result = postRepository.findByIdForHitCount(post2.getId());
+        Optional<Post> result = postRepository
+                .findByIdForHitCount(post2.getId());
 
         //then
         assertNotEquals(Optional.empty(), result);
