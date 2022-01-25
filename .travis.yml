@@ -49,3 +49,5 @@ deploy:
   deployment_group: thandbag-webservice-group
   region: ap-northeast-2
   wait-until-deployed: true
+CODECOV:
+- TOKEN: 4e54da16-a28c-44a8-b141-2bf5765fd793
