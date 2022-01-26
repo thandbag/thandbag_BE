@@ -19,6 +19,7 @@ import org.springframework.data.redis.listener.ChannelTopic;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
@@ -107,7 +108,7 @@ class CommentServiceTest {
                 .likedByWriter(false)
                 .user(user2)
                 .post(post)
-                .commentLikeList(new ArrayList<>())
+                .commentLikeList(new HashSet<>())
                 .build();
 
         commentService = new CommentService(

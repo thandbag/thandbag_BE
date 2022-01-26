@@ -110,11 +110,15 @@ public class MainService {
 
     /* 생드백 전체 리스트 페이지로 만들기 */
     public List<ThandbagResponseDto> showAllThandbag(int page, int size) {
+        Pageable pageable =
+                PageRequest.of(page, size, Sort.by("createdAt")
+                .descending());
 
         List<ThandbagResponseDto> allThandbags = new ArrayList<>();
 
         List<Post> allPosts = postRepository
-                .findAllByShareTrueOrderByCreatedAtDesc();
+                .findAllByShareTrueOrderByCreatedAtDesc(pageable).getContent();
+                //.findAllByShareTrueOrderByCreatedAtDesc();
 
         for (Post post : allPosts) {
             ThandbagResponseDto thandbagResponseDto =

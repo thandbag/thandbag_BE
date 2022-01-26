@@ -16,6 +16,9 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     List<Post> findAllByUser(User user);
     Page<Post> findAllByUserOrderByCreatedAtDesc(User user, Pageable pageable);
+
+    @EntityGraph(attributePaths = {"user", "user.profileImg"})
+    @Query(value = "select p from Post p where p.share = true")
     Page<Post> findAllByShareTrueOrderByCreatedAtDesc(Pageable pageable);
 
     @Query(value = "select p from Post p JOIN FETCH " +
@@ -23,6 +26,11 @@ public interface PostRepository extends JpaRepository<Post, Long> {
                     "where p.share = true " +
                     "order by p.createdAt desc")
     List<Post> findAllByShareTrueOrderByCreatedAtDesc();
+
+    @EntityGraph(attributePaths = {"user", "commentList",
+                                    "commentList.commentLikeList"})
+    @Query(value = "select p from Post p where p.id = :id")
+    Optional<Post> findById(@Param("id") Long id);
 
     @Query(value = "select p from Post p where p.id = :id")
     Optional<Post> findByIdForHitCount(@Param("id") Long postId);
