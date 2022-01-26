@@ -20,6 +20,7 @@ import org.springframework.data.redis.listener.ChannelTopic;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
@@ -122,7 +123,7 @@ class ThandbagDetailServiceTest {
                 .user(user)
                 .post(post)
                 .id(1L)
-                .commentLikeList(new ArrayList<>())
+                .commentLikeList(new HashSet<>())
                 .build();
     }
 

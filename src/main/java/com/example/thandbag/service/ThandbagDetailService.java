@@ -15,10 +15,7 @@ import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -37,15 +34,15 @@ public class ThandbagDetailService {
     public ThandbagResponseDto getOneThandbag(long postId, User user) {
         Post post = postRepository.findById(postId).orElseThrow(
                 () -> new NullPointerException("작성된 게시물이 없습니다"));
-        List<String> imgUrlList = new ArrayList<>();
-        for (PostImg postImg : post.getImgList())
-            imgUrlList.add(postImg.getPostImgUrl());
+//        List<String> imgUrlList = new ArrayList<>();
+//        for (PostImg postImg : post.getImgList())
+//            imgUrlList.add(postImg.getPostImgUrl());
 
         List<ShowCommentDto> showCommentDtoList = new ArrayList<>();
 
         /* 게시글에 달린 댓글 가져오기 */
         for (Comment comment : post.getCommentList()) {
-            List<CommentLike> allLikes = comment.getCommentLikeList();
+            Set<CommentLike> allLikes = comment.getCommentLikeList();
 
             /* login 한 유저, 안한 유저 구분 */
             Boolean likeExist = user.getNickname() != "visitor"
@@ -94,7 +91,7 @@ public class ThandbagDetailService {
                 .category(post.getCategory().getCategory())
                 .title(post.getTitle())
                 .content(post.getContent())
-                .imgUrl(imgUrlList)
+                //.imgUrl(imgUrlList)
                 .profileImgUrl(
                         post.getUser()
                         .getProfileImg()
