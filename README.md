@@ -296,7 +296,26 @@
 > - Bearer는 Authorization Type의 한 종류로, JWT / OAuth에 대한 토큰을 사용할 경우 주로 사용된다.
 > ```
 
+<br />
+<br />
 
+```
+9. EC2 용량제한 문제로 배포가 되지 않는 문제
+```
+
+> ❓ 원인 : EC2의 용량 기본 설정이 8GiB로 설정되어있어서, 용량 부족으로 Build 파일이 배포되지 않았음
+>
+> 💡 To-Be 
+>
+> ```
+> # 1. AWS EC2 웹페이지에서 용량 설정 변경해주기 (8Gib -? 16GiB)
+> # 2. EC2 Ubuntu에서 용량이 확장된 디스크 마운트 시켜주기  
+>  ~$ sudo growpart /dev/xvda 1
+> # 3. Linux 파일시스템에서 디스크 확장 적용 하기
+>  ~$ sudo resize2fs /dev/xvda1
+> ```
+> [\[자세한 내용 - 블로그 보기\]](https://59-devv.github.io/troubleshooting/ts_ec2_storage/)
+> 
 <br />
 
 ## 🔓 적용하지 못한 부분
