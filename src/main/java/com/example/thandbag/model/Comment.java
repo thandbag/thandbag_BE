@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @NoArgsConstructor
@@ -33,7 +34,7 @@ public class Comment extends Timestamped {
     private Post post;
 
     @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL)
-    private List<CommentLike> commentLikeList;
+    private Set<CommentLike> commentLikeList;
 
     public void selectedByPostOwner() {
         this.likedByWriter = true;

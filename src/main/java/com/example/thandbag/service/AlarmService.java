@@ -81,7 +81,7 @@ public class AlarmService {
         int currentLv = user.getLevel();
         int postCount = user.getTotalCount();
 
-        /* 레벨1에서 레벨2로 상승할 때 */
+        /* 레벨이 상승할 때 */
         if ((postCount <= LV2_MAX && postCount >= LV2_MIN && currentLv == LV1)
                 || (postCount >= LV3_MIN && currentLv == LV2)
                 || (postCount <= LV1_MAX && currentLv == LV2)
