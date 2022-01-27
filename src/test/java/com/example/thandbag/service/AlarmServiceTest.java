@@ -20,6 +20,7 @@ import org.springframework.data.redis.listener.ChannelTopic;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -363,7 +364,7 @@ class AlarmServiceTest {
             .likedByWriter(false)
             .user(user)
             .post(post)
-            .commentLikeList(new ArrayList<>())
+            .commentLikeList(new HashSet<>())
             .build();
 
     ChatRoom chatRoom = new ChatRoom(
