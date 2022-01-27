@@ -1,4 +1,4 @@
-## 👊 생드백(Thandbag) - BackEnd
+## 👊 생드백(Thandbag) - BackEnd 
 ![thandbag_main_thumbnail](https://user-images.githubusercontent.com/87135478/150528634-b8623912-648a-49a9-9a0a-b980a5c45610.png)
 
 <br />
