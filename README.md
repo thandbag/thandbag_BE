@@ -34,7 +34,9 @@
 <br />
 
 ## 🧩 Architecture
-![image](https://user-images.githubusercontent.com/87135478/150536736-dcd94ef7-a88d-4235-81dd-7ce0513b2faf.png)
+
+![architecture](https://user-images.githubusercontent.com/87135478/151476552-4cae69e4-a62b-46d1-afc5-8bae92349223.png)
+
 
 <br />
 
