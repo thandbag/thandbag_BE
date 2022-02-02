@@ -117,6 +117,20 @@ class ThandbagDetailServiceTest {
                 .build();
         post.setCreatedAt(LocalDateTime.now());
 
+        post = Post.builder()
+                .id(1L)
+                .title(thandbagRequestDto.getTitle())
+                .category(category)
+                .closed(thandbagRequestDto.isShare())
+                .content(thandbagRequestDto.getContent())
+                .imgList(postImgList)
+                .share(thandbagRequestDto.isShare())
+                .user(user)
+                .commentList(commentList)
+                .totalHitCount(0)
+                .build();
+        post.setCreatedAt(LocalDateTime.now());
+
         comment = Comment.builder()
                 .comment(content)
                 .likedByWriter(false)

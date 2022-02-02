@@ -1,4 +1,4 @@
-## 👊 생드백(Thandbag) - BackEnd
+## 👊 생드백(Thandbag) - BackEnd 
 ![thandbag_main_thumbnail](https://user-images.githubusercontent.com/87135478/150528634-b8623912-648a-49a9-9a0a-b980a5c45610.png)
 
 <br />
@@ -34,13 +34,15 @@
 <br />
 
 ## 🧩 Architecture
-![image](https://user-images.githubusercontent.com/87135478/150536736-dcd94ef7-a88d-4235-81dd-7ce0513b2faf.png)
+
+![architecture](https://user-images.githubusercontent.com/87135478/151476552-4cae69e4-a62b-46d1-afc5-8bae92349223.png)
+
 
 <br />
 
 
 ## 🗺 ER Diagram
-![image](https://user-images.githubusercontent.com/87135478/150534258-326547ce-2094-4b5f-ac83-ee9a9967a58d.png)
+![image](https://user-images.githubusercontent.com/87135478/151312641-0f6a5210-d4d2-4aa3-a1dd-ca7d8fc10d82.png)
 
 <br />
 
@@ -101,8 +103,8 @@
 
 ## 👀 유저 피드백  
 >  \* 피드백 수집일자 : 2022년 1월 22일 ~ 2022년 1월 25일  
->  \* 피드백 수 : 총 27개  
-* 서비스 만족도 평균 점수 : 4.4점 (5점)  
+>  \* 피드백 수 : 총 30개  
+* 서비스 만족도 평균 점수 : 4.23점 (5점)  
 * 스트레스 해소 만족도 점수 : 4.2점 (5점)  
 * 긍정적인 피드백 Top3  
     * 생드백을 때리면서 스트레스를 해소한다는 아이디어가 참신하고 좋았다.  
@@ -117,7 +119,7 @@
 
 ## 👣 런칭 성과
 >  \* 런칭일자 : 2022년 01월 22일(토)  
->  \* 성과 집계일자 : 2022년 01월 25일(화) 16:00
+>  \* 성과 집계일자 : 2022년 01월 27일(목) 15:00
 
 ### 1. 인스타그램 광고 진행 성과 요약
 * 3일간 인스타그램 광고 진행을 통해 약 2만명에게 도달하였으며 이 중, 182명이 사이트에 방문하였음  
@@ -135,14 +137,22 @@
 
 <br />
 
-### 3. 런칭 이후 누적 데이터 분석
-* 가입 회원 수 : 105명
-* 작성된 생드백(게시글) 수 : 총 46개 
-* 터트린 생드백 수 : 17개 (전체 대비 37%)
-* 작성된 잽(댓글) 수 : 총 75개
-* 가장 많은 생드백이 작성된 고민 카테고리 Top2 : 기타(25개), 대인관계(11개)
-* 기간동안 생드백이 맞은 횟수 : 총 4,869대 (1인 평균 46.3대)
+### 3. 런칭 이후 누적 데이터 분석 (DataBase)
+* 가입 회원 수 : 141명
+* 작성된 생드백(게시글) 수 : 총 86개 
+* 터트린 생드백 수 : 36개 (전체 대비 41.8%)
+* 작성된 잽(댓글) 수 : 총 93개
+* 가장 많은 생드백이 작성된 고민 카테고리 Top3 : 기타(27개), 공부(13개), 진로고민(13개)
+* 기간동안 생드백이 맞은 횟수 : 총 6,995대 (1인 평균 49.6대)
 
+<br />
+
+### 4. 런칭 이후 누적 데이터 분석 (Google Analytics)
+* 사용자 : 741명 (First Visit 기준)
+* Page View : 1만
+* 이벤트 수 : 1.5만
+* 모바일 / PC 비율 : 6.5 / 3.5
+* 사용자 재방문 : 12.6%
 
 <br />
 
@@ -258,51 +268,84 @@
 <br />
 
 ```
-7. 웹소켓 연결 시도 시 토큰 인증 에러가 나는 문제
+8. 웹소켓 연결 시도 시 토큰 인증 에러가 나는 문제
 ```
 
 > ❓ 원인 : Bearer Token을 사용한 후 Bearer 타입까지 포함된 토큰 문자열을 인증하려고 하였기 때문
 >
 > 💡 To-Be (Stomp Interceptor에서 타입 부분을 잘라냄)
+>
+> ```
+> String jwtToken = accessor
+>         .getFirstNativeHeader("Authorization")
+>         .substring(7);
+> ```
+> 
+> 🔑 Bearer Token을 사용한 이유
+> 
+> ```
+> # Bearer Token의 정의
+> A security token with the property that any party in possession of the token (a "bearer") can use the token
+> in any way that any other party in possession of it can. Using a bearer token does not require a bearer to 
+> prove possession of cryptographic key material(proof-of-possession).
+> 토큰을 소유한 모든 당사자가 토큰을 소유한 다른 당사자가 할 수 있는 방식으로 토큰을 사용할 수 있는 속성이 있는 보안 토큰이다. 
+> 보유자 토큰을 사용하는 경우 보유자가 암호화 키 자료(소유 증명)의 소유를 증명할 필요가 없다.
+> ```
+> 
+> ```
+> # 일반적으로  토큰은 요청 헤더의 Authorization 필드에 담아져 보내지는데, Authorization은 아래와 같은 구조를 갖고 있다.
+> - Authorization: [type] [credential]
+> - Bearer는 Authorization Type의 한 종류로, JWT / OAuth에 대한 토큰을 사용할 경우 주로 사용된다.
+> ```
 
- ```java
-            String jwtToken = accessor
-                    .getFirstNativeHeader("Authorization")
-                    .substring(7);
- ```
-> **Bearer Token을 사용한 이유**
-> 
-> 기본적으로 HTTP Request Header에 Authorization을 넣으려면 syntax는 다음과 같다
-> 
-> Authorization: [type] [credential]
-> 
-> bearer 토큰의 정의는 다음과 같다
-> 
-> A security token with the property that any party in possession of the token (a "bearer") can use the token in any way that any other party in possession of it can. Using a bearer token does not require a bearer to prove possession of cryptographic key material(proof-of-possession).
-(토큰을 소유한 모든 당사자("보유자")가 토큰을 소유한 다른 당사자가 할 수 있는 방식으로 토큰을 사용할 수 있는 속성이 있는 보안 토큰이다. 보유자 토큰을 사용하는 경우 보유자가 암호화 키 자료(소유 증명)의 소유를 증명할 필요가 없다.)
-> 
-> 로그인 시 발급되는 토큰의 필요성과 Authorization header 를 사용하였기 때문에 bearer token으로 jwt를 사용하는것이 부합하다고 판단하였다.
+<br />
+<br />
+
+```
+9. EC2 용량제한 문제로 배포가 되지 않는 문제
+```
+
+> ❓ 원인 : EC2의 용량 기본 설정이 8GiB로 설정되어있어서, 용량 부족으로 Build 파일이 배포되지 않았음
 >
-##  적용하지 못한 부분
+> 💡 To-Be 
 >
-> 1. thandbag 클릭/터치 시 동시성 문제
->
-> thandbag을 여러 유저가 클릭하여 올라간 hit수가 동시성 문제로 제대로 업데이트가 되지 않을것 같다고 판단하여, 웹소켓을 연결하여
-> 샌드백을 치려고 접속한 유저들이 실시간으로 샌드백의 타격 수가 올라가는것을 볼 수 있도록 하려고 하였으나, 시간 관계 상 적용하지 못하였다.
+> ```
+> # 1. AWS EC2 웹페이지에서 용량 설정 변경해주기 (8Gib -? 16GiB)
+> # 2. EC2 Ubuntu에서 용량이 확장된 디스크 마운트 시켜주기  
+>  ~$ sudo growpart /dev/xvda 1
+> # 3. Linux 파일시스템에서 디스크 확장 적용 하기
+>  ~$ sudo resize2fs /dev/xvda1
+> ```
+> [\[자세한 내용 - 블로그 보기\]](https://59-devv.github.io/troubleshooting/ts_ec2_storage/)
 > 
-> 대안 - thandbag을 치려고 페이지에 접속할때, 때리기 전과 후의 횟수를 모두 서버로 전송하여, 두 횟수의 차이를 업데이트 하도록 설정하여 보완 함.
+<br />
+
+## 🔓 적용하지 못한 부분
+
+```
+1. 샌드백 클릭/터치 시 동시성 문제
+```
+> 샌드백을 여러 유저가 동시에 클릭할 경우, 동시성 문제로 인해 hit수가 제대로 업데이트가 되지 않을 수 있겠다고 생각하였음.
+> 웹소켓을 연결하여, 접속한 유저들이 실시간으로 샌드백의 타격 수가 올라가는것을 확인할 수 있도록 하려고 하였으나 시간 관계 상 적용하지 못하였음.
 > 
-> 2. thandbag을 때린 사람의 랭킹 조회 기능
-> 
+> * 대안 - 샌드백을 치려고 페이지에 접속할때, 때리기 전과 후의 횟수를 모두 서버로 전송하여 두 횟수의 차이만 업데이트 하도록 보완하였음.
+
+<br />
+
+```
+2. thandbag을 때린 사람의 랭킹 조회 기능
+``` 
 > thandbag을 떄린 유저들의 목록과 랭킹이 조회 되도록 하게 해달라는 기능이 사용자 피드백으로 왔으나, 서버와 프론트엔드 에서 빠르게 적용할 수 있는 기능이 아니여서 적용하지 못함.
 > 
-> server에서는 DB정규화와 api 추가 및 수정 등이 필요, 샌드백때리기 기능을 웹소켓을 사용한 실시간 기능으로 업데이트 시 더욱 복잡해짐.
-> 
-> 3. 기타 고려 사항이었지만 시간 관계상 적용하지 못한 점
-> 
+> * 백엔드에서는 DB정규화와 API 추가 및 수정 등이 필요할 것으로 판단되며,
+> * 프론트엔드에서는 샌드백때리기 기능을 웹소켓을 사용한 실시간 기능으로 업데이트해야 할 것으로 판단됨.
+
+<br />
+
+```
+3. 기타 고려 사항이었지만 시간 관계상 적용하지 못한 점
+```
 > - 가독성 향상 및 타입 에러 방지를 위해 queryDSL 적용
 > - 서버에 과한 요청으로 부하를 주기 쉬운 like 요청 제한 처리(redis 사용)
 > - MSA 아키텍쳐 설계방식에 맞춰 기능 단위로 서버를 나누어 서버 안정성 개선
-
-
 
