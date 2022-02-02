@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -95,7 +96,7 @@ public class CommentControllerTest {
         /* given */
         String requestBody = mapper.writeValueAsString(user1);
         HttpEntity<String> request = new HttpEntity<>(requestBody, headers);
-
+        //System.out.println("프로필이미지:" + profileImgRepository.getById(1L).getProfileImgUrl());
         /* when */
         ResponseEntity<String> response = restTemplate.postForEntity(
                 "/api/user/signup",
@@ -106,6 +107,7 @@ public class CommentControllerTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
         assertEquals("회원가입 성공", response.getBody());
+
     }
 
     @Test
@@ -168,6 +170,7 @@ public class CommentControllerTest {
 
         }
 
+        //@Transactional
         @Test
         @Order(2)
         @DisplayName("댓글 달기 1")
@@ -189,7 +192,6 @@ public class CommentControllerTest {
             assertEquals(HttpStatus.OK, response.getStatusCode());
             assertEquals(requestBody, postCommentDto.getComment());
             commentId = postCommentDto.getCommentId();
-            System.out.println(commentId);
         }
 
         @Test

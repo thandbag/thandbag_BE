@@ -95,8 +95,6 @@ class MyPageServiceTest {
 
             userDetails = new UserDetailsImpl(user);
 
-            given(userRepository.getById(userDetails.getUser().getId()))
-                    .willReturn(user);
             given(imageService.uploadFile(file)).willReturn(newProfileImgUrl);
             given(userRepository.findByNickname(updateDto.getNickname()))
                     .willReturn(Optional.empty());
@@ -132,8 +130,6 @@ class MyPageServiceTest {
 
             userDetails = new UserDetailsImpl(user);
 
-            given(userRepository.getById(userDetails.getUser().getId()))
-                    .willReturn(user);
             given(userRepository.findByNickname(updateDto.getNickname()))
                     .willReturn(Optional.empty());
             given(userRepository.save(user)).willReturn(user);
@@ -181,9 +177,6 @@ class MyPageServiceTest {
                     profileImg
             );
 
-
-            given(userRepository.getById(userDetails.getUser().getId()))
-                    .willReturn(user);
             given(userRepository.findByNickname(updateDto.getNickname()))
                     .willReturn(Optional.of(user2));
 

@@ -142,6 +142,8 @@ class CommentServiceTest {
 
         given(postRepository.getById(1L)).willReturn(post);
 
+        given(userRepository.save(any())).willReturn(user1);
+
         /* when */
         PostCommentDto result =
                 commentService.postComment(postId, content, userDetails);

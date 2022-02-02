@@ -61,6 +61,7 @@ public class CommentService {
         alarmService.generateNewReplyAlarm(postOwner, user, post);
 
         userRepository.save(user);
+        String profileImgUrl = user.getProfileImg().getProfileImgUrl();
 
         return new PostCommentDto(
                 userDetails.getUser().getId(),
@@ -72,7 +73,7 @@ public class CommentService {
                 0L,
                 userDetails.getUser().getMbti(),
                 false,
-                comment.getUser().getProfileImg().getProfileImgUrl(),
+                profileImgUrl,
                 userDetails.getUser().getLevel()
         );
     }

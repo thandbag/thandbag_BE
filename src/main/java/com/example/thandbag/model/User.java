@@ -48,7 +48,7 @@ public class User extends Timestamped {
     @Enumerated(value = EnumType.STRING)
     private Auth auth;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private ProfileImg profileImg;
 
     public User(SignupRequestDto requestDto){
