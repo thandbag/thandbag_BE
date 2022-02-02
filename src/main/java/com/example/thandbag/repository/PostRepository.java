@@ -17,7 +17,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     List<Post> findAllByUser(User user);
     Page<Post> findAllByUserOrderByCreatedAtDesc(User user, Pageable pageable);
 
-    @EntityGraph(attributePaths = {"user", "user.profileImg"})
+    @EntityGraph(attributePaths = {"user"})
     @Query(value = "select p from Post p where p.share = true")
     Page<Post> findAllByShareTrueOrderByCreatedAtDesc(Pageable pageable);
 
@@ -36,9 +36,13 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     Optional<Post> findByIdForHitCount(@Param("id") Long postId);
 
     /* 닉네임, 게시글 제목, 게시글 내용 안에 키워드가 포함되는 글들을 리턴 (검색 쿼리) */
+//    @Query(value = "select p from Post p where p.share = true and " +
+//            "(p.title like %:keyword% or p.content like %:keyword% or " +
+//            "p.user in (select u from User u where u.nickname like %:keyword%))")
+    @EntityGraph(attributePaths = {"user"})
     @Query(value = "select p from Post p where p.share = true and " +
             "(p.title like %:keyword% or p.content like %:keyword% or " +
-            "p.user in (select u from User u where u.nickname like %:keyword%))")
+            "p.user.nickname like %:keyword%)")
     Page<Post> findAllByShareTrueAndContainsKeywordForSearch(
             @Param("keyword") String keyword, Pageable pageable);
 

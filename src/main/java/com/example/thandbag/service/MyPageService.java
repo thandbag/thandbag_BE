@@ -44,7 +44,7 @@ public class MyPageService {
             UserDetailsImpl userDetails
     ) throws IOException {
 
-        User user = userRepository.getById(userDetails.getUser().getId());
+        User user = userDetails.getUser();
 
         /* 닉네임 중복검사용 */
         Optional<User> foundNickname = userRepository
@@ -90,7 +90,6 @@ public class MyPageService {
                                            UserDetailsImpl userDetails) {
 
         User user = userDetails.getUser();
-
         Pageable sortedByModifiedAtDesc = PageRequest.of(
                 pageNo,
                 sizeNo,
@@ -113,9 +112,9 @@ public class MyPageService {
                     .content(post.getContent())
                     .createdAt(TimeConversion
                             .timeConversion(post.getCreatedAt()))
-                    .imgUrl(post.getImgList().size()!=0
-                            ? post.getImgList().get(0).getPostImgUrl()
-                            : "")
+//                    .imgUrl(post.getImgList().size()!=0
+//                            ? post.getImgList().get(0).getPostImgUrl()
+//                            : "")
                     .closed(post.getClosed())
                     .category(post.getCategory())
                     .mbti(post.getUser().getMbti())
