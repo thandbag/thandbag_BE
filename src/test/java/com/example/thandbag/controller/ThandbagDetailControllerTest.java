@@ -263,11 +263,27 @@ public class ThandbagDetailControllerTest {
             assertNotNull(postId2);
 
         }
-
         @Test
         @Order(3)
+        @DisplayName("비회원 생드백 상세불러오기")
+        void test3() {
+            /* when */
+            HttpEntity request = new HttpEntity(headers);
+            ResponseEntity<Object> response2 = restTemplate.exchange(
+                    "/api/visitor/thandbag/" + postId2,
+                    HttpMethod.GET,
+                    request,
+                    Object.class);
+
+            /* then */
+            assertEquals(HttpStatus.OK, response2.getStatusCode());
+        }
+
+
+        @Test
+        @Order(4)
         @DisplayName("생드백 상세불러오기/삭제 1")
-        void test3() throws JsonProcessingException {
+        void test4() throws JsonProcessingException {
 
             /* when */
             headers.set("Authorization", token);
@@ -307,9 +323,9 @@ public class ThandbagDetailControllerTest {
         }
 
         @Test
-        @Order(4)
+        @Order(5)
         @DisplayName("생드백 때리기/때리기 페이지 이동 1")
-        void test4() throws JsonProcessingException {
+        void test5() throws JsonProcessingException {
             /* given */
             HitCountDto hitCountDto1 = new HitCountDto(0, 10);
             HitCountDto hitCountDto2 = new HitCountDto(10, 20);
@@ -369,9 +385,9 @@ public class ThandbagDetailControllerTest {
         }
 
         @Test
-        @Order(5)
+        @Order(6)
         @DisplayName("생드백 떠뜨리기 1")
-        void test5() throws JsonProcessingException {
+        void test6() throws JsonProcessingException {
 
             /* given */
             HitCountDto hitCountDto = new HitCountDto(33, 33);

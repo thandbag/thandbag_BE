@@ -43,15 +43,15 @@ public class MyPageController {
         return myPageService.getMyPostList(pageNo, sizeNo, userDetails);
     }
 
-    /* DB indexing 성능 테스트를 위한 Controller*/
-    @PostMapping("/mypage/profileTest")
-    public ProfileUpdateResponseDto updateProfileTest(
-            @RequestBody ProfileUpdateRequestDto updateDto,
-            @RequestParam String nickname)
-            throws IOException {
-
-        Optional<User> user = userRepository.findByNickname(nickname);
-        UserDetailsImpl userDetails = new UserDetailsImpl(user.get());
-        return myPageService.updateProfile(null, updateDto, userDetails);
-    }
+//    /* DB indexing 성능 테스트를 위한 Controller*/
+//    @PostMapping("/mypage/profileTest")
+//    public ProfileUpdateResponseDto updateProfileTest(
+//            @RequestBody ProfileUpdateRequestDto updateDto,
+//            @RequestParam String nickname)
+//            throws IOException {
+//
+//        Optional<User> user = userRepository.findByNickname(nickname);
+//        UserDetailsImpl userDetails = new UserDetailsImpl(user.get());
+//        return myPageService.updateProfile(null, updateDto, userDetails);
+//    }
 }

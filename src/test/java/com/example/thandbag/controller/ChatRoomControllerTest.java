@@ -239,5 +239,29 @@ class ChatRoomControllerTest {
             assertEquals(HttpStatus.OK, response.getStatusCode());
             assertNotNull(response.getBody());
         }
+
+
+        @Test
+        @Order(4)
+        @DisplayName("getUserInfo()")
+        void test4() throws JsonProcessingException {
+            /* given */
+            Optional<User> user = userRepository
+                    .findByUsername("xxx@naver.com");
+            Optional<User> user2 = userRepository
+                    .findByUsername("aaa@naver.com");
+            headers.set("Authorization", token);
+            HttpEntity<String> request = new HttpEntity<>(headers);
+
+            /* when */
+            ResponseEntity<Object> response = restTemplate.exchange(
+                    "/chat/user",
+                    HttpMethod.GET,
+                    request,
+                    Object.class);
+
+            /* then */
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+        }
     }
 }
