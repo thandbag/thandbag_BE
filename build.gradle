@@ -78,6 +78,14 @@ dependencies {
 test {
 	finalizedBy 'jacocoTestReport'
 	useJUnitPlatform()
+
+	jacoco {
+		excludes += ["com/example/thandbag/ThandbagApplication.class",
+					 "com/example/thandbag/exceptionHandler/**",
+					 "com/example/thandbag/repository/**",
+					 "com/example/thandbag/service/KakaoUserService.class"]
+	}
+
 }
 
 jacocoTestReport {
@@ -85,6 +93,17 @@ jacocoTestReport {
 		html.enabled true
 		xml.enabled false
 		csv.enabled true
+	}
+
+	afterEvaluate {
+
+		classDirectories.setFrom(files(classDirectories.files.collect {
+			fileTree(dir: it,
+					exclude: ["com/example/thandbag/ThandbagApplication.class",
+							  "com/example/thandbag/exceptionHandler/**",
+							  "com/example/thandbag/repository/**",
+							  "com/example/thandbag/service/KakaoUserService.class"])
+		}))
 	}
 
 	finalizedBy 'jacocoTestCoverageVerification'
@@ -101,7 +120,7 @@ jacocoTestCoverageVerification {
 				value = 'COVEREDRATIO'
 			}
 
-			excludes = []
+			excludes = ['com.example.thandbag.ThandbagApplication']
 		}
 	}
 }
