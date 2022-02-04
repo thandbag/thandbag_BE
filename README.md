@@ -9,7 +9,7 @@
 > \* 서비스 설명 : 일상 생활속에서 받은 스트레스, 고민을 샌드백을 때리면서 재미있게 풀 수 있는 스트레스 해소 서비스  
     
 - [\[사이트 바로가기\]](https://thandbag.com)  
-- [\[시연영상 바로가기\]](https://www.youtube.com/watch?v=h1GhBCIiZe0)  
+- [\[시연영상 바로가기\]](https://www.youtube.com/watch?v=TDr55gjFYGs)  
 
 <br />
 
