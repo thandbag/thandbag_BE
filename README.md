@@ -9,7 +9,7 @@
 > \* 서비스 설명 : 일상 생활속에서 받은 스트레스, 고민을 샌드백을 때리면서 재미있게 풀 수 있는 스트레스 해소 서비스  
     
 - [\[사이트 바로가기\]](https://thandbag.com)  
-- [\[시연영상 바로가기\]](https://www.youtube.com/watch?v=h1GhBCIiZe0)  
+- [\[시연영상 바로가기\]](https://www.youtube.com/watch?v=TDr55gjFYGs)  
 
 <br />
 
@@ -156,6 +156,14 @@
 
 <br />
 
+## 꼼꼼한 Testcode 작성을 통한 코드 신뢰도 향상
+
+> 154개의 테스트 코드 작성을 통한 87%의 코드 커버리지 달성
+> 
+> <img src=https://user-images.githubusercontent.com/22443546/152502943-5a47de3f-e0d9-4ed5-b30b-c0432c827074.png> 
+> 
+
+
 ## ⛔️ Trouble Shooting
 
 ```
@@ -163,6 +171,24 @@
 ```
 >
 > 🛠 해결방법 : DB 인덱싱을 통한 data 반환 속도 향상 (초당 122개 반환 -> 초당 486개 반환)  
+
+> ❗️ 확인된 개선 사항
+> 
+> 유효성 검사를 하기위해 spirng data JPA에서 findByUsername과 findByNickname과 같은 query method등의 조회가 잦음. Update나 insert가 발생하는 것보다 조회가 많이 발생한다고 판단.
+> 
+> ex) 마이페이지에서 정보 수정(닉네임이 아니라 MBTI나 이미지를 변경 하기 위해서도 유효성 검사를 진행)
+> 
+> ex2) 채팅목록을 불러오거나 회원가입 시에도 해당 query method를 호출함.
+
+> indexing을 하기에는 아직 데이터 테이블이 크지는 않으나, 현재 DB 테이블에서는 user 테이블이 가장 크기 때문에, indexing을 적용하여 성능을 확인해 보기로함.
+>
+> ❗️ 테스트 시나리오
+>
+> Given: 10000명의 회원이 DB에 저장되어 있음.
+> 
+> When: 초당 10명이 동시에 자신의 마이페이지 정보를 수정함
+> 
+> Then: DB인덱싱을 해준것이 아래 결과 스크린 삿과 같이 throughput이 약 4배 개선됨. 
 >
 > ❗️ 코드  
 > <img src=https://user-images.githubusercontent.com/87135478/150985188-6b64bf0b-454d-4cd8-9750-f9fb7b119f2a.png width="500" height="70">  
@@ -180,7 +206,9 @@
 2. JPA에서 데이터 조회 시 발생하는 n+1 문제
 ```
 > 
-> ❗️ 문제 : JPA를 통해 데이터를 조회할 경우, 연관관계가 있는 데이터들을 추가로 조회하도록 쿼리를 보내는 n+1 문제가 발생함
+> ❗️ 문제 : Spring Data JPA를 통해 게시글 목록을 전체 조회할 경우, 연관관계가 있는 데이터들이 페치 전략과 상관 없이 전부 추가로 조회되는 쿼리가 발생
+>
+> 🛠 해결방법 : @Query를 사용한 정적 쿼리문은 페이징 처리가 되지 않아서 @EntityGraph로 Eager로 가져와야 하는것만 fetch join을 해주어서 쿼리문이 한번만 실행되게 해주었다.  
 >
 > ❓ As-Is  
 > <img src=https://user-images.githubusercontent.com/87135478/150987705-9227882e-2592-4985-a58c-e59d5e1d6392.png width="800">
